@@ -112,7 +112,7 @@
       to: [['questionmark.circle', 'anything unknown', 'text']] },
     { t: 'Small glyphs change weight and color', d: 'Chevrons are semibold in links and bold in the prompt, and the database table list uses the system’s grey instead of a token.',
       now: [['chevron.right', 'links, .semibold', 'text2', { size: 12, weight: 'semibold' }], ['chevron.right', 'the prompt, .bold', 'text2', { size: 12, weight: 'bold' }], ['tablecells', 'system grey']],
-      to: [['chevron.right', 'icon-12, .semibold', 'text', { size: 12, weight: 'semibold' }], ['tablecells', 'icon-16, text3', 'text3']] }
+      to: [['chevron.right', 'icon-sm, .semibold', 'text', { size: 12, weight: 'semibold' }], ['tablecells', 'icon-md, text3', 'text3']] }
   ];
 
   function finding(f, i) {
@@ -153,7 +153,7 @@
   var rules = [
     ['1 · One meaning, one symbol', 'A symbol names a place or a thing. Lists, tabs, tiles and buttons about that thing reuse it, and no symbol stands for two things.'],
     ['2 · Outline by default', 'Use .fill only for status glyphs, in their status color and next to a word, and for Run.'],
-    ['3 · Sizes from the scale', 'Rows icon-16, no frame. Chevrons and close marks icon-8 or icon-12, .semibold. Tiles 20 to 48 with glyphs 12 to 24, .medium. Empty states icon-32, .light.'],
+    ['3 · Sizes from the scale', 'Rows icon-md, no frame. Chevrons and close marks icon-xs or icon-sm, .semibold. Tiles 20 to 48 with glyphs 12 to 24, .medium. Empty states icon-2xl, .light.'],
     ['4 · Color from the tokens', 'text3 in rows, text when selected. A family tint only on its family’s tile; text2 for places and things, accent for new items.']
   ];
 

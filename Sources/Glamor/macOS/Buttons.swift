@@ -12,7 +12,7 @@ private struct ButtonMetrics {
     var height: CGFloat { compact ? G.Height.control28 : G.Height.control32 }
     var radius: CGFloat { compact ? G.Radius.r6 : G.Radius.r8 }
     /// The symbol beside a button's title is 12 at both sizes (design system: Button).
-    var icon: CGFloat { G.Icon.i12 }
+    var icon: CGFloat { G.Icon.sm }
 }
 
 /// A Label inside a button: the icon on the icon scale, 8 before its title.
@@ -139,7 +139,7 @@ public struct GhostButtonStyle: ButtonStyle {
         let height = size ?? m.height
         let radius = height > G.Height.control28 ? G.Radius.r8 : G.Radius.r6
         // Only an icon-only square of 28 or more draws its symbol at 16.
-        let icon = square && height >= G.Height.control28 ? G.Icon.i16 : m.icon
+        let icon = square && height >= G.Height.control28 ? G.Icon.md : m.icon
         configuration.label
             .lineLimit(1)
             .textStyle(.body)

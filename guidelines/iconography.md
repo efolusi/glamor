@@ -18,7 +18,7 @@ Symbols are named, not cited by line, because the Swift views are being moved to
 10. **A bolt means two things.** The connection test is `bolt.heart`. Use `waveform.path.ecg` for the test. (Caches were a bolt too; they are `memorychip` now.)
 11. **The install screen borrows a family symbol.** "Install the komando command line" uses `shippingbox`, the Registries symbol. Use `terminal`.
 12. **Unknown has three symbols.** A missing target shows `questionmark.circle`, an unknown tab `questionmark`, an unknown activity `circle.dashed`. Use `questionmark.circle` for all three.
-13. **Small glyphs change weight and color.** `chevron.right` is `.semibold` in links and `.bold` in the prompt, `xmark` is `.bold`, and the table list in the database client uses the system's secondary grey. Small glyphs are `icon-8` or `icon-12` at `.semibold`, and every glyph takes its color from the tokens.
+13. **Small glyphs change weight and color.** `chevron.right` is `.semibold` in links and `.bold` in the prompt, `xmark` is `.bold`, and the table list in the database client uses the system's secondary grey. Small glyphs are `icon-xs` or `icon-sm` at `.semibold`, and every glyph takes its color from the tokens.
 
 ## One meaning, one symbol
 
@@ -53,5 +53,5 @@ Symbols marked *new* are new to the app. Their stand-ins are in the bundle's map
 
 1. **One meaning, one symbol.** A symbol names a place or a thing. Lists, tabs, tiles and buttons about that thing reuse it, and no symbol stands for two things.
 2. **Outline by default.** `.fill` is only for status glyphs, in their status color and next to a word, and for Run.
-3. **Sizes from the scale.** Glyphs in rows are `icon-16` with no frame. Chevrons, close marks and the lock in a pill are `icon-8` or `icon-12` at `.semibold`. Tiles are 20, 28, 32, 40 and 48 with glyphs of 12, 16, 16, 20 and 24 at `.medium`. Empty states are `icon-32` at `.light`.
+3. **Sizes from the scale.** Glyphs in rows are `icon-md` with no frame. Chevrons, close marks and the lock in a pill are `icon-xs` or `icon-sm` at `.semibold`. Tiles are 20, 28, 32, 40 and 48 with glyphs of 12, 16, 16, 20 and 24 at `.medium`. Empty states are `icon-2xl` at `.light`.
 4. **Color from the tokens.** Glyphs in rows are `text3`, or `text` when the row is selected. A family tint goes only on that family's tile; places and other things use `text2`, new items `accent`. Status colors appear only on status glyphs.

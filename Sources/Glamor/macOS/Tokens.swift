@@ -254,22 +254,22 @@ public enum G {
         /// The glyph box for a tile: 20 → 12, 28 and 32 → 16, 40 → 20, 48 → 24.
         public static func glyph(_ tile: CGFloat) -> CGFloat {
             switch tile {
-            case ...t20: Icon.i12
-            case ...t32: Icon.i16
-            case ...t40: Icon.i20
-            default: Icon.i24
+            case ...t20: Icon.sm
+            case ...t32: Icon.md
+            case ...t40: Icon.lg
+            default: Icon.xl
             }
         }
     }
 
-    /// SF Symbols on the icon scale. Each size is the box the glyph fills.
+    /// SF Symbols on the icon scale (design-tokens `icon.*`; `xxl` is `icon.2xl`, since a Swift name cannot start with a digit). Each size is the box the glyph fills.
     public enum Icon {
-        public static let i8: CGFloat = 8      // the close mark in a tab or chip
-        public static let i12: CGFloat = 12    // chevrons, locks, icons in compact buttons
-        public static let i16: CGFloat = 16    // sidebar places, row icons, toolbar icons
-        public static let i20: CGFloat = 20    // the run button, glyphs in 40 tiles
-        public static let i24: CGFloat = 24    // glyphs in 48 tiles
-        public static let i32: CGFloat = 32    // empty states
+        public static let xs = CGFloat(GlamorTokens.Length.iconXs)      // the close mark in a tab or chip
+        public static let sm = CGFloat(GlamorTokens.Length.iconSm)    // chevrons, locks, icons in compact buttons
+        public static let md = CGFloat(GlamorTokens.Length.iconMd)    // sidebar places, row icons, toolbar icons
+        public static let lg = CGFloat(GlamorTokens.Length.iconLg)    // the run button, glyphs in 40 tiles
+        public static let xl = CGFloat(GlamorTokens.Length.iconXl)    // glyphs in 48 tiles
+        public static let xxl = CGFloat(GlamorTokens.Length.icon2xl)    // empty states
 
         /// The point size that makes a symbol fill a box of `box` points: a symbol draws about a
         /// fifth larger than its point size, so a 16 box takes a 12.8 point symbol (the body's size).

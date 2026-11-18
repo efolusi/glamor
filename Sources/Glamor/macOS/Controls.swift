@@ -206,7 +206,7 @@ public struct LinkButton: View {
     @State private var hover = false
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: G.Space.s4) { Text(title); Image(systemName: "chevron.right").icon(G.Icon.i8, weight: .bold) }
+            HStack(spacing: G.Space.s4) { Text(title); Image(systemName: "chevron.right").icon(G.Icon.xs, weight: .bold) }
                 .textStyle(.body).foregroundStyle(hover ? G.text : G.text2)
                 .contentShape(Rectangle())
         }
@@ -238,7 +238,7 @@ public struct SearchBar<Accessory: View>: View {
 
     public var body: some View {
         HStack(spacing: G.Space.s8) {
-            Image(systemName: "magnifyingglass").icon(G.Icon.i16).foregroundStyle(G.text3)
+            Image(systemName: "magnifyingglass").icon(G.Icon.md).foregroundStyle(G.text3)
                 .accessibilityHidden(true)
             TextField(placeholder, text: $text)
                 .textFieldStyle(.plain)
@@ -246,7 +246,7 @@ public struct SearchBar<Accessory: View>: View {
                 .focused($focused)
                 .onSubmit { action?() }
             if !text.isEmpty {
-                Button { text = "" } label: { Image(systemName: "xmark.circle.fill").icon(G.Icon.i16) }
+                Button { text = "" } label: { Image(systemName: "xmark.circle.fill").icon(G.Icon.md) }
                     .buttonStyle(.plainFocus(G.Radius.r4)).foregroundStyle(G.text3)
                     .help("Clear the search")
                     .accessibilityLabel("Clear the search")

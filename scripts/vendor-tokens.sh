@@ -5,9 +5,9 @@
 # Usage: scripts/vendor-tokens.sh [--check]
 set -euo pipefail
 cd "$(dirname "$0")/.."
-TOKENS_VERSION="v0.1.1"
+TOKENS_VERSION="v0.2.0"
 # The commit that tag points at. A moved tag fails here instead of changing the tokens.
-TOKENS_COMMIT="ab2a6b11ae490849527206200c174184f1d20da6"
+TOKENS_COMMIT="127170f92047e6f394c5333efb19cbba589765f1"
 URL="https://raw.githubusercontent.com/efolusi/design-tokens/$TOKENS_COMMIT/tokens/native/GlamorTokens.swift"
 OUT="Sources/Glamor/Generated/GlamorTokens.swift"
 
