@@ -2,7 +2,7 @@
 
 Native design system for Windows, Linux, Mac, Android, iOS, and iPad, by [Efolusi](https://efolusi.com). Swift-first. Compatible with SwiftUI.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-7A4E2B.svg)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-7A4E2B.svg)](LICENSE)
 
 ## What's here
 
@@ -56,4 +56,4 @@ Next work: turn Komando-specific Page cards into shared primitives, and consume 
 
 ## License
 
-MIT. See `LICENSE`.
+Apache-2.0. See `LICENSE`.

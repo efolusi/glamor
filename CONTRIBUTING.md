@@ -1,6 +1,6 @@
 # Contributing to Glamor
 
-Glamor is MIT-licensed. HTML cards under `components/` run through the preview script. Swift under `Sources/` is the native seed.
+Glamor is licensed under Apache-2.0. HTML cards under `components/` run through the preview script. Swift under `Sources/` is the native seed.
 
 ## Layout
 
@@ -42,4 +42,4 @@ scripts/check-motion.sh Sources/DesignSystemMobile
 
 ## License
 
-By contributing, you agree your contributions are licensed under the MIT License.
+By contributing, you agree your contributions are licensed under the Apache License 2.0.
