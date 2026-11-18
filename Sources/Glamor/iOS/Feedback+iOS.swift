@@ -1,29 +1,33 @@
-import GlamorText
+#if os(iOS)
 import SwiftUI
 import UIKit
 
 /// A change or a check the person started did not happen: an icon and the words, in danger, where they
 /// acted. VoiceOver hears it once, when it happens: the screen says it with `resultFeedback` or
 /// `announcesFailure`, not this row, which appears again each time it scrolls back into view.
-struct FailureLine: View {
-    let text: String
-    var body: some View {
+public struct FailureLine: View {
+    public let text: String
+    public var body: some View {
         Label { Text(DisplayText.clean(text)) } icon: { Image(systemName: "xmark.circle.fill").accessibilityHidden(true) }
-            .font(MK.small).foregroundStyle(MK.danger)
+            .font(G.small).foregroundStyle(G.danger)
             .fixedSize(horizontal: false, vertical: true)
+    }
+
+    public init(text: String) {
+        self.text = text
     }
 }
 
 /// A loading row that shows only after 300 ms, so a quick answer never flashes one (owner's motion
 /// decision, 2026-11-15). Static: the system spinner and the words, no shimmer.
-struct DelayedProgress: View {
-    let text: String
+public struct DelayedProgress: View {
+    public let text: String
     @State private var shown = false
-    var body: some View {
+    public var body: some View {
         HStack(spacing: 8) {
             if shown {
                 ProgressView()
-                Text(text).foregroundStyle(MK.text3)
+                Text(text).foregroundStyle(G.text3)
             }
         }
         .frame(minHeight: 20)
@@ -33,15 +37,19 @@ struct DelayedProgress: View {
             shown = true
         }
     }
+
+    public init(text: String) {
+        self.text = text
+    }
 }
 
 /// A small spinner at the end of a button's row (Refresh, Verify the Record): nothing for 300 ms, then at
 /// least 500 ms, so a quick answer never flashes it. Its place is kept, so the label never moves.
-struct DelayedSpinner: View {
-    let isBusy: Bool
+public struct DelayedSpinner: View {
+    public let isBusy: Bool
     @State private var shown = false
     @State private var shownAt = ContinuousClock.now
-    var body: some View {
+    public var body: some View {
         ProgressView()
             .opacity(shown ? 1 : 0)
             .accessibilityHidden(!shown)
@@ -59,24 +67,28 @@ struct DelayedSpinner: View {
                 }
             }
     }
+
+    public init(isBusy: Bool) {
+        self.isBusy = isBusy
+    }
 }
 
 /// The skeleton of a list that has not answered yet: placeholder rows in the shape of the real ones,
 /// static and shown after 300 ms. VoiceOver hears the words instead.
-struct ListSkeleton: View {
-    let text: String
-    var rows = 4
+public struct ListSkeleton: View {
+    public let text: String
+    public var rows: Int = 4
     @State private var shown = false
-    var body: some View {
+    public var body: some View {
         List {
             if shown {
                 Section {
                     ForEach(0..<rows, id: \.self) { _ in
                         HStack(spacing: 12) {
-                            RoundedRectangle(cornerRadius: MK.Radius.r8).fill(MK.subtle).frame(width: 32, height: 32)
+                            RoundedRectangle(cornerRadius: G.Radius.r8).fill(G.subtle).frame(width: 32, height: 32)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("web-1 placeholder").font(MK.bodyStrong)
-                                Text("deploy@10.0.0.4:22").font(MK.monoSmall)
+                                Text("web-1 placeholder").font(G.bodyStrong)
+                                Text("deploy@10.0.0.4:22").font(G.monoSmall)
                             }
                             .redacted(reason: .placeholder)
                         }
@@ -90,6 +102,11 @@ struct ListSkeleton: View {
             try? await Task.sleep(for: PhoneMotion.loadingDelay)
             shown = true
         }
+    }
+
+    public init(text: String, rows: Int = 4) {
+        self.text = text
+        self.rows = rows
     }
 }
 
@@ -115,7 +132,7 @@ struct ListSkeleton: View {
     UINotificationFeedbackGenerator().notificationOccurred(.success)
 }
 
-extension View {
+public extension View {
     /// The iPhone's answer to a result the person started (owner's motion decision): the success haptic
     /// each time `done` goes up; the error haptic and VoiceOver hearing `failure` each time `failed`
     /// goes up, also when the same failure happens twice. The system leaves the haptics out when the
@@ -135,4 +152,4 @@ extension View {
         }
     }
 }
-
+#endif

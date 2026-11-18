@@ -6,7 +6,7 @@ Glamor is licensed under Apache-2.0. HTML cards under `components/` run through 
 
 Keep the shallow root. `tokens.json`, `components/`, `assets/`, and `Sources/` are the public contract. Do not reintroduce `design/`.
 
-Authored token file: root `tokens.json`. Keep `Sources/DesignSystem/Tokens.swift` and `Sources/DesignSystemMobile/Tokens.swift` in lockstep until `design-tokens` exports land.
+Authored token file: root `tokens.json`. Keep `Sources/Glamor/macOS/Tokens.swift` and `Sources/Glamor/iOS/Tokens+iOS.swift` in lockstep until `design-tokens` exports land.
 
 Preview cards stay flat: `components/<Name>/preview.html`.
 
@@ -15,10 +15,9 @@ Preview cards stay flat: `components/<Name>/preview.html`.
 ```bash
 python3 scripts/design-preview.py --no-open
 scripts/check-colors.sh
-scripts/check-sizes.sh Sources/DesignSystem
-scripts/check-sizes.sh Sources/DesignSystemMobile
-scripts/check-motion.sh Sources/DesignSystem
-scripts/check-motion.sh Sources/DesignSystemMobile
+scripts/check-sizes.sh
+scripts/check-motion.sh
+swift test
 ```
 
 `design-preview.py` loads React from jsDelivr (needs network). Output is under `build/` (gitignored).
@@ -27,7 +26,7 @@ scripts/check-motion.sh Sources/DesignSystemMobile
 
 - Neutrals carry the interface; color is for status only.
 - One primary action per screen.
-- Tokens only: no literal colors or sizes outside DesignSystem.
+- Tokens only: no literal colors or sizes outside `Sources/Glamor`.
 - SF Symbols by name unless `guidelines/iconography.md` says otherwise.
 - Motion only when it explains a change (`guidelines/overview.md`).
 - Prefer shared primitives when generalizing product-specific Page cards.

@@ -51,7 +51,7 @@ public enum DisplayText {
 
     /// Shown where a control string starts but never ends, so the words after it stay visible and the
     /// person can see something was there.
-    static let marker: Unicode.Scalar = "\u{FFFD}"
+    public static let marker: Unicode.Scalar = "\u{FFFD}"
 
     /// One line, for a name, a title or a menu item: line breaks and tabs become spaces, and a
     /// break at either end is dropped.
@@ -64,7 +64,7 @@ public enum DisplayText {
 
     /// What the approval card spells out: everything hidden, and also ZWNJ and ZWJ, because there the
     /// exact characters of a command matter more than how a word looks.
-    static func invisibleInCommand(_ c: Unicode.Scalar) -> Bool {
+    public static func invisibleInCommand(_ c: Unicode.Scalar) -> Bool {
         isHidden(c) || c.value == 0x200C || c.value == 0x200D
     }
 
@@ -75,7 +75,7 @@ public enum DisplayText {
     /// C0 and C1 controls (other than line feed and tab), DEL, the bidirectional overrides,
     /// embeddings, isolates and marks, the zero-width space and word joiner, the byte order mark, and the
     /// Unicode line and paragraph separators (which `clean` turns into line breaks), and the tag characters.
-    static func isHidden(_ c: Unicode.Scalar) -> Bool {
+    public static func isHidden(_ c: Unicode.Scalar) -> Bool {
         switch c.value {
         case 0x09, 0x0A: false
         case 0x00...0x1F, 0x7F...0x9F: true

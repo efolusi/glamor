@@ -24,7 +24,7 @@ How Komando moves, and when it doesn't. Motion only explains a change: *what cha
 **Start and end frames.** The app draws the same rows with its own views (`KOMANDO_APP_PAGE=motion`, `MotionGallery`), with animations off, so the two can be compared side by side as stills. The durations are in the notes under each frame.
 
 **Building blocks in Swift:**
-- `kAnimation(.base, value:)`, `kTransition(.appear(from: .top))` and `withKAnimation(.base) { }`. Each one follows Reduce Motion by itself.
+- `gAnimation(.base, value:)`, `gTransition(.appear(from: .top))` and `withGAnimation(.base) { }`. Each one follows Reduce Motion by itself.
 - `DelayedProgress(isBusy:)`: the spinner that waits 300 ms and stays 500 ms.
 - `CopyButton`: the copy icon with its check.
 - `ProgressBar`: it eases by itself.
@@ -35,7 +35,7 @@ How Komando moves, and when it doesn't. Motion only explains a change: *what cha
 
 **Still on purpose:** the ⌘K palette, switching places and tabs, keyboard moves in lists, terminal and log text, command output, selection, status dots and pills, rows in long lists, hover coming in, and the system's sheets, alerts and menus.
 
-**iPhone and iPad:** the same tokens, as `MK.Motion` (`mkAnimation`, `withMKAnimation`; the times are `PhoneMotion`), checked by the same lint. A spinner in a button's row (Refresh, Verify the Record) and the agent's "Working…" wait delay-spinner; "Copied" stays hold-confirm (1.5 s). The cover the app switcher shows is there at once and fades away over motion-fast when the app comes back. Haptics are for outcomes only:
+**iPhone and iPad:** the same tokens, as `MK.Motion` (`gAnimation`, `withGAnimation`; the times are `PhoneMotion`), checked by the same lint. A spinner in a button's row (Refresh, Verify the Record) and the agent's "Working…" wait delay-spinner; "Copied" stays hold-confirm (1.5 s). The cover the app switcher shows is there at once and fades away over motion-fast when the app comes back. Haptics are for outcomes only:
 - success or error when a run, copy or transfer the person started ends while its screen is open;
 - warning when a safety question or an approval card appears.
 

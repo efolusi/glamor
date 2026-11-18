@@ -10,8 +10,8 @@ glamor/
 ├── tokens/                 # export home (swift/, css/ later)
 ├── assets/ · components/   # brand files; flat HTML preview cards
 ├── guidelines/
-├── Sources/DesignSystem/
-├── Sources/DesignSystemMobile/
+├── Package.swift         # one library: Glamor (macOS 15, iOS 18)
+├── Sources/Glamor/        # macOS/, iOS/ (files end in +iOS), Text/
 ├── scripts/                # design-preview.py, check-*.sh
 ├── Tests/ · build/         # build/ is gitignored preview out
 └── README, ARCHITECTURE, CONTRIBUTING, SECURITY, …

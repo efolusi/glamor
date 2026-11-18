@@ -152,7 +152,7 @@ It is built, in the Mac app and in the iPhone app's Agent tab. It runs Claude Op
 
 - Use SF Pro and SF Mono through `Font.system`. Ship no font files, because the system provides them.
 - Use six sizes and nothing else: 11 (`small`, `section-label`, `mono-s`), 12 (`caption`, `mono`), 13 (`body`, `body-medium`, `body-strong`, `mono-l`), 15 (`title-s`), 17 (`title-m`, `input-l`) and 20 (`title-l`). No half sizes and, on the Mac, no system text styles.
-- **iPhone and iPad use iOS text styles** (owner decision 2026-11-12), so every size grows with Dynamic Type. At the default text size they land on the same six sizes: `ios-title` 20 (`.title3` semibold, `MK.title`), `ios-headline` 17 (`.headline`), `ios-body` 15 (`.subheadline`), `ios-small` 13 (`.footnote`), `ios-caption` 12 (`.caption`) and `ios-tiny` 11 (`.caption2`); mono is the same style with `design: .monospaced`. Line heights are the system's. The Mac keeps fixed sizes, because macOS text styles change with its own settings.
+- **iPhone and iPad use iOS text styles** (owner decision 2026-11-12), so every size grows with Dynamic Type. At the default text size they land on the same six sizes: `ios-title` 20 (`.title3` semibold, `G.title`), `ios-headline` 17 (`.headline`), `ios-body` 15 (`.subheadline`), `ios-small` 13 (`.footnote`), `ios-caption` 12 (`.caption`) and `ios-tiny` 11 (`.caption2`); mono is the same style with `design: .monospaced`. Line heights are the system's. The Mac keeps fixed sizes, because macOS text styles change with its own settings.
 - Emphasise with weight before size. A selected sidebar row or tab changes from regular to semibold and from `text2` to `text`, with no other change.
 - Set anything komando prints or reads in `mono`: commands, output, addresses, ratios and counts. Use `.monospacedDigit()` for counts in proportional text.
 
@@ -199,25 +199,25 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 - `border` is decorative only. The outline of a thing that is a control (the off Switch track, an unchecked Checkbox, a text field) is `controlEdge`, which holds 3:1 on every surface in both themes.
 - A Pill draws its tint on an opaque ground: the status color at `opacity-pill` (10%) over `card`, so a hover or selected row behind it never shows through. The same goes for the Protected capsule on a target. Its text, in the status color, holds 4.6:1 or more on that ground in both themes: in light ok 4.66, warn 4.70, danger 4.68, accent 4.63; in dark ok 6.12, warn 6.58, danger 4.64, accent 4.65. At 12% accent and danger sat at 4.50, with no margin. With Increase Contrast the tint is 16% and the status colors take their increased pair (see States), so the text still holds 4.61:1 or more.
 - The avatar is one solid fill, `avatar` (#247A43), the same in both themes (it does not follow the theme), so its white initial holds 5.33:1 everywhere. Icon tiles are always the 12% tint; there is no filled tile.
-- Keep shadows faint and functional: four shadows, all black, never colored. `shadow-control` (K.Shadow.control) on the primary and secondary buttons, a MenuPicker, the chosen segment and the split tip; `shadow-hover` (K.Shadow.hover) on a HoverCard under the pointer and nowhere else; `shadow-panel` (K.Shadow.panel) on the floating content panel; `shadow-palette` (K.Shadow.palette) on the ⌘K palette. Cards, rows, banners, pills, the agent's composer and the whole iPhone and iPad app have none. Draw them only as `.shadow(K.Shadow.x)` (`scripts/check-colors.sh`).
+- Keep shadows faint and functional: four shadows, all black, never colored. `shadow-control` (G.Shadow.control) on the primary and secondary buttons, a MenuPicker, the chosen segment and the split tip; `shadow-hover` (G.Shadow.hover) on a HoverCard under the pointer and nowhere else; `shadow-panel` (G.Shadow.panel) on the floating content panel; `shadow-palette` (G.Shadow.palette) on the ⌘K palette. Cards, rows, banners, pills, the agent's composer and the whole iPhone and iPad app have none. Draw them only as `.shadow(G.Shadow.x)` (`scripts/check-colors.sh`).
 
 ### States
 
 - Hover has three levels, each the same strength wherever it appears, and it comes in and goes at once (no motion).
-  - **Items** (list, table and side-list rows, menu and palette rows, chips, the ⋯, ghost buttons, sidebar places, panel-header tabs): a fill chosen by the ground under it, `hover-card` (K.Hover.onCard), `hover-panel` (K.Hover.onPanel) or `hover-window` (K.Hover.onWindow); a panel-header tab takes `hover-tab` (K.Hover.onTab), quieter than the active tab's `subtle`. All sit at about 1.06 to 1.12:1 in both themes, so text3 keeps 4.5:1 on it. Words in `text2` may turn `text`.
+  - **Items** (list, table and side-list rows, menu and palette rows, chips, the ⋯, ghost buttons, sidebar places, panel-header tabs): a fill chosen by the ground under it, `hover-card` (G.Hover.onCard), `hover-panel` (G.Hover.onPanel) or `hover-window` (G.Hover.onWindow); a panel-header tab takes `hover-tab` (G.Hover.onTab), quieter than the active tab's `subtle`. All sit at about 1.06 to 1.12:1 in both themes, so text3 keeps 4.5:1 on it. Words in `text2` may turn `text`.
   - **Raised controls** (secondary button, MenuPicker, HoverCard, the profile row, the sidebar Search): `card` to `cardHover`. Only a HoverCard also gains `shadow-hover`.
   - **Primary**: `primary` to `primaryHover`, an opaque mix, so the ground never shows through.
   - Never use `accent`, a status color or a family tint as a hover fill. A destructive action (Remove…) hovers like its level; only its word is `danger`.
-- Pressed: one step past hover. Items and raised controls take `pressed` (K.Hover.pressed); the primary button takes `primaryPressed`. Nothing fades or dims on press. text3 sits at 4.2:1 on `pressed` only while the mouse is down.
+- Pressed: one step past hover. Items and raised controls take `pressed` (G.Hover.pressed); the primary button takes `primaryPressed`. Nothing fades or dims on press. text3 sits at 4.2:1 on `pressed` only while the mouse is down.
 - Disabled: the primary button at `opacity-disabled` with no shadow; secondary text in `text3`.
 - Focus, fields: an input's border becomes `accent` at `opacity-ring`, 2pt (`focus-ring`). Never add a glow.
-- Focus, everything else you can press (buttons, chips, sidebar places, tabs, list rows, cards, switches): a `line-strong` (2pt) line in `focus` with a `focus-offset` (2pt) gap, one recipe on the Mac and in these cards. Around a control: `RoundedRectangle(cornerRadius: r + 4).strokeBorder(K.focus, lineWidth: 2).padding(-4)`, so the line sits 2 to 4pt outside the shape and never touches its fill. A selectable row (**ListRow**) draws it on its own highlight, inside: `RoundedRectangle(cornerRadius: K.Row.radius).strokeBorder(K.focus, lineWidth: 2)`, so a card's clip or the next row never cuts it. 4.8:1 or more against what surrounds it in both themes (WCAG 2.4.7 and 2.4.13). Every custom `ButtonStyle` reads `@Environment(\.isFocused)` to draw it; a control that hides until hover (a tab's ×) shows while it has focus (UX audit P1-9, P1-10).
+- Focus, everything else you can press (buttons, chips, sidebar places, tabs, list rows, cards, switches): a `line-strong` (2pt) line in `focus` with a `focus-offset` (2pt) gap, one recipe on the Mac and in these cards. Around a control: `RoundedRectangle(cornerRadius: r + 4).strokeBorder(G.focus, lineWidth: 2).padding(-4)`, so the line sits 2 to 4pt outside the shape and never touches its fill. A selectable row (**ListRow**) draws it on its own highlight, inside: `RoundedRectangle(cornerRadius: G.Row.radius).strokeBorder(G.focus, lineWidth: 2)`, so a card's clip or the next row never cuts it. 4.8:1 or more against what surrounds it in both themes (WCAG 2.4.7 and 2.4.13). Every custom `ButtonStyle` reads `@Environment(\.isFocused)` to draw it; a control that hides until hover (a tab's ×) shows while it has focus (UX audit P1-9, P1-10).
 - Selected: the fill still says "this one" (a `panel` fill with a `border` hairline in the sidebar; `subtle` on a tab; `accent` at 10% on a list row), but a fill is only 1.04 to 1.11:1, so every selected item also has a `selected-marker` (accent) mark of 3:1 or more: a 2pt bar, 16 high, at the leading edge of a sidebar place or list row (the first cell of a table row); a 2pt bar under the active panel-header tab; a 1pt ring around a selected chip (4.4:1 or more against the fill it sits on, both themes). Underline tabs keep their 2pt `text` rule (UX audit P1-8).
 - Increase Contrast (macOS and iOS): `border` becomes `controlEdge` (3:1), `text3` becomes `text2`, the hover and pressed fills take their `increased` pair (about 1.2:1), and pill and tile tints go from 10 to 16% (`opacity-increased`). At 16% the normal status colors fall to 4.2 to 4.3:1 inside their pill, so `accent`, `ok`, `warn` and `danger` take their `increased` pair from tokens.json (darker in light, lighter in dark) and hold 4.61:1 or more inside a 16% pill in both themes. Read it with `colorSchemeContrast` / `accessibilityContrast` (UX audit P2-3, P2-8).
 
 ### Motion
 
-Motion only explains a change (owner decision 2026-11-15). It answers one of three questions: *what changed*, *where did it go*, or *is it still working*. If it answers none, nothing moves. The tokens are `motion-*`, `ease-*`, `delay-*`, `hold-*` and `guard-*` in tokens.json, and `K.Motion` in `DesignSystem/Motion.swift`. **MotionSpec** shows each one live, with a Reduce Motion switch.
+Motion only explains a change (owner decision 2026-11-15). It answers one of three questions: *what changed*, *where did it go*, or *is it still working*. If it answers none, nothing moves. The tokens are `motion-*`, `ease-*`, `delay-*`, `hold-*` and `guard-*` in tokens.json, and `G.Motion` in `DesignSystem/Motion.swift`. **MotionSpec** shows each one live, with a Reduce Motion switch.
 
 1. **Fast first.** The app never waits for an animation. Every animation can be interrupted, and a keypress always acts at once.
 2. **What you do often stays still.** ⌘K, switching places and tabs, moving through a list with the keyboard, typing in a terminal, opening a menu, selection: all instant.
@@ -226,7 +226,7 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 5. **A short wait shows nothing; a long one shows honest progress.** A spinner or skeleton waits `delay-spinner` (300 ms) and then stays at least `hold-spinner` (500 ms) (**DelayedProgress**). A bar moves to each value over `motion-progress` (250 ms, linear) whenever the size is known.
 6. **Nothing moves on its own.** No pulse, breathing, glow or shimmer. The one loop is the spinner, and only while work really runs. The skeleton is a still `subtle` shape.
 7. **Something that arrives moves `motion-shift` (8) as it fades in**: a notice from above, a card from below. A card that arrives on its own, such as the approval card, ignores clicks and taps for `guard-click` (300 ms). The keyboard is never blocked.
-8. **Reduce Motion means fades.** Nothing travels, slides or scales. Every move becomes a `motion-fast` fade, a bar jumps to its value, and the spinner still turns. `K.Motion` does this by itself (`kAnimation`, `kTransition`), so a view never reads the setting.
+8. **Reduce Motion means fades.** Nothing travels, slides or scales. Every move becomes a `motion-fast` fade, a bar jumps to its value, and the spinner still turns. `G.Motion` does this by itself (`gAnimation`, `gTransition`), so a view never reads the setting.
 9. **The system's motion stays the system's.** Sheets, alerts, popovers, menus, split dividers, pull to refresh, Face ID and Liquid Glass toolbars keep their own motion. We never re-animate them.
 10. **Haptics on iPhone only, for outcomes.** Success, warning or error when a run the person started ends while its screen is open, and warning when a safety question or approval card appears. Never for scrolling, hover, taps through a list or a background refresh. Always with something visual too. The Mac plays no success or error haptics, so its feedback is visual.
 
@@ -236,7 +236,7 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 
 **In each card's README**, a line in one shape: `Motion: <moment> → <token> (<what moves>). Reduce Motion: <fallback>. iPhone: <haptic or none>.`
 
-**In Swift**, use only `K.Motion` (`kAnimation(.base, value:)`, `kTransition(.appear)`, `withKAnimation(.base) { }`). On the phone the same tokens are `MK.Motion` (`mkAnimation(.fast, value:)`, `withMKAnimation(.base, reduceMotion:) { }`). `scripts/check-motion.sh` (`make lint`, both apps) fails on a literal curve, `withAnimation` or `.repeatForever` outside `Motion.swift`. Debug snapshots turn every K.Motion animation off, so renders are the same every time.
+**In Swift**, use only `G.Motion` (`gAnimation(.base, value:)`, `gTransition(.appear)`, `withGAnimation(.base) { }`). On the phone the same tokens are `G.Motion` (`gAnimation(.fast, value:)`, `withGAnimation(.base, reduceMotion:) { }`). `scripts/check-motion.sh` (`make lint`, both apps) fails on a literal curve, `withAnimation` or `.repeatForever` outside `Motion.swift`. Debug snapshots turn every G.Motion animation off, so renders are the same every time.
 
 ## Iconography
 
@@ -280,7 +280,7 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 
 The tokens are the members of `enum K` in `Apps/macOS/Sources/Komando/DesignSystem/Tokens.swift`, with the same names. Each color is one `Color.adaptive(light, dark)`; every size is a named constant, so a view never writes a number.
 
-The building blocks live beside the tokens in `Apps/macOS/Sources/Komando/DesignSystem/`, one file per kind: `Typography.swift` (text styles, Appearance), `Buttons.swift`, `Controls.swift` (fields, ToggleCard, UnderlineTabs, Pill, SectionTitle, LinkButton, SearchBar), `Lists.swift` (CardList, InfoRow, ListRow and the row style, chips, MoreMenu), `Surfaces.swift` (IconTile, StatusDot, DashedDivider, HoverCard), `Feedback.swift` (Banner, EmptyState), `Layout.swift` (Page, PageSection, FormPage, FormHeader, SheetLayout), `Motion.swift` (K.Motion, kAnimation, kTransition, withKAnimation, clickGuard) and `AppLogo.swift`. `Feedback.swift` also holds DelayedProgress, DelayedLoading, Skeleton, CopyButton and ProgressBar. Screens live in `Apps/macOS/Sources/Komando/Features/`, one folder per place or feature, and use only these.
+The building blocks live beside the tokens in `Apps/macOS/Sources/Komando/DesignSystem/`, one file per kind: `Typography.swift` (text styles, Appearance), `Buttons.swift`, `Controls.swift` (fields, ToggleCard, UnderlineTabs, Pill, SectionTitle, LinkButton, SearchBar), `Lists.swift` (CardList, InfoRow, ListRow and the row style, chips, MoreMenu), `Surfaces.swift` (IconTile, StatusDot, DashedDivider, HoverCard), `Feedback.swift` (Banner, EmptyState), `Layout.swift` (Page, PageSection, FormPage, FormHeader, SheetLayout), `Motion.swift` (G.Motion, gAnimation, gTransition, withGAnimation, clickGuard) and `AppLogo.swift`. `Feedback.swift` also holds DelayedProgress, DelayedLoading, Skeleton, CopyButton and ProgressBar. Screens live in `Apps/macOS/Sources/Komando/Features/`, one folder per place or feature, and use only these.
 
 ```swift
 enum K {
@@ -294,7 +294,7 @@ enum K {
     enum Dot    { d6, d8 }
     enum Width  { sidebar, inspector, sidePanel, chat, palette, menu, sheet, windowMin, outputSheet, forwardName, forwardKind, numberField, settings, … }
     enum Hover  { onCard, onPanel, onTab, onWindow, pressed }   // hover-card, hover-panel, hover-tab, hover-window, pressed
-    enum Shadow { control, hover, panel, palette }       // drawn with .shadow(K.Shadow.panel)
+    enum Shadow { control, hover, panel, palette }       // drawn with .shadow(G.Shadow.panel)
     enum Opacity { tint, pill, increased, selected, banner, bannerEdge, attention, attentionEdge, ring, kbd, softHairline, chip }
     enum Ansi   { blue, cyan, yellow, red }              // command output only
     enum Motion { fast, base, slow, progress, shift, spinnerDelay, spinnerHold, confirmHold, noticeHold, clickGuard }   // MotionSpec
@@ -303,13 +303,13 @@ enum K {
 
 ```swift
 // A section of a page
-VStack(alignment: .leading, spacing: K.Space.s16) {
+VStack(alignment: .leading, spacing: G.Space.s16) {
     HStack(alignment: .top) {
         SectionTitle("Needs attention", subtitle: "2 findings from komando's doctor")
         Spacer()
         LinkButton(title: "View all 4") { model.go(.doctor) }
     }
-    LazyVGrid(columns: [GridItem(.flexible(), spacing: K.Space.s16), GridItem(.flexible(), spacing: K.Space.s16)], spacing: K.Space.s16) {
+    LazyVGrid(columns: [GridItem(.flexible(), spacing: G.Space.s16), GridItem(.flexible(), spacing: G.Space.s16)], spacing: G.Space.s16) {
         ForEach(items) { AttentionCard(item: $0, confirm: $confirm) }
     }
 }
@@ -319,6 +319,6 @@ DashedDivider()
 - Use only `K.*`, never a literal color or size in a view. The one exception is a family tint, which belongs on `Family.tint`.
 - Set text with `.textStyle(.caption)` and the other styles: each carries its 16, 20 or 24 line and centres the text in it.
 - Use the button styles `.primary`, `.secondary` and `.ghost` (32), with `compact: true` or `.controlSize(.small)` for 28. The sidebar has no create button; **Add** (⌘N) sits in the panel header.
-- Use `.card()`, `.card(padding: K.Space.s16)` and `.surface()` instead of repeating backgrounds and overlays.
+- Use `.card()`, `.card(padding: G.Space.s16)` and `.surface()` instead of repeating backgrounds and overlays.
 - `scripts/check-sizes.sh` fails the build check when a view uses a number that is not on the scale. Run it before every change to a view.
-- Keep SwiftUI's own controls where the system draws them: `Toggle(.switch)`, segmented `Picker`, `Menu`, `.alert`, `.popover` and `.sheet`. They take the system accent color, not `K.accent`.
+- Keep SwiftUI's own controls where the system draws them: `Toggle(.switch)`, segmented `Picker`, `Menu`, `.alert`, `.popover` and `.sheet`. They take the system accent color, not `G.accent`.

@@ -4,8 +4,8 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 
 ## Where things stand (2026-11-18)
 
-- `Sources/DesignSystem/` and `Sources/DesignSystemMobile/` are exact copies of komando-apps. They import `KomandoKit` and `KomandoMobileCore`, so they do not build on their own.
-- There is no `Package.swift` yet.
+- One Swift package, one library `Glamor` (macOS 15, iOS 18). Tokens live in `enum G`; Mac files in `Sources/Glamor/macOS/`, iPhone and iPad files in `Sources/Glamor/iOS/` (named `<Name>+iOS.swift`), shared text cleaning in `Sources/Glamor/Text/`.
+- No Komando imports. The Komando logo, terminal palette and ANSI colors were removed; they stay in komando-apps.
 - `tokens.json` here and in design-tokens hold the same colors. Two copies of one fact.
 - Framework: SwiftUI-first; Android through Skip later (decided 2026-11-18).
 - Token format: DTCG, as Meridian already produces (decided 2026-11-18). Komando-only tokens go back to komando-apps.
@@ -35,11 +35,11 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 1 | Decide the framework path: SwiftUI-first, Skip later for Android | glamor | done | |
 | 2 | Pick one token format shared with Meridian: DTCG | design-tokens | done | |
 | 3 | Swift generator: `tokens/native/swift/GlamorTokens.swift` | design-tokens | open | 2 |
-| 4 | Add `Package.swift` and the `Glamor` library | glamor | open | 1 |
-| 5 | Remove `KomandoKit` / `KomandoMobileCore` imports | glamor | open | 4 |
-| 6 | Merge `K` and `MK` into one namespace | glamor | open | 4 |
+| 4 | Add `Package.swift` and the `Glamor` library | glamor | done | |
+| 5 | Remove `KomandoKit` / `KomandoMobileCore` imports | glamor | done | |
+| 6 | Merge `K` and `MK` into one namespace (`G`; motion helpers `gAnimation`, `gTransition`, `withGAnimation`) | glamor | done | |
 | 7 | Vendor generated tokens; remove the root `tokens.json` copy | glamor | open | 3 |
-| 8 | Unit tests that build on macOS and the iOS Simulator | glamor | open | 5 |
+| 8 | Unit tests that build on macOS and the iOS Simulator | glamor | open | macOS done (`swift test`); iOS Simulator run open |
 | 9 | komando-apps Mac app uses Glamor | komando-apps | open | 5, 6 |
 | 10 | komando-apps iPhone and iPad app uses Glamor | komando-apps | open | 5, 6 |
 | 11 | First Glamor tag `0.0.1` | glamor | open | owner's yes, 8 |
@@ -47,3 +47,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 13 | Android through Skip | glamor | deferred | after Apple apps adopt Glamor |
 | 14 | Windows and Linux | glamor | deferred | no framework covers SwiftUI there yet |
 | 15 | Move Komando-only tokens back to komando-apps | komando-apps | open | 3 |
+| 16 | Move Komando-only sizes out of `G` (`Width.hostName`, `connName`, named `Resize` areas, window sizes) | glamor, komando-apps | open | 9 |
+| 17 | Rename `K.`/`MK.` to `G.` in `components/` cards and `guidelines/logo.md` | glamor | open | Komando-specific cards decision (12) |
+| 18 | Same token names on Mac and iOS where the meaning is the same (`G.Opacity.pill` vs `G.pillOpacity`, fonts) | glamor | open | 9, 10 |
+| 19 | Apache-2.0 license | glamor | done | |

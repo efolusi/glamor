@@ -13,8 +13,8 @@ Native design system for Windows, Linux, Mac, Android, iOS, and iPad, by [Efolus
 | `assets/` | Logos and brand files |
 | `components/` | Flat HTML preview cards (`components/<Name>/`) |
 | `guidelines/` | Overview, iconography, logo, journeys, UX review, ecosystem |
-| `Sources/DesignSystem/` | SwiftUI desktop seed (`K`) |
-| `Sources/DesignSystemMobile/` | iPhone / iPad seed (`MK`) |
+| `Package.swift` | The `Glamor` library for macOS 15 and iOS 18 |
+| `Sources/Glamor/` | SwiftUI tokens (`G`) and components: `macOS/`, `iOS/`, `Text/` |
 | `scripts/` | Preview build and color / size / motion checks |
 
 ## Principles
@@ -46,7 +46,7 @@ Opens `build/design-preview/index.html` (gitignored). Cards live under `componen
 
 ## Seed
 
-Seeded from `efolusi/komando-apps` on 2026-11-18: design files lifted to this shallow root; Swift DesignSystem trees kept under `Sources/`. `komando-apps` was not modified.
+Seeded from `efolusi/komando-apps` on 2026-11-18: design files lifted to this shallow root; Swift design-system trees merged into one `Glamor` library under `Sources/Glamor/`. `komando-apps` was not modified.
 
 Next work: turn Komando-specific Page cards into shared primitives, and consume exports from `design-tokens`.
 

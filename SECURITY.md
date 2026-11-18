@@ -18,7 +18,7 @@ Report privately via [GitHub private vulnerability reporting](https://github.com
 ## Scope
 
 - `components/`, `assets/`, `tokens.json`, `tokens/`
-- `Sources/DesignSystem/`, `Sources/DesignSystemMobile/`
+- `Sources/Glamor/`
 - `scripts/design-preview.py` (loads React from jsDelivr)
 - Future publish and release pipelines once they exist
 

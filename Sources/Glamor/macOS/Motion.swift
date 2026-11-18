@@ -1,3 +1,4 @@
+#if os(macOS)
 import AppKit
 import SwiftUI
 
@@ -5,57 +6,57 @@ import SwiftUI
 // (design/README.md › Motion, design/components/MotionSpec). Views never write a curve or a duration:
 // they use these tokens, and scripts/check-motion.sh fails on a literal one anywhere else.
 
-extension K {
+public extension G {
     enum Motion {
         /// motion-fast: a symbol replaced, the copied check, the drop ring. Also the Reduce Motion fade.
-        static let fast: Animation = .easeOut(duration: 0.12)
+        public static let fast: Animation = .easeOut(duration: 0.12)
         /// motion-base: something arriving or leaving in place (a notice, a banner, an approval card).
-        static let base: Animation = .spring(duration: 0.2, bounce: 0)
+        public static let base: Animation = .spring(duration: 0.2, bounce: 0)
         /// motion-slow: a panel (the agent drawer, the transfer queue folding). Nothing is longer.
-        static let slow: Animation = .spring(duration: 0.25, bounce: 0)
+        public static let slow: Animation = .spring(duration: 0.25, bounce: 0)
         /// motion-progress: a bar moving to its new value, so it never jumps.
-        static let progress: Animation = .linear(duration: 0.25)
-        /// motion-shift: how far an arriving thing travels (K.Space.s8).
-        static let shift: CGFloat = K.Space.s8
+        public static let progress: Animation = .linear(duration: 0.25)
+        /// motion-shift: how far an arriving thing travels (G.Space.s8).
+        public static let shift: CGFloat = G.Space.s8
 
         /// delay-spinner: a spinner or skeleton waits this long, so fast work never flashes one.
-        static let spinnerDelay: Duration = .milliseconds(300)
+        public static let spinnerDelay: Duration = .milliseconds(300)
         /// hold-spinner: once shown, the shortest time it stays.
-        static let spinnerHold: Duration = .milliseconds(500)
+        public static let spinnerHold: Duration = .milliseconds(500)
         /// hold-confirm: how long the copied check stays.
-        static let confirmHold: Duration = .milliseconds(1500)
+        public static let confirmHold: Duration = .milliseconds(1500)
         /// hold-notice: how long a success notice stays.
-        static let noticeHold: Duration = .seconds(8)
+        public static let noticeHold: Duration = .seconds(8)
         /// guard-click: a card that arrives on its own ignores clicks this long. Never the keyboard.
-        static let clickGuard: Duration = .milliseconds(300)
+        public static let clickGuard: Duration = .milliseconds(300)
 
-        /// Debug snapshots draw every K.Motion animation off, so renders are the same every time.
-        static let isOff = ProcessInfo.processInfo.environment["KOMANDO_APP_SNAPSHOT"] != nil
+        /// Debug snapshots draw every G.Motion animation off, so renders are the same every time.
+        public static let isOff = ProcessInfo.processInfo.environment["KOMANDO_APP_SNAPSHOT"] != nil
 
-        /// Reduce Motion from the system, for code that has no view environment (withKAnimation).
-        @MainActor static var systemReducesMotion: Bool { NSWorkspace.shared.accessibilityDisplayShouldReduceMotion }
+        /// Reduce Motion from the system, for code that has no view environment (withGAnimation).
+        @MainActor public static var systemReducesMotion: Bool { NSWorkspace.shared.accessibilityDisplayShouldReduceMotion }
     }
 }
 
 /// The four kinds of motion. Each knows its Reduce Motion fallback, so a view never reads the setting.
-enum MotionToken: Sendable {
+public enum MotionToken: Sendable {
     case fast, base, slow, progress
 
     /// The animation to run, or nil for none. With Reduce Motion, base and slow become the motion-fast
-    /// fade (their transitions drop the travel, see `kTransition`), and a progress bar jumps.
-    func animation(reduceMotion: Bool) -> Animation? {
-        if K.Motion.isOff { return nil }
+    /// fade (their transitions drop the travel, see `gTransition`), and a progress bar jumps.
+    public func animation(reduceMotion: Bool) -> Animation? {
+        if G.Motion.isOff { return nil }
         switch self {
-        case .fast: return K.Motion.fast
-        case .base: return reduceMotion ? K.Motion.fast : K.Motion.base
-        case .slow: return reduceMotion ? K.Motion.fast : K.Motion.slow
-        case .progress: return reduceMotion ? nil : K.Motion.progress
+        case .fast: return G.Motion.fast
+        case .base: return reduceMotion ? G.Motion.fast : G.Motion.base
+        case .slow: return reduceMotion ? G.Motion.fast : G.Motion.slow
+        case .progress: return reduceMotion ? nil : G.Motion.progress
         }
     }
 }
 
 /// How something arrives and leaves.
-enum MotionTransition: Sendable {
+public enum MotionTransition: Sendable {
     /// Fades in moving motion-shift (8) from above (a notice) or below (a card).
     case appear(from: VerticalEdge)
     /// Fades only: the lock cover, a drop ring, a label.
@@ -64,10 +65,10 @@ enum MotionTransition: Sendable {
     case drawer
 
     /// With Reduce Motion nothing travels: every transition is a fade.
-    func transition(reduceMotion: Bool) -> AnyTransition {
+    public func transition(reduceMotion: Bool) -> AnyTransition {
         if reduceMotion { return .opacity }
         switch self {
-        case .appear(let edge): return .opacity.combined(with: .offset(y: edge == .top ? -K.Motion.shift : K.Motion.shift))
+        case .appear(let edge): return .opacity.combined(with: .offset(y: edge == .top ? -G.Motion.shift : G.Motion.shift))
         case .fade: return .opacity
         case .drawer: return .move(edge: .trailing).combined(with: .opacity)
         }
@@ -100,20 +101,20 @@ private struct ClickGuard: ViewModifier {
         content
             .allowsHitTesting(ready)
             .task {
-                if !K.Motion.isOff { try? await Task.sleep(for: K.Motion.clickGuard) }
+                if !G.Motion.isOff { try? await Task.sleep(for: G.Motion.clickGuard) }
                 ready = true
             }
     }
 }
 
-extension View {
+public extension View {
     /// Animates changes of `value` with a motion token, following Reduce Motion.
-    func kAnimation<V: Equatable>(_ token: MotionToken, value: V) -> some View {
+    func gAnimation<V: Equatable>(_ token: MotionToken, value: V) -> some View {
         modifier(KAnimation(token: token, value: value))
     }
 
-    /// How this view arrives and leaves, following Reduce Motion. Pair it with kAnimation or withKAnimation.
-    func kTransition(_ kind: MotionTransition) -> some View {
+    /// How this view arrives and leaves, following Reduce Motion. Pair it with gAnimation or withGAnimation.
+    func gTransition(_ kind: MotionTransition) -> some View {
         modifier(KTransition(kind: kind))
     }
 
@@ -123,6 +124,7 @@ extension View {
 
 /// withAnimation with a motion token, following the system's Reduce Motion.
 @MainActor @discardableResult
-func withKAnimation<Result>(_ token: MotionToken, _ body: () throws -> Result) rethrows -> Result {
-    try withAnimation(token.animation(reduceMotion: K.Motion.systemReducesMotion), body)
+func withGAnimation<Result>(_ token: MotionToken, _ body: () throws -> Result) rethrows -> Result {
+    try withAnimation(token.animation(reduceMotion: G.Motion.systemReducesMotion), body)
 }
+#endif

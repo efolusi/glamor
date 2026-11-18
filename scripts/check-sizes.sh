@@ -14,7 +14,7 @@
 # Usage: scripts/check-sizes.sh [directory]
 set -euo pipefail
 cd "$(dirname "$0")/.."
-DIR="${1:-Sources/DesignSystem}"
+DIR="${1:-Sources/Glamor}"
 
 FONTS="11 12 13 15 17 20"
 SPACES="0 1 2 4 8 12 16 20 24 32 40 48"
