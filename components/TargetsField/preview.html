@@ -1,0 +1,17 @@
+<!-- @dsCard group="Inputs" height=304 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>TargetsField preview</title></head>
+<body>
+<div id="root" class="k-stack" style="max-width: 640px"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null,
+      h(K.FormField, { label: 'Run on' }, h(K.TargetsField, { words: ['@web', 'tag:prod', '!web-3'], picks: '3 servers: web-1, web-2, web-4', protectedCount: 2 })),
+      h(K.FormField, { label: 'Run on' }, h(K.TargetsField, { words: ['backup-1'], picks: '1 server: backup-1' })),
+      h(K.FormField, { label: 'Run on' }, h(K.TargetsField, { words: [] })))
+  );
+</script>
+</body>
+</html>

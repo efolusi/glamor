@@ -1,0 +1,34 @@
+<!-- @dsCard group="Feedback" height=440 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ImportSheet preview</title></head>
+<body>
+<div id="root"></div>
+<style>
+  .im-row { display: flex; align-items: center; gap: var(--space-12); height: var(--row-32); padding: 0 var(--space-12); color: var(--text); }
+  .im-note .k-mono { color: var(--text3); white-space: nowrap; }
+</style>
+<script>
+  var K = window.Komando, h = React.createElement;
+
+  // What `komando import pgpass --dry-run` would add: connections, named after their database.
+  var found = ['shop', 'billing', 'reports'];
+
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { className: 'k-window', style: { height: '440px', minHeight: '440px' } },
+      h(K.Sheet, {
+        symbol: 'square.and.arrow.down', tint: 'accent', title: 'Import from .pgpass',
+        subtitle: h(React.Fragment, null, 'PostgreSQL databases and their passwords from ', h('span', { className: 'k-mono' }, '~/.pgpass'), '.'),
+        actions: h(React.Fragment, null,
+          h(K.Button, { variant: 'secondary' }, 'Cancel'),
+          h(K.Button, { variant: 'primary' }, 'Import 3 Targets'))
+      },
+        h(K.CardList, null, found.map(function (n) {
+          return h('div', { key: n, className: 'im-row' }, h(K.IconTile, { symbol: 'link', tint: 'accent', size: 20 }), n);
+        })),
+        h('span', { className: 'k-meta im-note', style: { whiteSpace: 'normal' } },
+          'line 4: wildcards (*) match many databases; add them one by one with ', h('span', { className: 'k-mono' }, 'komando conn add'))))
+  );
+</script>
+</body>
+</html>

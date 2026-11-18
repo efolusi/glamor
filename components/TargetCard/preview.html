@@ -1,0 +1,17 @@
+<!-- @dsCard group="Content" height=104 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>TargetCard preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { className: 'k-grid3', style: { width: '100%' } },
+      h(K.TargetCard, { symbol: 'server.rack', tint: 'tint-servers', name: 'web-1', subtitle: 'deploy@10.0.0.4 \u00b7 via bastion', protected: true }),
+      h(K.TargetCard, { symbol: 'cylinder.split.1x2', tint: 'tint-databases', name: 'prod-db', subtitle: 'PostgreSQL \u00b7 db.internal:5432', hover: true }),
+      h(K.TargetCard, { symbol: 'memorychip', tint: 'tint-caches', name: 'sessions', subtitle: 'Redis \u00b7 cache.internal:6379' }))
+  );
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!-- @dsCard group="Inputs" height=112 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>TextField preview</title></head>
+<body>
+<div id="root" class="k-stage" style="align-items:flex-start"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(React.Fragment, null,
+      h(K.TextField, { label: 'Name', placeholder: 'web1-pass', mono: true, help: 'Used as secret:NAME in a password reference.' }),
+      h(K.TextField, { label: 'Local port', value: '15432', mono: true, focused: true, help: 'Empty: komando picks a free one and shows it here.' }),
+      h(K.TextField, { label: 'Value', secure: true, value: 'hunter22', help: 'Sent to komando through a pipe and stored encrypted.' }))
+  );
+</script>
+</body>
+</html>

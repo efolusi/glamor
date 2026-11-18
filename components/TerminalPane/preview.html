@@ -1,0 +1,16 @@
+<!-- @dsCard group="Content" height=192 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>TerminalPane preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { className: 'k-grid2', style: { width: '100%' } },
+      h(K.TerminalPane, { state: 'running', label: 'uptime', text: ' 09:41:07 up 41 days,  3:12,  1 user,  load average: 0.08, 0.03, 0.01', height: 160 }),
+      h(K.TerminalPane, { state: 'failed', exitCode: 1, meaning: 'general error', text: 'df: /mnt/backup: No such file or directory', height: 160 }))
+  );
+</script>
+</body>
+</html>

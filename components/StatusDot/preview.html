@@ -1,0 +1,17 @@
+<!-- @dsCard group="Foundations" height=56 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>StatusDot preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(React.Fragment, null,
+      [['ok', 'Up'], ['warn', 'Needs attention'], ['danger', 'Not answering'], ['text3', 'Unprotected']].map(function (d) {
+        return h('span', { key: d[0], className: 'k-row', style: { marginRight: 'var(--space-16)' } }, h(K.StatusDot, { tone: d[0], size: 8 }), h('span', { className: 'k-t2' }, d[1]));
+      }))
+  );
+</script>
+</body>
+</html>

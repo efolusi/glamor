@@ -1,0 +1,25 @@
+<!-- @dsCard group="Navigation" height=620 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>CommandPalette preview</title></head>
+<body>
+<div id="root" class="k-scrim" style="display: flex; flex-direction: column; gap: var(--space-24)"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+h(K.CommandPalette, { index: 0, items: [
+      { symbol: 'server.rack', tint: 'tint-servers', title: 'web-1', detail: 'deploy@10.0.0.4' },
+      { symbol: 'cylinder.split.1x2', tint: 'tint-databases', title: 'prod-db', detail: 'PostgreSQL \u00b7 db.internal:5432' },
+      { symbol: 'memorychip', tint: 'tint-caches', title: 'sessions', detail: 'Redis \u00b7 cache.internal:6379' },
+      { symbol: 'plus', tint: 'text2', title: 'Add…', detail: 'A server, database, cache, storage, cluster, registry, queue or VPN' },
+      { symbol: 'terminal', tint: 'text2', title: 'Run a Command…', detail: 'Any komando command, in a terminal tab' },
+      { symbol: 'arrow.left.arrow.right', tint: 'text2', title: 'Port Forwarding', detail: 'Go to' }
+    ] }),
+// Run a Command… chosen: where it runs (TargetsField, owner decision 2026-11-17, M-MV5), then the command.
+h(K.CommandPalette, { index: 0, query: 'systemctl is-active nginx',
+    runOn: { words: ['@web'], picks: '3 servers: web-1, web-2, web-4', protectedCount: 2 },
+    items: [{ symbol: 'terminal', tint: 'text2', title: 'Run on @web', detail: 'komando exec @web -- systemctl is-active nginx, in a terminal tab' }] }))
+  );
+</script>
+</body>
+</html>

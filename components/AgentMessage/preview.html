@@ -1,0 +1,14 @@
+<!-- @dsCard group="Agent" height=148 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AgentMessage preview</title></head>
+<body>
+<div id="root" class="k-stack"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null, h(K.AgentMessage, { role: 'user' }, 'Is anything on @production close to a full disk?'), h(K.AgentMessage, { role: 'agent' }, h(K.ToolCall, { command: 'komando exec @production -- df -h /', status: 'ok', duration: '1.1 s' }), h('p', null, 'web-1 is at 82% of 78 GB; the other three are under 60%. web-1\u2019s releases folder holds 31 GB of old builds. Shall I list them?')))
+  );
+</script>
+</body>
+</html>

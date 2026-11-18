@@ -1,0 +1,14 @@
+<!-- @dsCard group="Agent" height=300 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ToolCall preview</title></head>
+<body>
+<div id="root" class="k-stack"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null, h(K.ToolCall, { command: 'komando exec web-1 -- uptime', status: 'ok', duration: '0.4 s', open: true, output: ' 09:41:07 up 41 days,  load average: 3.92, 3.71, 2.80' }), h(K.ToolCall, { command: 'komando test prod-db', status: 'running' }), h(K.ToolCall, { command: 'komando exec web-2 -- systemctl restart api', status: 'failed', duration: '2.0 s' }), h(K.ToolCall, { command: 'komando db prod-db --write -- "vacuum full orders"', status: 'denied' }), h(K.ToolCall, { command: 'komando conn set prod-db host=10.9.9.9', status: 'notrun' }))
+  );
+</script>
+</body>
+</html>

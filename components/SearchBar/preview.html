@@ -1,0 +1,16 @@
+<!-- @dsCard group="Inputs" height=124 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>SearchBar preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' } },
+      h(K.SearchBar, { placeholder: 'Find a database, cache, bucket, cluster, registry or queue' }),
+      h(K.SearchBar, { placeholder: 'Find a host, or connect to user@address', value: 'deploy@10.0.0.4', actionTitle: 'Connect', focused: true }))
+  );
+</script>
+</body>
+</html>

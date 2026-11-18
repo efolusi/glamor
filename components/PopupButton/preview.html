@@ -1,0 +1,14 @@
+<!-- @dsCard group="Inputs" height=64 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>PopupButton preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null, h('div', { style: { width: '240px' } }, h(K.PopupButton, { symbol: 'server.rack', tint: 'tint-servers', value: 'web-1 · deploy@10.0.0.4' })), h('div', { style: { width: '160px' } }, h(K.PopupButton, { placeholder: 'Choose…' })), h('div', { style: { width: '120px' } }, h(K.PopupButton, { size: 'sm', value: 'Last 200' })))
+  );
+</script>
+</body>
+</html>

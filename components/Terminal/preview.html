@@ -1,0 +1,14 @@
+<!-- @dsCard group="Content" height=184 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Terminal preview</title></head>
+<body>
+<div id="root" class="k-stack"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { style: { display: 'flex', borderRadius: 'var(--radius-12)', overflow: 'hidden', boxShadow: 'inset 0 0 0 1px var(--border)' } }, h(K.Terminal, { lines: [[['deploy@web-1', 'green bold'], ':', ['~', 'blue bold'], '$ systemctl is-active nginx postgresql'], [['active', 'green']], [['failed', 'red bold']], [['deploy@web-1', 'green bold'], ':', ['~', 'blue bold'], '$ df -h / | tail -1'], ['/dev/sda1        78G   61G   14G  ', ['82%', 'yellow bold'], ' /'], [['deploy@web-1', 'green bold'], ':', ['~', 'blue bold'], '$ ls'], [['app', 'blue bold'], '  ', ['deploy.sh', 'green bold'], '  ', ['logs', 'blue bold'], '  ', ['notes.txt', 'sel']], [['deploy@web-1', 'green bold'], ':', ['~', 'blue bold'], '$ ']] }))
+  );
+</script>
+</body>
+</html>

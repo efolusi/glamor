@@ -1,0 +1,17 @@
+<!-- @dsCard group="Content" height=84 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>FormHeader preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(React.Fragment, null,
+      h(K.FormHeader, { symbol: 'server.rack', tint: 'tint-servers', title: 'New Host', subtitle: 'A server you reach over SSH' }),
+      h('span', { style: { width: '40px' } }),
+      h(K.FormHeader, { symbol: 'cylinder.split.1x2', tint: 'tint-databases', title: 'New Connection', subtitle: 'A database, cache, bucket, registry or queue' }))
+  );
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!-- @dsCard group="Proposed" height=1872 width=1280 page subtitle="Proposed: thirteen places where the app's symbols disagree, today beside the fix, and the set and rules that follow" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Icon audit page</title></head>
+<body>
+<div id="root"></div>
+<style>
+  .ia { width: 1280px; box-sizing: border-box; padding: var(--space-24) var(--space-32); display: flex; flex-direction: column; gap: var(--space-24); background: var(--window); color: var(--text); font-family: var(--font-sans); }
+  .ia-head { display: flex; flex-direction: column; gap: var(--space-4); }
+  .ia-title { font-size: 20px; line-height: 24px; font-weight: 600; color: var(--text); }
+  .ia-label { font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); }
+  .ia-table { display: flex; flex-direction: column; }
+  .ia-grid { display: grid; grid-template-columns: 24px minmax(0, 1fr) 340px 16px 280px; column-gap: var(--space-16); padding: 0 var(--space-16); }
+  .ia-th { height: 32px; align-items: center; }
+  .ia-tr { align-items: start; padding: var(--space-12) var(--space-16); box-shadow: inset 0 1px 0 var(--border); }
+  .ia-num { font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--text3); }
+  .ia-find, .ia-list { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+  .ia-item { display: flex; align-items: center; gap: var(--space-8); min-width: 0; }
+  .ia-mono { font-family: var(--font-mono); font-size: 11px; line-height: 16px; color: var(--text); white-space: nowrap; flex: none; }
+  .ia-mono.was { color: var(--text2); }
+  .ia-mono.new { color: var(--accent); }
+  .ia-arrow { display: flex; align-items: center; justify-content: center; height: 16px; }
+  .ia-box { padding: var(--space-16); display: flex; flex-direction: column; gap: var(--space-16); }
+  .ia-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-32); }
+  .ia-col { display: flex; flex-direction: column; gap: var(--space-24); }
+  .ia-group { display: flex; flex-direction: column; gap: var(--space-8); }
+  .ia-setitem { display: grid; grid-template-columns: 32px 112px minmax(0, 1fr); align-items: center; column-gap: var(--space-8); }
+  .ia-glyph { display: flex; align-items: center; justify-content: flex-start; }
+  .ia-lbl { font-size: 13px; line-height: 16px; color: var(--text); }
+  .ia-rulegrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-24); }
+  .ia-rule { display: flex; flex-direction: column; gap: var(--space-4); }
+</style>
+<script>
+  var K = window.Komando, h = React.createElement;
+
+  // Retired symbols and outline variants that only this audit shows, drawn like the bundle's map:
+  // a 16-unit box, stroke 1.5, class "f" for fills. Every other name, the proposed ones included, comes from K.SFSymbol.
+  var X = {
+    'bolt.heart': '<path d="M8 13.8S2 10.3 2 6.2a3.1 3.1 0 0 1 6-1.6 3.1 3.1 0 0 1 6 1.6c0 4.1-6 7.6-6 7.6z"/><path d="M8.6 5.6 6.9 8.3h2.2L7.4 11"/>',
+    'list.bullet.clipboard': '<rect x="3" y="2.8" width="10" height="11.7" rx="1.6"/><path d="M6 2.8v-.3c0-.4.3-.7.7-.7h2.6c.4 0 .7.3.7.7v.3M7.5 7h3.5M7.5 10h3.5M5.2 7h.01M5.2 10h.01"/>',
+    'lock.shield': '<path d="M8 1.8 13 3.6v4c0 3.2-2.2 5.6-5 6.6-2.8-1-5-3.4-5-6.6v-4z"/><rect class="f" x="5.9" y="7.4" width="4.2" height="3.4" rx=".7"/><path d="M6.8 7.4v-.7a1.2 1.2 0 0 1 2.4 0v.7"/>',
+    'plus.circle': '<circle cx="8" cy="8" r="6.5"/><path d="M8 5v6M5 8h6"/>',
+    'plus.rectangle.on.rectangle': '<rect x="4.5" y="4.5" width="9.5" height="8.5" rx="1.6"/><path d="M11.5 4.5v-.9c0-.9-.7-1.6-1.6-1.6H3.6C2.7 2 2 2.7 2 3.6v5.3c0 .9.7 1.6 1.6 1.6h.9M9.25 6.75v4M7.25 8.75h4"/>',
+    'square.grid.2x2.fill': '<rect class="f" x="2" y="2" width="5" height="5" rx="1.2"/><rect class="f" x="9" y="2" width="5" height="5" rx="1.2"/><rect class="f" x="2" y="9" width="5" height="5" rx="1.2"/><rect class="f" x="9" y="9" width="5" height="5" rx="1.2"/>',
+    'key.fill': '<circle class="f" cx="5" cy="8" r="3.4"/><path d="M8 8h6.5M12 8v2.3M14.3 8v1.6"/>',
+    'questionmark': '<path d="M5.4 5.4a2.6 2.6 0 1 1 3.7 2.4c-.7.3-1.1.9-1.1 1.6v.6M8 12.8v.1"/>',
+    'exclamationmark.triangle': '<path d="M6.8 2.4a1.4 1.4 0 0 1 2.4 0l5.7 9.9a1.4 1.4 0 0 1-1.2 2.1H2.3a1.4 1.4 0 0 1-1.2-2.1z"/><path d="M8 6v3.4M8 11.8v.1"/>',
+    'exclamationmark.circle': '<circle cx="8" cy="8" r="6.5"/><path d="M8 4.6v4.1M8 11.3v.1"/>',
+    'checkmark.circle': '<circle cx="8" cy="8" r="6.5"/><path d="M5 8.2 7.1 10.3 11 6"/>'
+  };
+  var WEIGHT = { light: 1, regular: 1.5, medium: 1.6, semibold: 1.8, bold: 2 };
+
+  function sym(name, size, color, weight) {
+    if (!X[name]) return h(K.SFSymbol, { name: name, size: size, color: color, weight: weight });
+    return h('span', {
+      className: 'k-sym', 'aria-hidden': 'true', 'data-symbol': name,
+      style: { width: size + 'px', height: size + 'px', color: color ? 'var(--' + color + ')' : undefined },
+      dangerouslySetInnerHTML: { __html: '<svg viewBox="0 0 16 16" style="stroke-width:' + (WEIGHT[weight || 'regular']) + '">' + X[name] + '</svg>' }
+    });
+  }
+  function tile(name, tint, size) {
+    var glyph = { 20: 12, 28: 16, 32: 16, 40: 20, 48: 24 }[size];
+    return h('span', { className: 'k-tile', style: { width: size + 'px', height: size + 'px', '--t': 'var(--' + tint + ')', '--sym-knock': 'var(--panel)' } },
+      sym(name, glyph, null, 'medium'));
+  }
+
+  // One symbol in a finding: [symbol, where, color, options]
+  function item(x, was) {
+    var o = x[3] || {};
+    return h('div', { key: x[0] + x[1], className: 'ia-item' },
+      o.tile ? tile(x[0], x[2], 20) : sym(x[0], o.size || 16, x[2] || 'text2', o.weight),
+      h('span', { className: 'ia-mono' + (was ? ' was' : o.isNew ? ' new' : '') }, x[0]),
+      x[1] ? h('span', { className: 'k-meta k-trunc' }, x[1]) : null);
+  }
+
+  var findings = [
+    { t: 'Failure has two symbols', d: 'A failed connection test and a failed command each draw it differently. Failure should be the pair of success.',
+      now: [['xmark.octagon.fill', 'connection test', 'danger'], ['xmark.circle.fill', 'command result', 'danger']],
+      to: [['xmark.circle.fill', 'every failed result', 'danger']] },
+    { t: 'An error drawn as a warning', d: '“komando did not answer” uses the warning triangle. Errors use the circle; the triangle belongs to warn.',
+      now: [['exclamationmark.triangle', 'komando did not answer']],
+      to: [['exclamationmark.circle', 'errors', 'text']] },
+    { t: 'A lock means two things', d: 'Protected targets and secrets both show a lock. Keep the lock for protected.',
+      now: [['lock.fill', 'protected target', 'warn'], ['lock.fill', 'New Secret, secret rows']],
+      to: [['lock.fill', 'protected', 'warn'], ['key', 'a secret', 'text']] },
+    { t: 'Feature lists invent symbols', d: 'The old license window drew a clipboard and a shield that appear nowhere else. Reuse the symbols of the places it names.',
+      now: [['list.bullet.clipboard', 'audit, doctor, console'], ['lock.shield', 'protected changes']],
+      to: [['clock.arrow.circlepath', 'the audit log', 'text'], ['lock.fill', 'protected changes', 'warn']] },
+    { t: 'Groups look like the Dashboard', d: 'Group cards and the group activity use the Dashboard’s grid, filled on the cards.',
+      now: [['square.grid.2x2.fill', 'group cards'], ['square.grid.2x2', 'group activity']],
+      to: [['square.stack.3d.up', 'a group', 'text', { isNew: true }]] },
+    { t: 'Jobs look like Settings', d: 'Two gears sit next to the Settings gear. A job is a long command that keeps running on its server.',
+      now: [['gearshape.2', 'Jobs'], ['gearshape', 'Settings…']],
+      to: [['play.square.stack', 'Jobs', 'text', { isNew: true }], ['gearshape', 'Settings…', 'text']] },
+    { t: 'Family tints outside their family', d: 'Keychain keys wear the Registries tint and jobs the Clusters tint. A family tint belongs on that family’s tile only.',
+      now: [['key.fill', 'Keychain keys', 'tint-registries', { tile: true }], ['gearshape.2', 'job rows', 'tint-clusters', { tile: true }]],
+      to: [['key', 'Keychain keys', 'text2', { tile: true }], ['play.square.stack', 'job rows', 'text2', { tile: true, isNew: true }]] },
+    { t: 'Filled glyphs in tiles', d: 'Three tiles use .fill while every family tile is outline, so the tiles come in two weights.',
+      now: [['square.grid.2x2.fill', 'group cards', 'accent', { tile: true }], ['key.fill', 'keys', 'tint-registries', { tile: true }], ['lock.fill', 'New Secret', 'accent', { tile: true }]],
+      to: [['square.stack.3d.up', 'group cards', 'text2', { tile: true, isNew: true }], ['key', 'keys, New Secret', 'text2', { tile: true }]] },
+    { t: 'New tabs use two plus shapes', d: 'The New Host and New Connection tabs show unrelated plus symbols, while the New menu shows what is being made.',
+      now: [['plus.rectangle.on.rectangle', 'New Host tab'], ['plus.circle', 'New Connection tab']],
+      to: [['server.rack', 'New Host tab', 'text'], ['cylinder.split.1x2', 'New Connection tab', 'text']] },
+    { t: 'A bolt means two things', d: 'Caches were a bolt, and so is the connection test. A cache lives in memory, so caches become a memory chip.',
+      now: [['bolt.heart', 'connection test'], ['bolt.horizontal', 'caches']],
+      to: [['waveform.path.ecg', 'connection test', 'text', { isNew: true }], ['memorychip', 'caches', 'text', { isNew: true }]] },
+    { t: 'The install screen borrows a family symbol', d: '“Install the komando command line” uses the Registries box.',
+      now: [['shippingbox', 'install screen']],
+      to: [['terminal', 'install screen', 'text']] },
+    { t: 'Unknown has three symbols', d: 'A missing target, an unknown tab and an unknown activity each draw it differently.',
+      now: [['questionmark.circle', 'missing target'], ['questionmark', 'unknown tab'], ['circle.dashed', 'unknown activity']],
+      to: [['questionmark.circle', 'anything unknown', 'text']] },
+    { t: 'Small glyphs change weight and color', d: 'Chevrons are semibold in links and bold in the prompt, and the database table list uses the system’s grey instead of a token.',
+      now: [['chevron.right', 'links, .semibold', 'text2', { size: 12, weight: 'semibold' }], ['chevron.right', 'the prompt, .bold', 'text2', { size: 12, weight: 'bold' }], ['tablecells', 'system grey']],
+      to: [['chevron.right', 'icon-12, .semibold', 'text', { size: 12, weight: 'semibold' }], ['tablecells', 'icon-16, text3', 'text3']] }
+  ];
+
+  function finding(f, i) {
+    return h('div', { key: f.t, className: 'ia-grid ia-tr' },
+      h('span', { className: 'ia-num' }, String(i + 1)),
+      h('div', { className: 'ia-find' }, h('span', { className: 'k-rowtitle' }, f.t), h('span', { className: 'k-sub' }, f.d)),
+      h('div', { className: 'ia-list' }, f.now.map(function (x) { return item(x, true); })),
+      h('div', { className: 'ia-arrow' }, sym('chevron.right', 12, 'text3', 'semibold')),
+      h('div', { className: 'ia-list' }, f.to.map(function (x) { return item(x, false); })));
+  }
+
+  // The proposed set: [meaning, symbol, isNew, color]
+  var places = [['Dashboard', 'square.grid.2x2'], ['Hosts', 'server.rack'], ['Connections', 'cylinder.split.1x2'], ['VPNs', 'network.badge.shield.half.filled'],
+    ['Port Forwarding', 'arrow.left.arrow.right'], ['Jobs', 'play.square.stack', true], ['Recipes', 'curlybraces'], ['Keychain', 'key'],
+    ['Audit Log', 'clock.arrow.circlepath'], ['Console', 'terminal'], ['Doctor', 'stethoscope']];
+  var statuses = [['Success', 'checkmark.circle.fill', false, 'ok'], ['Failed', 'xmark.circle.fill', false, 'danger'], ['Error', 'exclamationmark.circle.fill', false, 'danger'],
+    ['Warning', 'exclamationmark.triangle.fill', false, 'warn'], ['Protected', 'lock.fill', false, 'warn']];
+  var things = [['Group', 'square.stack.3d.up', true], ['Secret', 'key'], ['Connection test', 'waveform.path.ecg', true], ['Link', 'link'],
+    ['Upgrade', 'arrow.up.circle'], ['Settings', 'gearshape'], ['Table', 'tablecells'], ['Unknown', 'questionmark.circle']];
+  var actions = [['New', 'plus'], ['Close', 'xmark'], ['Search', 'magnifyingglass'], ['Refresh', 'arrow.clockwise'], ['More', 'ellipsis'],
+    ['Prompt', 'chevron.right'], ['Edit', 'pencil'], ['Start', 'play.fill'], ['Run', 'arrow.up.circle.fill', false, 'accent']];
+  var families = [['Servers', 'server.rack', 'tint-servers'], ['Databases', 'cylinder.split.1x2', 'tint-databases'], ['Caches', 'memorychip', 'tint-caches'],
+    ['Storage', 'archivebox', 'tint-storage'], ['Clusters', 'circle.hexagongrid', 'tint-clusters'], ['Registries', 'shippingbox', 'tint-registries'], ['Queues', 'tray.full', 'tint-queues'],
+    ['VPNs', 'network.badge.shield.half.filled', 'tint-vpns'], ['Other', 'questionmark.circle', 'tint-other']];
+  var empties = [['Error', 'exclamationmark.circle'], ['Done', 'checkmark.circle'], ['Missing', 'questionmark.circle']];
+
+  function setItem(x, glyph) {
+    return h('div', { key: x[0] + x[1], className: 'ia-setitem' },
+      h('span', { className: 'ia-glyph' }, glyph),
+      h('span', { className: 'ia-lbl' }, x[0]),
+      h('span', { className: 'ia-mono k-trunc' + (x[2] === true ? ' new' : ' was') }, x[1]));
+  }
+  function group(title, rows, draw) {
+    return h('div', { className: 'ia-group' }, h('span', { className: 'ia-label' }, title), rows.map(function (x) { return setItem(x, draw(x)); }));
+  }
+  var plain = function (x) { return sym(x[1], 16, x[3] || 'text2'); };
+
+  var rules = [
+    ['1 · One meaning, one symbol', 'A symbol names a place or a thing. Lists, tabs, tiles and buttons about that thing reuse it, and no symbol stands for two things.'],
+    ['2 · Outline by default', 'Use .fill only for status glyphs, in their status color and next to a word, and for Run.'],
+    ['3 · Sizes from the scale', 'Rows icon-16, no frame. Chevrons and close marks icon-8 or icon-12, .semibold. Tiles 20 to 48 with glyphs 12 to 24, .medium. Empty states icon-32, .light.'],
+    ['4 · Color from the tokens', 'text3 in rows, text when selected. A family tint only on its family’s tile; text2 for places and things, accent for new items.']
+  ];
+
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { className: 'ia' },
+      h('div', { className: 'ia-head' },
+        h('span', { className: 'ia-title' }, 'Icon audit'),
+        h('span', { className: 'k-sectiontitle-sub' }, 'Proposed. Thirteen places where one meaning has several symbols, or one symbol several meanings. Nothing in the app is changed yet.')),
+      h('div', { className: 'k-card ia-table' },
+        h('div', { className: 'ia-grid ia-th' },
+          h('span', { className: 'ia-label' }, '#'), h('span', { className: 'ia-label' }, 'Finding'),
+          h('span', { className: 'ia-label' }, 'Today'), h('span', null), h('span', { className: 'ia-label' }, 'Proposed')),
+        findings.map(finding)),
+      h('div', { className: 'k-card ia-box' },
+        h('div', { className: 'k-sectiontitle' },
+          h('span', { className: 'k-sectiontitle-title' }, 'The proposed set'),
+          h('span', { className: 'k-sectiontitle-sub' }, 'Names in blue change; the rest stay as they are. Check every new name in the SF Symbols app before it goes into Swift.')),
+        h('div', { className: 'ia-cols' },
+          h('div', { className: 'ia-col' }, group('Places', places, plain), group('Status', statuses, plain)),
+          h('div', { className: 'ia-col' }, group('Things', things, plain), group('Actions', actions, plain)),
+          h('div', { className: 'ia-col' },
+            group('Family tiles', families, function (x) { return tile(x[1], x[2], 20); }),
+            group('Empty states', empties, function (x) { return sym(x[1], 32, 'text3', 'light'); })))),
+      h('div', { className: 'k-card ia-box' },
+        h('span', { className: 'k-sectiontitle-title' }, 'Rules'),
+        h('div', { className: 'ia-rulegrid' }, rules.map(function (r) {
+          return h('div', { key: r[0], className: 'ia-rule' }, h('span', { className: 'k-rowtitle' }, r[0]), h('span', { className: 'k-sub' }, r[1]));
+        }))))
+  );
+</script>
+</body>
+</html>

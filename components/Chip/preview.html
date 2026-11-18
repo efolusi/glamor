@@ -1,0 +1,19 @@
+<!-- @dsCard group="Actions" height=60 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Chip preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(React.Fragment, null,
+      h(K.Chip, null, 'All'),
+      h(K.Chip, { selected: true }, 'Disk'),
+      h(K.Chip, { className: 'is-focus' }, 'Memory'),
+      h(K.Chip, null, 'Services'),
+      h(K.Chip, null, 'Logs'))
+  );
+</script>
+</body>
+</html>

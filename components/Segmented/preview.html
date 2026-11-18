@@ -1,0 +1,14 @@
+<!-- @dsCard group="Inputs" height=60 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Segmented preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null, h(K.Segmented, { items: ['System', 'Light', 'Dark'], selected: 'System' }), h(K.Segmented, { items: ['Query', 'Table', 'Structure'], selected: 'Query' }), h(K.Segmented, { items: ['Ask', 'Act'], selected: 'Act' }))
+  );
+</script>
+</body>
+</html>

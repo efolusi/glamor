@@ -1,0 +1,17 @@
+<!-- @dsCard group="Inputs" height=144 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ToggleCard preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { className: 'k-grid2', style: { width: '100%', alignItems: 'start' } },
+      h(K.ToggleCard, { title: 'Protected', help: 'For production: every change needs your confirmation.' }),
+      h(K.ToggleCard, { title: 'Reach through a server or VPN', help: 'komando goes through it first. No local port is opened.', on: true },
+        h(K.TextField, { value: 'bastion', mono: true, ariaLabel: 'Through' })))
+  );
+</script>
+</body>
+</html>

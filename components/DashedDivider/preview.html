@@ -1,0 +1,17 @@
+<!-- @dsCard group="Foundations" height=148 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>DashedDivider preview</title></head>
+<body>
+<div id="root" class="k-stack"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(React.Fragment, null,
+      h(K.SectionTitle, { title: 'Needs attention', subtitle: 'Nothing to fix in komando\u2019s setup or inventory' }),
+      h(K.DashedDivider),
+      h(K.SectionTitle, { title: 'Running now', subtitle: 'VPNs, forwards and jobs komando keeps going' }))
+  );
+</script>
+</body>
+</html>

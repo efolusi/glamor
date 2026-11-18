@@ -1,0 +1,18 @@
+<!-- @dsCard group="Foundations" height=136 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AppLogo preview</title></head>
+<body>
+<div id="root" class="k-stage" style="gap:var(--space-32)"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null,
+      h('span', { className: 'k-row' }, h(K.AppLogo, { size: 28 }), h('span', { style: { fontSize: '17px', lineHeight: '24px', fontWeight: 600 } }, 'Komando')),
+      h(K.AppLogo, { size: 20 }),
+      h(K.AppLogo, { size: 48 }),
+      h('img', { src: '/_blob/f049e750db3f2f9bc5016bcb500ebe13', width: 96, height: 96, alt: 'Komando app icon' }))
+  );
+</script>
+</body>
+</html>

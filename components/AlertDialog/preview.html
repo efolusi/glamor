@@ -1,0 +1,14 @@
+<!-- @dsCard group="Feedback" height=272 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AlertDialog preview</title></head>
+<body>
+<div id="root" class="k-stage k-on-window"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(K.AlertDialog, { title: 'This target is protected', message: 'prod-db is protected. komando will run it again with --yes.', buttons: [{ title: 'Run Anyway', destructive: true }, { title: 'Cancel', variant: 'secondary' }] })
+  );
+</script>
+</body>
+</html>
