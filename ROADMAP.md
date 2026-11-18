@@ -51,5 +51,5 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 17 | Rename `K.`/`MK.` to `G.` in `components/` cards and `guidelines/logo.md` | glamor | open | Komando-specific cards decision (12) |
 | 18 | Same token names on Mac and iOS where the meaning is the same (`G.Opacity.pill` vs `G.pillOpacity`, fonts) | glamor | open | 9, 10 |
 | 19 | Apache-2.0 license | glamor | done | |
-| 20 | design-tokens `native` theme with Glamor values, missing roles, increased-contrast pairs (mapping in the shared notes, 2026-11-18) | design-tokens | open | design-tokens session |
+| 20 | Shared missing roles and increased-contrast pairs in design-tokens (branch tokens/native-roles); Komando values as an override file in komando-apps, applied by the Glamor generator (coordinator decision 2026-11-18, no `native` theme) | design-tokens, glamor, komando-apps | open | design-tokens session |
 | 21 | Phase 2: move design (Page cards, components/bundle.js) out of komando-apps into Glamor | glamor, komando-apps | open | plan agreed with the komando coordinator |
