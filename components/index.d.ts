@@ -45,7 +45,7 @@ export declare function Chip(props: ChipProps): React.ReactElement;
 export interface FormFieldProps { label: string; help?: string; children: React.ReactNode }
 export declare function FormField(props: FormFieldProps): React.ReactElement;
 
-/** TextFieldBox(placeholder:text:mono:secure:) inside FieldBox; with label, wrapped in FormField */
+/** TextFieldBox(placeholder:text:mono:secure:compact:label:) inside FieldBox; with label, wrapped in FormField */
 export interface TextFieldProps { placeholder?: string; value?: string; mono?: boolean; secure?: boolean; focused?: boolean; label?: string; help?: string }
 export declare function TextField(props: TextFieldProps): React.ReactElement;
 

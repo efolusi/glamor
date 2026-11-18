@@ -54,8 +54,8 @@ public struct TextFieldBox: View {
     public var mono: Bool = false
     public var secure: Bool = false
     public var compact: Bool = false
-    /// What VoiceOver names the field; without it, the placeholder.
-    public var label: String?
+    /// What VoiceOver names the field.
+    public let label: String
     @FocusState private var focused: Bool
     public var body: some View {
         FieldBox(focused: focused, compact: compact) {
@@ -64,11 +64,11 @@ public struct TextFieldBox: View {
             }
             .textStyle(mono ? .monoL : .body)
             .focused($focused)
-            .accessibilityLabel(label ?? placeholder)
+            .accessibilityLabel(label)
         }
     }
 
-    public init(placeholder: String, text: Binding<String>, mono: Bool = false, secure: Bool = false, compact: Bool = false, label: String?) {
+    public init(placeholder: String, text: Binding<String>, mono: Bool = false, secure: Bool = false, compact: Bool = false, label: String) {
         self.placeholder = placeholder
         self._text = text
         self.mono = mono

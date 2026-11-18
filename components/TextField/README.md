@@ -4,7 +4,7 @@ A text input with a `field` fill, a 1pt `border`, `radius-8`, 32 high with 12 at
 
 ```swift
 FormField(label: "Local port", help: "Empty: komando picks a free one and shows it here.") {
-    TextFieldBox(placeholder: "15432", text: $port, mono: true)
+    TextFieldBox(placeholder: "15432", text: $port, mono: true, label: "Local port")
 }
 ```
 
