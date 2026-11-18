@@ -43,7 +43,7 @@ public struct Banner<Actions: View>: View {
 
     public var body: some View {
         HStack(alignment: .center, spacing: G.Space.s8) {
-            Image(systemName: symbol).icon(G.Icon.i16, label: Self.spokenKind(kind)).foregroundStyle(color)
+            Image(systemName: symbol).icon(G.Icon.md, label: Self.spokenKind(kind)).foregroundStyle(color)
                 .frame(maxHeight: .infinity, alignment: .top)
             VStack(alignment: .leading, spacing: G.Space.s2) {
                 Text(DisplayText.line(title)).fontWeight(.medium).foregroundStyle(G.text).textSelection(.enabled)
@@ -105,7 +105,7 @@ public struct EmptyState<Actions: View>: View {
 
     public var body: some View {
         VStack(spacing: G.Space.s8) {
-            Image(systemName: symbol).icon(G.Icon.i32, weight: .light).foregroundStyle(G.text3)
+            Image(systemName: symbol).icon(G.Icon.xxl, weight: .light).foregroundStyle(G.text3)
                 .padding(.bottom, G.Space.s4)
                 .accessibilityHidden(true)
             Text(title).textStyle(.titleS).foregroundStyle(G.text).multilineTextAlignment(.center)
@@ -250,7 +250,7 @@ public struct DelayedProgress: View {
         DelayedLoading(isBusy: isBusy, reservesSpace: true) {
             ProgressView().controlSize(.small).accessibilityLabel(label)
         }
-        .frame(width: G.Icon.i16, height: G.Icon.i16)
+        .frame(width: G.Icon.md, height: G.Icon.md)
     }
 
     public init(isBusy: Bool, label: String = "") {

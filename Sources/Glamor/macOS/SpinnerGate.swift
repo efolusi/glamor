@@ -66,7 +66,7 @@ public struct SpinnerSlot: View {
         ZStack {
             if shown { ProgressView().controlSize(.small).accessibilityLabel(label) }
         }
-        .frame(width: G.Icon.i16, height: G.Icon.i16)
+        .frame(width: G.Icon.md, height: G.Icon.md)
     }
 
     public init(shown: Bool, label: String = "") {
@@ -149,13 +149,13 @@ public struct RunSymbol: View {
         let lastFailed = last ?? false
         ZStack {
             Image(systemName: lastFailed ? "xmark.circle.fill" : "checkmark.circle.fill")
-                .icon(G.Icon.i12).foregroundStyle(lastFailed ? G.danger : G.ok)
+                .icon(G.Icon.sm).foregroundStyle(lastFailed ? G.danger : G.ok)
                 .contentTransition(.symbolEffect(.replace))
                 .gAnimation(.fast, value: lastFailed)
                 .opacity(shown == .symbol(failed: lastFailed) ? 1 : 0)
             SpinnerSlot(shown: shown == .spinner, label: "Running")
         }
-        .frame(width: G.Icon.i16, height: G.Icon.i16)
+        .frame(width: G.Icon.md, height: G.Icon.md)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(running ? "Running" : lastFailed ? "Failed" : "Done")
         .spinnerGate($gate, busy: running)

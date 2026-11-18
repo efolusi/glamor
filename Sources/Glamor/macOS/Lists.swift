@@ -263,11 +263,11 @@ public struct FilterField: View {
     public var body: some View {
         FieldBox(focused: focused, compact: true) {
             HStack(spacing: G.Space.s8) {
-                Image(systemName: Self.symbol).icon(G.Icon.i12).foregroundStyle(G.text3)
+                Image(systemName: Self.symbol).icon(G.Icon.sm).foregroundStyle(G.text3)
                     .accessibilityHidden(true)
                 TextField(placeholder, text: $text).textStyle(.body).focused($focused)
                 if !text.isEmpty {
-                    Button { text = "" } label: { Image(systemName: "xmark.circle.fill").icon(G.Icon.i12) }
+                    Button { text = "" } label: { Image(systemName: "xmark.circle.fill").icon(G.Icon.sm) }
                         .buttonStyle(.plainFocus(G.Radius.r4)).foregroundStyle(G.text3)
                         .help("Clear the filter")
                         .accessibilityLabel("Clear the filter")
@@ -302,7 +302,7 @@ public struct MoreMenu<Items: View>: View {
     @State private var hover = false
     @Environment(\.hoverGround) private var ground
     public var body: some View {
-        Menu { items() } label: { Image(systemName: "ellipsis").icon(G.Icon.i16) }
+        Menu { items() } label: { Image(systemName: "ellipsis").icon(G.Icon.md) }
             .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
             .fixedSize()

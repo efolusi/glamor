@@ -155,6 +155,9 @@ public enum GlamorTokens {
         public static let text5xl: Double = 44.0
         public static let text6xl: Double = 60.0
         public static let text7xl: Double = 76.0
+        public static let avatarSm: Double = 24.0
+        public static let avatarMd: Double = 32.0
+        public static let avatarLg: Double = 40.0
         public static let space0: Double = 0.0
         public static let space1: Double = 4.0
         public static let space2: Double = 8.0
@@ -179,9 +182,18 @@ public enum GlamorTokens {
         public static let radiusFull: Double = 999.0
         public static let containerMax: Double = 1200.0
         public static let containerText: Double = 720.0
+        public static let controlHXs: Double = 24.0
         public static let controlHSm: Double = 28.0
         public static let controlHMd: Double = 36.0
         public static let controlHLg: Double = 44.0
+        public static let iconXs: Double = 8.0
+        public static let iconSm: Double = 12.0
+        public static let iconMd: Double = 16.0
+        public static let iconLg: Double = 20.0
+        public static let iconXl: Double = 24.0
+        public static let icon2xl: Double = 32.0
+        public static let sidebarWidth: Double = 256.0
+        public static let sidebarWidthIcon: Double = 48.0
         public static let tapMin: Double = 44.0
         public static let tablePadY: Double = 12.0
         public static let tablePadX: Double = 16.0
@@ -189,6 +201,7 @@ public enum GlamorTokens {
 
     /// Lengths in points for compact density. Only the tokens that change.
     public enum Compact {
+        public static let controlHXs: Double = 20.0
         public static let controlHSm: Double = 24.0
         public static let controlHMd: Double = 30.0
         public static let controlHLg: Double = 38.0

@@ -164,7 +164,7 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 | --- | --- | --- | --- | --- |
 | Button, standard (primary, secondary, ghost) | 32 | 12 (ghost 8) | 8 | `body-strong` / `body-medium` / `body` |
 | Button, compact (toolbars, cards, table rows) | 28 | 12 (ghost 8) | 6 | same |
-| Icon-only button | 28, or 24 in rows | square | 6 | `icon-16`, `icon-12` |
+| Icon-only button | 28, or 24 in rows | square | 6 | `icon-md`, `icon-sm` |
 | Text field, sidebar search | 32 | 12 | 8 | `body`, `mono-l` |
 | Compact field (toolbars, side panels) | 28 | 8 | 6 | `body` |
 | Search bar, command bar line | 40 | 12 | 12 | `body`, `mono-l` |
@@ -175,7 +175,7 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 | Table header | 28 | 12 | – | `small` |
 | Palette row, info row, inventory row, group row | 40 | 8 to 16 | 8 | `body` |
 | Two-line row (menu with help, target in a list) | 52 | 12 | 8 | `body-strong` + `caption` |
-| Activity line (Home's Recent activity, `k-actline`) | 40, one line, `k-rule` between | 0, `space-12` gaps | – | `icon-16` + `body` + `caption` (who · when) |
+| Activity line (Home's Recent activity, `k-actline`) | 40, one line, `k-rule` between | 0, `space-12` gaps | – | `icon-md` + `body` + `caption` (who · when) |
 | Three-line row (**ActivityRow**: jobs, forwards) | 64 | 16 | – | `body-strong` + `mono` + `caption` |
 | Panel header / tab inside it | 52 / 28 | 24 / 8 | – / 8 | `title-m` / `body` |
 | Toolbar in a tab / pane head / status bar | 44 / 28 / 28 | 16 / 12 / 12 | – | `body` / `caption` / `caption` |
@@ -256,7 +256,7 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 | Error · Warning · Success · Protected | `exclamationmark.circle.fill` · `exclamationmark.triangle.fill` · `checkmark.circle.fill` · `lock.fill` |
 
 - Put a target's symbol in an **IconTile**: its family tint at 12% behind the glyph, `.medium`, corner `radius-tile`. Tiles come in five sizes with fixed glyphs: 20 (glyph 12), 28 (16), 32 (16), 40 (20), 48 (24).
-- Icons come in `icon-8`, `icon-12`, `icon-16`, `icon-20` and `icon-32`. Inline icons in rows are `icon-16` in `text3`, or `text` when the row is selected.
+- Icons come in `icon-xs`, `icon-sm`, `icon-md`, `icon-lg` and `icon-2xl`. Inline icons in rows are `icon-md` in `text3`, or `text` when the row is selected.
 - **When an icon has color.** Only three things are colored: a **tile for a kind of target** (IconTile in its family tint: servers, databases, caches and so on), the **agent's mark** (`text.bubble`) in `accent`, and **status** (`ok` check, `warn` lock or triangle, `danger` cross). Everything else is a plain glyph in `text3`, `text` when selected: places, actions in ⌘K (Add…, Run a Command…), feature lists in Settings, menu items, tree rows. A chosen item is never marked by turning its icon `accent`; use `text`, weight or a fill.
 - **Flag:** SF Symbols cannot be published outside Apple platforms, so the previews draw simple stand-in glyphs, keyed by the same names. Use the real symbol in Swift.
 
