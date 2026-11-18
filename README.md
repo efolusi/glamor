@@ -1,6 +1,6 @@
 # Glamor
 
-Native design system for Windows, Linux, Mac, Android, iOS, and iPad, by [Efolusi](https://efolusi.com). Swift-first. Compatible with SwiftUI.
+Native design system for Mac, iPhone, and iPad, by [Efolusi](https://efolusi.com), built on SwiftUI. Android, Windows, and Linux are planned (see [ROADMAP.md](ROADMAP.md)).
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-7A4E2B.svg)](LICENSE)
 

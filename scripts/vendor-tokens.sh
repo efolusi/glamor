@@ -6,8 +6,16 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 TOKENS_VERSION="v0.1.1"
-URL="https://raw.githubusercontent.com/efolusi/design-tokens/$TOKENS_VERSION/tokens/native/GlamorTokens.swift"
+# The commit that tag points at. A moved tag fails here instead of changing the tokens.
+TOKENS_COMMIT="ab2a6b11ae490849527206200c174184f1d20da6"
+URL="https://raw.githubusercontent.com/efolusi/design-tokens/$TOKENS_COMMIT/tokens/native/GlamorTokens.swift"
 OUT="Sources/Glamor/Generated/GlamorTokens.swift"
+
+tagged=$(git ls-remote https://github.com/efolusi/design-tokens "refs/tags/$TOKENS_VERSION^{}" | cut -f1)
+if [ "$tagged" != "$TOKENS_COMMIT" ]; then
+    echo "design-tokens $TOKENS_VERSION points at ${tagged:-nothing}, not $TOKENS_COMMIT. Check the tag before updating TOKENS_COMMIT." >&2
+    exit 1
+fi
 
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT

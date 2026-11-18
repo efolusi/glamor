@@ -325,7 +325,7 @@ public struct CopyButton: View {
         }
     }
 
-    public init(text: String, help: String = "", size: CGFloat = G.Height.control24) {
+    public init(text: String, help: String = "Copy", size: CGFloat = G.Height.control24) {
         self.text = text
         self.help = help
         self.size = size
