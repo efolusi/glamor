@@ -9,7 +9,6 @@ Native design system for Windows, Linux, Mac, Android, iOS, and iPad, by [Efolus
 | Path | What it is |
 |---|---|
 | `tokens.json` | Authored tokens (color, type, space, motion, …) |
-| `tokens/` | Platform exports later (`swift/`, `css/`) |
 | `assets/` | Brand files (no Glamor logo yet) |
 | `components/` | Flat HTML preview cards (`components/<Name>/`) |
 | `guidelines/` | Overview, iconography, journeys, UX review, ecosystem |
