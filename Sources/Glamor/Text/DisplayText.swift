@@ -1,6 +1,6 @@
 import Foundation
 
-/// Text from a server or from komando, made safe to show. A name or a line of output can carry
+/// Text from a server or a command, made safe to show. A name or a line of output can carry
 /// terminal escape codes, control characters, or Unicode direction overrides that make it read
 /// as something else ("Trojan Source"); none of them is shown.
 public enum DisplayText {

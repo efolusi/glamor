@@ -2,7 +2,7 @@
 import AppKit
 import SwiftUI
 
-// How the app says what happened: banners in place, empty states, and output from komando.
+// How the app says what happened: banners in place, empty states, and command output.
 
 /// A message in place, above what it is about (design system: Banner). 12 inside, radius 8, the
 /// status color at 10%; a danger banner adds a ring of its color at 25%.
@@ -144,7 +144,7 @@ public struct QuietLine: View {
     }
 }
 
-/// A block of komando's output, without escape codes or control characters (a server wrote it).
+/// A block of command output, without escape codes or control characters (a server wrote it).
 public struct OutputText: View {
     public let text: String
     public var color: Color = G.text
