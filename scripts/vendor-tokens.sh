@@ -5,7 +5,7 @@
 # Usage: scripts/vendor-tokens.sh [--check]
 set -euo pipefail
 cd "$(dirname "$0")/.."
-TOKENS_VERSION="v0.1.0"
+TOKENS_VERSION="v0.1.1"
 URL="https://raw.githubusercontent.com/efolusi/design-tokens/$TOKENS_VERSION/tokens/native/GlamorTokens.swift"
 OUT="Sources/Glamor/Generated/GlamorTokens.swift"
 
