@@ -27,7 +27,8 @@ glamor/
 
 | Path | Who writes it | Notes |
 |---|---|---|
-| `tokens.json`, `Sources/`, `components/`, `guidelines/` | Authors | Commit these |
+| `tokens.json`, `Sources/` (except `Generated/`), `components/`, `guidelines/` | Authors | Commit these |
+| `Sources/Glamor/Generated/GlamorTokens.swift` | `scripts/vendor-tokens.sh` from design-tokens (pinned tag) | Commit it; never edit by hand |
 | `build/design-preview/` | `scripts/design-preview.py` | Local only, gitignored |
 | `tokens/swift/`, `tokens/css/` | Future generators | Not present yet |
 

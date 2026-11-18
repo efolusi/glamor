@@ -38,7 +38,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 4 | Add `Package.swift` and the `Glamor` library | glamor | done | |
 | 5 | Remove `KomandoKit` / `KomandoMobileCore` imports | glamor | done | |
 | 6 | Merge `K` and `MK` into one namespace (`G`; motion helpers `gAnimation`, `gTransition`, `withGAnimation`) | glamor | done | |
-| 7 | Vendor generated tokens; remove the root `tokens.json` copy | glamor | open | 3 |
+| 7 | Vendor generated tokens (done: `scripts/vendor-tokens.sh`, design-tokens v0.1.0); wire `G` to them through the Komando override; remove the root `tokens.json` copy | glamor | open | 9 (override file in komando-apps); `tokens.json` stays while `design-preview.py` reads it |
 | 8 | Unit tests that build on macOS and the iOS Simulator | glamor | done | |
 | 9 | komando-apps Mac app uses Glamor | komando-apps | open | 5, 6 |
 | 10 | komando-apps iPhone and iPad app uses Glamor | komando-apps | open | 5, 6 |
@@ -54,3 +54,4 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 20 | Shared missing roles and increased-contrast pairs in design-tokens (branch tokens/native-roles); Komando values as an override file in komando-apps, applied by the Glamor generator (coordinator decision 2026-11-18, no `native` theme) | design-tokens, glamor, komando-apps | open | design-tokens session |
 | 21 | Phase 2: move design (Page cards, components/bundle.js) out of komando-apps into Glamor | glamor, komando-apps | open | plan agreed with the komando coordinator |
 | 22 | Glamor's own logo (the Komando icon and logo guide were removed; the AppLogo card leaves with item 12) | glamor | open | a design |
+| 23 | Rename env vars `KOMANDO_APP_SNAPSHOT` / `KOMANDO_APP_SCROLL` to `GLAMOR_SNAPSHOT` / `GLAMOR_SCROLL`, in Glamor and komando-apps' scripts together, no alias (coordinator 2026-11-18) | glamor, komando-apps | open | 9 |
