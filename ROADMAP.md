@@ -39,7 +39,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 5 | Remove `KomandoKit` / `KomandoMobileCore` imports | glamor | done | |
 | 6 | Merge `K` and `MK` into one namespace (`G`; motion helpers `gAnimation`, `gTransition`, `withGAnimation`) | glamor | done | |
 | 7 | Vendor generated tokens; remove the root `tokens.json` copy | glamor | open | 3 |
-| 8 | Unit tests that build on macOS and the iOS Simulator | glamor | open | macOS done (`swift test`); iOS Simulator run open |
+| 8 | Unit tests that build on macOS and the iOS Simulator | glamor | done | |
 | 9 | komando-apps Mac app uses Glamor | komando-apps | open | 5, 6 |
 | 10 | komando-apps iPhone and iPad app uses Glamor | komando-apps | open | 5, 6 |
 | 11 | First Glamor tag `0.0.1` | glamor | open | owner's yes, 8 |
