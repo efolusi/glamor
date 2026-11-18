@@ -25,17 +25,8 @@
     "Logos": {
       "name": "Logos",
       "tile": "l",
-      "order": [
-        "komando-app-icon.png"
-      ],
-      "files": {
-        "komando-app-icon.png": {
-          "name": "komando-app-icon.png",
-          "blob": "f049e750db3f2f9bc5016bcb500ebe13",
-          "size": 162901,
-          "type": "image/png"
-        }
-      }
+      "order": [],
+      "files": {}
     }
   },
   "blobs": {},

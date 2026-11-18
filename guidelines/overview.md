@@ -268,14 +268,6 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 - Composer shadow. Owner answer 2026-11-09: fix everything, so the agent's composer has no shadow and keeps its border.
 - Pill tint. Owner answer 2026-11-09: fix everything, so pills drop from 12% to 10% (`opacity-pill`), the value that gives every status color 4.6:1 or more in both themes.
 
-## Logo
-
-- The mark is **K-caret**: a K whose stem is the cursor. The stem is `logo-cursor`, the arms one rounded stroke in `logo-ink`, on a graphite square from `logo-ground-top` to `logo-ground-bottom` with a 25% corner. It is the same in both themes.
-- In a 100-unit square: the stem is a capsule from x 27.5 to 39.5 and y 24 to 76; the arms are M69.5 29.5 L50.5 50 L69.5 70.5, stroke 10, round caps and joins, 6 from the stem. At 32 and below use the small drawing: stem x 25–39, y 24.5–75.5; arms M70.5 31 L51.5 50 L70.5 69, stroke 12. The arms are thinner than the stem on purpose: at their angle and in white they would otherwise look heavier (see Optical correction in logo.md).
-- In the app, draw it with **AppLogo**: 28 beside the name in the sidebar and 20 where it is small (both use the small drawing), 48 in alerts. Pair it with "Komando" in `title-m`, `space-8` to its right.
-- The Dock and Finder icon adds only Apple's grid, a soft top light, a 10% hairline and a soft shadow, with no glow. It lives under Logos.
-- Never recolor the mark, outline it, put it on a tint, or set the K without its square. The full spec is in the Logo section (logo.md).
-
 ## In Swift
 
 The tokens are the members of `enum K` in `Apps/macOS/Sources/Komando/DesignSystem/Tokens.swift`, with the same names. Each color is one `Color.adaptive(light, dark)`; every size is a named constant, so a view never writes a number.

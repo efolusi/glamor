@@ -10,9 +10,9 @@ Native design system for Windows, Linux, Mac, Android, iOS, and iPad, by [Efolus
 |---|---|
 | `tokens.json` | Authored tokens (color, type, space, motion, …) |
 | `tokens/` | Platform exports later (`swift/`, `css/`) |
-| `assets/` | Logos and brand files |
+| `assets/` | Brand files (no Glamor logo yet) |
 | `components/` | Flat HTML preview cards (`components/<Name>/`) |
-| `guidelines/` | Overview, iconography, logo, journeys, UX review, ecosystem |
+| `guidelines/` | Overview, iconography, journeys, UX review, ecosystem |
 | `Package.swift` | The `Glamor` library for macOS 15 and iOS 18 |
 | `Sources/Glamor/` | SwiftUI tokens (`G`) and components: `macOS/`, `iOS/`, `Text/` |
 | `scripts/` | Preview build and color / size / motion checks |
@@ -48,7 +48,7 @@ Opens `build/design-preview/index.html` (gitignored). Cards live under `componen
 
 Seeded from `efolusi/komando-apps` on 2026-11-18: design files lifted to this shallow root; Swift design-system trees merged into one `Glamor` library under `Sources/Glamor/`. `komando-apps` was not modified.
 
-Next work: turn Komando-specific Page cards into shared primitives, and consume exports from `design-tokens`.
+Next work: see [ROADMAP.md](ROADMAP.md).
 
 ## Contributing
 
