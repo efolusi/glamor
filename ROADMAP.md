@@ -38,7 +38,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 4 | Add `Package.swift` and the `Glamor` library | glamor | done | |
 | 5 | Remove `KomandoKit` / `KomandoMobileCore` imports | glamor | done | |
 | 6 | Merge `K` and `MK` into one namespace (`G`; motion helpers `gAnimation`, `gTransition`, `withGAnimation`) | glamor | done | |
-| 7 | Vendor generated tokens (done: `scripts/vendor-tokens.sh`, design-tokens v0.1.0); wire `G` to them through the Komando override; remove the root `tokens.json` copy | glamor | open | 9 (override file in komando-apps); `tokens.json` stays while `design-preview.py` reads it |
+| 7 | Vendor generated tokens (done: `scripts/vendor-tokens.sh`, design-tokens v0.1.1); wire `G` to them through the Komando override; remove the root `tokens.json` copy | glamor | open | 9 (override file in komando-apps); `tokens.json` stays while `design-preview.py` reads it |
 | 8 | Unit tests that build on macOS and the iOS Simulator | glamor | done | |
 | 9 | komando-apps Mac app uses Glamor | komando-apps | open | 5, 6 |
 | 10 | komando-apps iPhone and iPad app uses Glamor | komando-apps | open | 5, 6 |
