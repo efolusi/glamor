@@ -1,0 +1,45 @@
+<!-- @dsCard group="Feedback" height=380 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Notifications preview</title></head>
+<body>
+<div id="root" class="k-on-window"></div>
+<style>
+  .nt-list { min-height: 100vh; align-content: center; display: grid; grid-template-columns: 360px minmax(0, 1fr); align-items: center; column-gap: var(--space-32); row-gap: var(--space-16); padding: var(--space-24) var(--space-32); }
+  .nt { display: flex; align-items: flex-start; gap: var(--space-12); padding: var(--space-12); background: var(--panel); border-radius: var(--radius-16); box-shadow: 0 0 0 var(--line) var(--border), var(--shadow-palette); }
+  .nt-icon { width: 40px; height: 40px; flex: none; display: block; }
+  .nt-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+  .nt-top { display: flex; align-items: center; gap: var(--space-8); }
+  .nt-title { flex: 1 1 auto; min-width: 0; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--text); }
+  .nt-body { font-size: 13px; line-height: 16px; color: var(--text); }
+</style>
+<script>
+  var K = window.Komando, h = React.createElement;
+
+  // [title, body, when it is posted]
+  var notes = [
+    ['Forward stopped', 'localhost:15432 → prod-db is no longer open.',
+      ['A forward that was open has stopped or is gone the next time Komando reads ', h('span', { key: 'm', className: 'k-mono' }, 'komando status'), ' (every 5 seconds).']],
+    ['VPN disconnected', 'office is down. komando brings it up again when a target needs it.',
+      'A VPN that was up is no longer listed.'],
+    ['Forward stopped', 'A forward is no longer open.',
+      'The same notice while the Mac\u2019s screen or Komando is locked: no address and no target name.'],
+    ['VPN disconnected', 'A VPN is down. komando brings it up again when a target needs it.',
+      'While locked: no VPN name.']
+  ];
+
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { className: 'nt-list' }, notes.map(function (n) {
+      return [
+        h('div', { key: n[0] + n[1], className: 'nt' },
+          h('img', { className: 'nt-icon', src: '/_blob/f049e750db3f2f9bc5016bcb500ebe13', alt: '' }),
+          h('div', { className: 'nt-text' },
+            h('div', { className: 'nt-top' }, h('span', { className: 'nt-title' }, n[0]), h('span', { className: 'k-meta' }, 'now')),
+            h('span', { className: 'nt-body' }, n[1]))),
+        h('span', { key: n[1] + '-w', className: 'k-sub' }, n[2])
+      ];
+    }))
+  );
+</script>
+</body>
+</html>

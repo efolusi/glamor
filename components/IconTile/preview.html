@@ -1,0 +1,28 @@
+<!-- @dsCard group="Foundations" height=80 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>IconTile preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(React.Fragment, null,
+      h(K.IconTile, { symbol: 'server.rack', tint: 'tint-servers' }),
+      h(K.IconTile, { symbol: 'cylinder.split.1x2', tint: 'tint-databases' }),
+      h(K.IconTile, { symbol: 'memorychip', tint: 'tint-caches' }),
+      h(K.IconTile, { symbol: 'archivebox', tint: 'tint-storage' }),
+      h(K.IconTile, { symbol: 'circle.hexagongrid', tint: 'tint-clusters' }),
+      h(K.IconTile, { symbol: 'shippingbox', tint: 'tint-registries' }),
+      h(K.IconTile, { symbol: 'tray.full', tint: 'tint-queues' }),
+      h(K.IconTile, { symbol: 'network.badge.shield.half.filled', tint: 'tint-vpns' }),
+      h(K.IconTile, { symbol: 'questionmark.circle', tint: 'tint-other' }),
+      h('span', { style: { width: '12px' } }),
+      h(K.IconTile, { symbol: 'plus', tint: 'accent', size: 20 }),
+      h(K.IconTile, { symbol: 'plus', tint: 'accent', size: 28 }),
+      h(K.IconTile, { symbol: 'plus', tint: 'accent', size: 40 }),
+      h(K.IconTile, { symbol: 'plus', tint: 'accent', size: 48 }))
+  );
+</script>
+</body>
+</html>

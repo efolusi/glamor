@@ -1,0 +1,17 @@
+<!-- @dsCard group="Navigation" height=64 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>TabButton preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { className: 'k-row', style: { gap: 'var(--space-4)' } },
+      h(K.TabButton, { symbol: 'server.rack', title: 'Hosts', home: true }),
+      h(K.TabButton, { symbol: 'cylinder.split.1x2', title: 'prod-db', active: true }),
+      h(K.TabButton, { symbol: 'server.rack', title: 'web-1' }))
+  );
+</script>
+</body>
+</html>

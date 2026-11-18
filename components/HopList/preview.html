@@ -1,0 +1,17 @@
+<!-- @dsCard group="Inputs" height=360 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>HopList preview</title></head>
+<body>
+<div id="root" class="k-stack" style="max-width: 576px"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null,
+      h(K.HopList, { target: 'web-2', steps: [{ name: 'office', kind: 'vpn' }, { name: 'jump1', kind: 'host' }, { name: 'jump2', kind: 'host' }] }),
+      h(K.HopList, { target: 'web-2', steps: [{ name: 'bastion', kind: 'host' }] }),
+      h(K.HopList, { target: 'web-2', steps: [] }))
+  );
+</script>
+</body>
+</html>

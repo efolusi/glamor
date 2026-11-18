@@ -1,0 +1,14 @@
+<!-- @dsCard group="Feedback" height=440 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Sheet preview</title></head>
+<body>
+<div id="root" class=""></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { className: 'k-window', style: { height: '440px', minHeight: '440px' } }, h(K.Sheet, { symbol: 'key', tint: 'accent', title: 'New Secret', subtitle: 'Stored encrypted in komando’s vault', actions: h(React.Fragment, null, h(K.Button, { variant: 'secondary' }, 'Cancel'), h(K.Button, { variant: 'primary' }, 'Save Secret')) }, h(K.TextField, { label: 'Name', value: 'staging-db-pass', mono: true, help: 'Used as secret:NAME in a password reference.' }), h(K.TextField, { label: 'Value', secure: true, value: 'hunter22', help: 'Sent to komando through a pipe and stored encrypted. Never shown again.' })))
+  );
+</script>
+</body>
+</html>

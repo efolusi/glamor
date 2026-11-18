@@ -1,0 +1,16 @@
+<!-- @dsCard group="Feedback" height=248 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>EmptyState preview</title></head>
+<body>
+<div id="root" class=""></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(K.EmptyState, { symbol: 'shippingbox', title: 'Install the komando command line', message: 'Komando works through the free komando command line program. Install it in Terminal, then check again.' },
+      h(K.Button, { variant: 'secondary' }, 'Copy Command'),
+      h(K.Button, { variant: 'primary' }, 'Check Again'))
+  );
+</script>
+</body>
+</html>

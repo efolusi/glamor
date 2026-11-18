@@ -1,0 +1,24 @@
+<!-- @dsCard group="Actions" height=156 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Button preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { style: { display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', width: '100%' } },
+      h('div', { className: 'k-row' },
+        h(K.Button, { variant: 'primary', symbol: 'plus', shortcut: '\u2318N' }, 'New Host'),
+        h(K.Button, { variant: 'primary' }, 'Check Again'),
+        h(K.Button, { variant: 'primary', disabled: true }, 'Save'),
+        h(K.Button, { variant: 'secondary' }, 'Run Doctor'),
+        h(K.Button, { variant: 'secondary', disabled: true }, 'Connect'),
+        h(K.Button, { variant: 'ghost' }, 'Stop'),
+        h(K.Button, { variant: 'ghost', symbol: 'arrow.clockwise', help: 'Read the inventory again (\u2318R)' })),
+      h('div', { className: 'k-row' }, h(K.Button, { variant: 'secondary', size: 'sm' }, 'Fix'), h(K.Button, { variant: 'ghost', size: 'sm', symbol: 'square.split.2x1' }, 'Split'), h(K.Button, { variant: 'ghost', size: 'sm', symbol: 'ellipsis', help: 'More' }), h(K.Button, { variant: 'ghost', size: 'xs', symbol: 'xmark', help: 'Close' }), h('span', { style: { width: '24px' } }), h(K.Button, { variant: 'secondary' }, 'Cancel'), h(K.Button, { variant: 'primary', className: 'is-focus' }, 'Save')),
+      h('div', { style: { width: '232px' } }, h(K.Button, { variant: 'primary', symbol: 'plus', shortcut: '\u2318N', wide: true }, 'New Host')))
+  );
+</script>
+</body>
+</html>

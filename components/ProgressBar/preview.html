@@ -1,0 +1,14 @@
+<!-- @dsCard group="Foundations" height=76 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ProgressBar preview</title></head>
+<body>
+<div id="root" class="k-stack"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null, h(K.ProgressBar, { value: 100, tone: 'ok' }), h(K.ProgressBar, { value: 82, tone: 'warn' }), h(K.ProgressBar, { value: 34, tone: 'accent' }))
+  );
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!-- @dsCard group="Inputs" height=64 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>UnderlineTabs preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(K.UnderlineTabs, { items: ['SSH Agent', 'Saved Key', 'Password'], selected: 'Saved Key' })
+  );
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!-- @dsCard group="Content" height=152 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>RunningCard preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { className: 'k-grid3', style: { width: '100%' } },
+      h(K.RunningCard, { symbol: 'network.badge.shield.half.filled', tint: 'ok', title: 'office', line: 'WireGuard', chip: 'Up', chipTone: 'ok', meta: 'since 2 hours ago' }),
+      h(K.RunningCard, { symbol: 'arrow.left.arrow.right', tint: 'tint-storage', title: 'localhost:15432', line: '\u2192 prod-db', chip: 'Open', chipTone: 'ok', meta: '12 minutes ago', hover: true }),
+      h(K.RunningCard, { symbol: 'gearshape.2', tint: 'tint-clusters', title: 'web-1', line: 'apt-get upgrade -y', chip: 'Job', chipTone: 'text2', meta: 'started 4 minutes ago' }))
+  );
+</script>
+</body>
+</html>

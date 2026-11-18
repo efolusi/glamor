@@ -1,0 +1,16 @@
+<!-- @dsCard group="Navigation" height=150 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>PanelHeader preview</title></head>
+<body>
+<div id="root" class="k-stack k-on-window"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' } },
+      h(K.Card, null, h(K.PanelHeader, { title: 'Hosts', action: { title: 'Add' } })),
+      h(K.Card, null, h(K.PanelHeader, { tabs: [{ symbol: 'server.rack', title: 'Hosts' }, { symbol: 'cylinder.split.1x2', title: 'prod-db' }, { symbol: 'server.rack', title: 'web-1' }], activeIndex: 1 })))
+  );
+</script>
+</body>
+</html>

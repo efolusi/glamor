@@ -1,0 +1,14 @@
+<!-- @dsCard group="Navigation" height=640 width=1280 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AppShell preview</title></head>
+<body>
+<div id="root" class=""></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(K.AppShell, { place: 'Hosts', counts: false, transfers: 2, action: { title: 'Add' } }, h(K.EmptyState, { symbol: 'server.rack', title: 'No hosts yet', message: 'Add a server you reach over SSH with Add, or import the ones in ~/.ssh/config.' }, h(K.Button, { variant: 'secondary' }, 'Import from ~/.ssh/config')))
+  );
+</script>
+</body>
+</html>

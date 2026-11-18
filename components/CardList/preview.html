@@ -1,0 +1,19 @@
+<!-- @dsCard group="Content" height=196 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>CardList preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { style: { width: '360px' } },
+      h(K.CardList, null,
+        h(K.InfoRow, { label: 'Kind', value: 'PostgreSQL' }),
+        h(K.InfoRow, { label: 'Address', value: 'db.internal:5432', mono: true }),
+        h(K.InfoRow, { label: 'Via', value: 'bastion' }),
+        h(K.InfoRow, { label: 'Password', value: 'secret:prod-db-pass', mono: true })))
+  );
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!-- @dsCard group="Content" height=532 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>DataTable preview</title></head>
+<body>
+<div id="root" class="k-stack"></div>
+<style>
+  .dt-sort { display: inline-flex; align-items: center; gap: var(--space-4); }
+  .k-stack > .k-seclabel { padding: 0; }
+</style>
+<script>
+  var K = window.Komando, h = React.createElement;
+  // A sorted header: the name, then chevron.up or chevron.down (8, bold, text2) 4 after it, as PageFiles draws it.
+  function sorted(name, up) { return h('span', { className: 'dt-sort' }, name, h(K.SFSymbol, { name: up ? 'chevron.up' : 'chevron.down', size: 8, weight: 'bold', color: 'text2' })); }
+  function columns(sort) {
+    var label = function (key) { return sort && sort.key === key ? sorted(key, sort.up) : key; };
+    return [
+      { key: 'id', label: label('id'), mono: true, align: 'right', width: 72 },
+      { key: 'customer', label: label('customer') },
+      { key: 'status', label: label('status'), render: function (v) { return h(K.Pill, { tone: v === 'paid' ? 'ok' : v === 'failed' ? 'danger' : 'text2' }, v); } },
+      { key: 'total', label: label('total'), mono: true, align: 'right' },
+      { key: 'shipped_at', label: label('shipped_at'), mono: true }
+    ];
+  }
+  var rows = [
+    { id: 48213, customer: 'Rina Wijaya', status: 'paid', total: '1250000', shipped_at: '2026-11-07 14:02' },
+    { id: 48214, customer: 'Dimas Pratama', status: 'pending', total: '310000', shipped_at: null },
+    { id: 48215, customer: 'Ayu Lestari', status: 'failed', total: '89000', shipped_at: null }
+  ];
+  function by(key, up) {
+    return rows.slice().sort(function (a, b) {
+      var x = String(a[key]), y = String(b[key]);
+      var o = /^\d+$/.test(x) && /^\d+$/.test(y) ? Number(x) - Number(y) : x.localeCompare(y);
+      return up ? o : -o;
+    });
+  }
+  // The selected row (Dimas) stays selected wherever a sort moves it.
+  function selected(list) { return list.findIndex(function (r) { return r.id === 48214; }); }
+  var up = by('customer', true), down = by('total', false);
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h('span', { className: 'k-seclabel' }, 'As the result came'),
+    h(K.DataTable, { selected: 1, columns: columns(null), rows: rows }),
+    h('span', { className: 'k-seclabel' }, 'Sorted up by customer'),
+    h(K.DataTable, { selected: selected(up), columns: columns({ key: 'customer', up: true }), rows: up }),
+    h('span', { className: 'k-seclabel' }, 'Sorted down by total'),
+    h(K.DataTable, { selected: selected(down), columns: columns({ key: 'total', up: false }), rows: down })
+  ));
+</script>
+</body>
+</html>

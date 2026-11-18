@@ -1,0 +1,479 @@
+/* Komando: HTML redraws of the SwiftUI building blocks. Every size is a token on the 4-point scale (README: Sizes).
+   Fixed-height things set their height from a size token and centre their content; vertical padding is 0. */
+html, body { margin: 0; }
+body { font-family: var(--font-sans); font-size: 13px; line-height: 16px; background: var(--panel); color: var(--text); -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+
+/* Controls: the pointer on everything that does something, not-allowed when it is off. */
+button:not(:disabled), [role=button], [role=switch], [role=tab], [role=option], label.k-check { cursor: pointer; }
+button:disabled, [aria-disabled=true] { cursor: not-allowed; }
+/* Controls drawn as real buttons keep the look of the shapes they replaced. */
+.k-switch, .k-seg-item, .k-navitem, .k-menurow, .k-tab-main, .k-tab-x, .k-more, .k-send, .k-ctx-x { font: inherit; color: inherit; border: 0; margin: 0; padding: 0; background: transparent; text-align: left; }
+/* Focus on a control (not a field): a 2pt focus line, 2pt outside the shape, following its radius. */
+.k-switch:focus-visible, .k-seg-item:focus-visible, .k-navitem:focus-visible, .k-menurow:focus-visible, .k-tab-x:focus-visible, .k-more:focus-visible, .k-send:focus-visible, .k-ctx-x:focus-visible, .k-tabs-item:focus-visible, .k-chip:focus-visible, .k-link:focus-visible, .k-hovercard:focus-visible, .k-listrow:focus-visible, .is-focus { outline: var(--line-strong) solid var(--focus); outline-offset: var(--focus-offset); }
+/* Hidden from sight, still read and still focusable (the checkbox input behind its drawn box). */
+.k-vh { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Preview stages and layout helpers */
+.k-stage { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-12); padding: var(--space-16); }
+.k-stack { display: flex; flex-direction: column; gap: var(--space-16); padding: var(--space-16); }
+.k-on-window { background: var(--window); }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); }
+.k-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-16); }
+.k-grid2 > *, .k-grid3 > * { min-width: 0; }
+.k-row { display: flex; align-items: center; gap: var(--space-8); }
+.k-spacer { flex: 1 1 auto; min-width: 0; }
+.k-twoline { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; flex: 1 1 auto; }
+.k-section { display: flex; flex-direction: column; gap: var(--space-16); }
+.k-page { padding: var(--space-24) var(--space-32); display: flex; flex-direction: column; gap: var(--space-24); }
+.k-scroll { overflow: hidden; flex: 1 1 auto; min-height: 0; }
+
+/* Type */
+.k-t1 { color: var(--text); } .k-t2 { color: var(--text2); } .k-t3 { color: var(--text3); }
+.k-rowtitle { font-size: 13px; line-height: 16px; font-weight: 500; color: var(--text); }
+.k-sub { font-size: 12px; line-height: 16px; color: var(--text2); }
+.k-meta { font-size: 12px; line-height: 16px; color: var(--text3); white-space: nowrap; }
+.k-mono { font-family: var(--font-mono); font-size: 12px; line-height: 16px; }
+.k-num { font-variant-numeric: tabular-nums; }
+.k-trunc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.k-seclabel { font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); padding: var(--space-20) var(--space-8) var(--space-8); }
+.k-panel-title { font-size: 13px; line-height: 16px; font-weight: 600; color: var(--text); }
+
+/* SF Symbol stand-ins */
+.k-sym { display: inline-block; flex: none; vertical-align: middle; }
+.k-sym svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.k-sym .f { fill: currentColor; stroke: none; }
+.k-sym .k { stroke: var(--sym-knock, var(--panel)); }
+
+/* Buttons: 32 standard, 28 compact, square icon-only */
+.k-btn { font: inherit; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-8); border: 0; margin: 0; cursor: pointer; white-space: nowrap; flex: none;
+  height: var(--control-32); padding: 0 var(--space-12); border-radius: var(--radius-8); font-size: 13px; line-height: 16px; text-decoration: none; }
+.k-btn.sm { height: var(--control-28); border-radius: var(--radius-6); }
+.k-btn.icon { width: var(--control-32); padding: 0; }
+.k-btn.sm.icon { width: var(--control-28); }
+.k-btn.xs { height: var(--control-24); width: var(--control-24); padding: 0; border-radius: var(--radius-6); }
+.k-btn:focus-visible { outline: var(--line-strong) solid var(--focus); outline-offset: var(--focus-offset); }
+/* ListRow: the focus line is drawn on the row's own highlight shape (inside it), so no clip or next row cuts it. */
+.k-listrow:focus-visible, .k-listrow.is-focus { outline-offset: calc(-1 * var(--line-strong)); border-radius: var(--radius-8); }
+.k-btn-primary { font-weight: 600; color: var(--onPrimary); background: var(--primary); box-shadow: var(--shadow-primary); }
+.k-btn-primary:hover:not(:disabled) { background: var(--primaryHover); }
+.k-btn-primary:active:not(:disabled) { background: var(--primaryPressed); }
+.k-btn-primary:disabled { opacity: var(--opacity-disabled); box-shadow: none; }
+.k-btn-wide { width: 100%; }
+.k-kbd-in { display: inline-flex; align-items: center; height: var(--kbd-height); font-size: 11px; line-height: 16px; font-weight: 500; padding: 0 var(--space-4); border-radius: var(--radius-4); background: color-mix(in srgb, var(--onPrimary) 18%, transparent); }
+.k-kbd-out { display: inline-flex; align-items: center; height: var(--kbd-height); font-size: 11px; line-height: 16px; font-weight: 500; padding: 0 var(--space-4); border-radius: var(--radius-4); color: var(--text3); box-shadow: inset 0 0 0 1px var(--border); }
+.k-btn-secondary { font-weight: 500; color: var(--text); background: var(--card); box-shadow: inset 0 0 0 1px var(--border), var(--shadow-control); }
+.k-btn-secondary:hover { background: var(--cardHover); }
+.k-btn-secondary:active { background: var(--pressed); }
+.k-btn-secondary:disabled { color: var(--text3); background: var(--card); }
+.k-btn-ghost { font-weight: 400; color: var(--text2); background: transparent; padding: 0 var(--space-8); }
+.k-btn-ghost:hover, .k-btn-ghost.on { color: var(--text); background: var(--hover-panel); }
+.k-btn-ghost:active { color: var(--text); background: var(--pressed); }
+.k-link { font: inherit; font-size: 13px; line-height: 16px; color: var(--text2); background: none; border: 0; padding: 0; display: inline-flex; align-items: center; gap: var(--space-4); cursor: pointer; }
+.k-link:hover { color: var(--text); }
+
+/* Chip */
+.k-chip { font: inherit; font-weight: 500; display: inline-flex; align-items: center; height: var(--control-28); font-size: 12px; line-height: 16px; color: var(--text2); padding: 0 var(--space-12); border: 0; border-radius: var(--radius-full); background: color-mix(in srgb, var(--card) 60%, transparent); box-shadow: inset 0 0 0 1px var(--border); cursor: pointer; white-space: nowrap; }
+.k-chip:not(.k-chip-on):active { color: var(--text); background: var(--pressed); }
+.k-chip-on { color: var(--text); background: var(--cardHover); box-shadow: inset 0 0 0 1px var(--selected-marker); }
+.k-chip:not(.k-chip-on):hover { color: var(--text); background: var(--hover-panel); }
+
+/* Fields: 32 standard, 28 compact */
+.k-formfield { display: flex; flex-direction: column; gap: var(--space-8); min-width: 240px; }
+.k-inspector .k-formfield, .k-grid2 > .k-formfield, .k-grid3 > .k-formfield { min-width: 0; }
+.k-formfield-label { font-size: 13px; line-height: 16px; font-weight: 500; color: var(--text); }
+.k-formfield-help { font-size: 12px; line-height: 16px; color: var(--text3); }
+.k-field { display: flex; align-items: center; gap: var(--space-8); height: var(--control-32); padding: 0 var(--space-12); background: var(--field); border-radius: var(--radius-8); box-shadow: inset 0 0 0 1px var(--controlEdge); font-size: 13px; line-height: 16px; }
+.k-field.sm { height: var(--control-28); padding: 0 var(--space-8); border-radius: var(--radius-6); }
+.k-field:focus-within, .k-field.is-focused { box-shadow: var(--focus-ring); }
+.k-input { font: inherit; font-size: 13px; line-height: 16px; color: var(--text); background: transparent; border: 0; outline: none; padding: 0; margin: 0; flex: 1 1 auto; min-width: 0; height: 16px; }
+.k-input::placeholder { color: var(--text3); }
+.k-input-mono { font-family: var(--font-mono); font-size: 13px; }
+.k-field.multi { height: auto; align-items: flex-start; padding: var(--space-8) var(--space-12); }
+.k-textarea { height: auto; line-height: 20px; resize: none; display: block; width: 100%; }
+
+/* Search bar and command bar line: 40 */
+.k-search { display: flex; align-items: center; gap: var(--space-8); height: var(--control-40); padding: 0 var(--space-8) 0 var(--space-12); background: var(--field); border-radius: var(--radius-12); box-shadow: inset 0 0 0 1px var(--controlEdge); }
+.k-search:focus-within, .k-search.is-focused { box-shadow: var(--focus-ring); }
+.k-cmdbar { display: flex; flex-direction: column; gap: var(--space-8); padding: var(--space-16); }
+.k-cmdbar-line { display: flex; align-items: center; gap: var(--space-8); height: var(--control-40); padding: 0 var(--space-8) 0 var(--space-12); background: var(--card); border-radius: var(--radius-12); box-shadow: inset 0 0 0 1px var(--controlEdge); }
+.k-cmdbar-line:focus-within, .k-cmdbar-line.is-focused { box-shadow: var(--focus-ring); }
+.k-cmdbar-opts { display: flex; align-items: center; gap: var(--space-16); font-size: 12px; line-height: 16px; color: var(--text2); }
+.k-check { position: relative; display: inline-flex; align-items: center; gap: var(--space-8); }
+.k-check-box { width: 16px; height: 16px; border-radius: var(--radius-4); background: var(--field); box-shadow: inset 0 0 0 1px var(--controlEdge); display: inline-flex; align-items: center; justify-content: center; color: var(--onPrimary); flex: none; }
+.k-check-box.on { background: var(--accent); box-shadow: none; color: #ffffff; }
+.k-check:hover .k-check-box:not(.on) { background: var(--hover-panel); }
+.k-check input:focus-visible + .k-check-box { box-shadow: var(--focus-ring); }
+.k-spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--text2); animation: k-spin .9s linear infinite; flex: none; }
+@keyframes k-spin { to { transform: rotate(360deg); } }
+/* Reduced motion: the spinner holds still (its darker quarter still reads as busy), nothing travels, and a bar jumps
+   to its value. Moves become a motion-fast fade (README: Motion). The .k-reduce-motion class does the same in a card. */
+@media (prefers-reduced-motion: reduce) { .k-spinner { animation: none; } .k-bar > i { transition: none; } }
+.k-reduce-motion .k-spinner { animation: none; }
+.k-reduce-motion .k-bar > i { transition: none; }
+
+/* Cards */
+.k-card { background: var(--card); border-radius: var(--radius-12); box-shadow: inset 0 0 0 1px var(--border); }
+.k-hovercard { display: block; width: 100%; text-align: left; font: inherit; color: inherit; border: 0; padding: var(--space-16); background: var(--card); border-radius: var(--radius-12); box-shadow: inset 0 0 0 1px var(--border); cursor: pointer; }
+.k-hovercard:hover, .k-hovercard.is-hover { background: var(--cardHover); box-shadow: inset 0 0 0 1px var(--border), var(--shadow-hover); }
+.k-surface { background: var(--subtle); border-radius: var(--radius-8); }
+
+/* ToggleCard */
+.k-togglecard { display: flex; flex-direction: column; gap: var(--space-12); padding: var(--space-16); }
+/* The off track is controlEdge (3:1 on card and field), so an off switch is still seen as a switch. */
+.k-switch { width: 28px; height: 16px; border-radius: var(--radius-full); background: var(--controlEdge); position: relative; flex: none; }
+.k-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #ffffff; box-shadow: 0 1px 2px #00000040; }
+.k-switch:hover { background: color-mix(in srgb, var(--controlEdge) 85%, var(--text)); }
+.k-switch.on { background: var(--accent); }
+.k-switch.on:hover { background: color-mix(in srgb, var(--accent) 88%, var(--text)); }
+.k-switch.on::after { left: 14px; }
+
+/* UnderlineTabs: 28 high, 2 rule */
+.k-tabs { display: flex; gap: var(--space-24); }
+.k-tabs-item { font: inherit; background: none; border: 0; padding: 0; height: var(--control-28); display: flex; flex-direction: column; justify-content: space-between; font-size: 13px; line-height: 16px; color: var(--text2); cursor: pointer; padding-top: var(--space-2); }
+.k-tabs-item::after { content: ""; height: var(--line-strong); background: transparent; }
+.k-tabs-item:hover { color: var(--text); }
+.k-tabs-item.on { color: var(--text); }
+.k-tabs-item.on::after { background: var(--text); }
+
+/* Tile, dot, pill, bar */
+.k-tile { display: inline-flex; align-items: center; justify-content: center; flex: none; border-radius: var(--radius-tile); color: var(--t); background: color-mix(in srgb, var(--t) 12%, transparent); }
+.k-dot { display: inline-block; flex: none; border-radius: var(--radius-full); background: var(--c); }
+/* The tint sits on an opaque card ground, so a hovered row, a subtle surface or the window never shows through
+   and the status text holds 4.5:1 wherever the pill is placed. The tint is opacity-pill (10%): every status color
+   holds 4.6:1 or more on it in both themes (at 12% accent and danger fell to 4.50). */
+.k-pill { display: inline-flex; align-items: center; height: var(--pill-height); font-size: 11px; line-height: 16px; font-weight: 500; padding: 0 var(--space-8); border-radius: var(--radius-full); color: var(--c); background: color-mix(in srgb, var(--c) calc(var(--opacity-pill) * 100%), var(--card)); white-space: nowrap; flex: none; }
+.k-bar { height: var(--bar); border-radius: var(--radius-full); background: var(--border); overflow: hidden; }
+.k-bar > i { display: block; height: 100%; border-radius: var(--radius-full); background: var(--c); transition: width var(--motion-progress) linear; }
+
+/* SectionTitle, dividers */
+.k-sectiontitle { display: flex; flex-direction: column; gap: var(--space-4); }
+.k-sectiontitle-top { display: flex; align-items: baseline; gap: var(--space-8); }
+.k-sectiontitle-title { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--text); }
+.k-sectiontitle-detail { font-size: 13px; line-height: 16px; color: var(--text3); font-variant-numeric: tabular-nums; }
+.k-sectiontitle-sub { font-size: 13px; line-height: 16px; color: var(--text2); }
+.k-dashed { height: var(--line); background: repeating-linear-gradient(90deg, var(--border) 0 4px, transparent 4px 8px); flex: none; }
+.k-rule { height: var(--line); background: var(--border); flex: none; }
+
+/* CardList, InfoRow: rows 40 */
+.k-cardlist { display: flex; flex-direction: column; }
+.k-cardlist-sep { height: var(--line); margin-left: var(--space-16); background: color-mix(in srgb, var(--border) 70%, transparent); }
+.k-inforow { display: flex; align-items: center; gap: var(--space-20); height: var(--row-40); padding: 0 var(--space-16); font-size: 13px; line-height: 16px; }
+.k-inforow-label { color: var(--text2); flex: 1 1 auto; }
+.k-inforow-value { color: var(--text); text-align: right; }
+
+/* Banners */
+.k-banner { display: flex; align-items: flex-start; gap: var(--space-8); padding: var(--space-12); font-size: 12px; line-height: 16px; border-radius: var(--radius-8); background: color-mix(in srgb, var(--c) 10%, transparent); }
+.k-banner-danger { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 25%, transparent); }
+.k-banner .k-sym { color: var(--c); }
+.k-banner-text { display: flex; flex-direction: column; gap: var(--space-2); }
+.k-banner-title { font-weight: 500; color: var(--text); }
+
+/* EmptyState */
+.k-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-8); padding: var(--space-40); }
+.k-empty > .k-sym { margin-bottom: var(--space-4); }
+.k-empty-title { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--text); }
+.k-empty-msg { font-size: 13px; line-height: 16px; color: var(--text2); max-width: 440px; }
+.k-empty-actions { padding-top: var(--space-8); display: flex; gap: var(--space-8); }
+
+/* AttentionCard */
+.k-attention { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-16); border-radius: var(--radius-12); background: color-mix(in srgb, var(--c) 5%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) calc(var(--opacity-attention-stroke) * 100%), transparent); }
+.k-attention-mark { display: inline-flex; flex: none; }
+.k-attention-text { display: flex; flex-direction: column; gap: var(--space-4); flex: 1 1 auto; min-width: 0; }
+.k-attention-top { display: flex; align-items: baseline; gap: var(--space-8); }
+.k-attention-subject { font-size: 13px; line-height: 16px; font-weight: 500; }
+.k-attention-cat { font-size: 12px; line-height: 16px; color: var(--text3); }
+.k-attention-msg { font-size: 12px; line-height: 16px; color: var(--c); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* RunningCard, TargetCard, ActivityRow (64) */
+.k-running { display: flex; flex-direction: column; gap: var(--space-12); }
+.k-running-top { display: flex; align-items: center; gap: var(--space-12); }
+.k-target { display: flex; align-items: center; gap: var(--space-12); }
+.k-activity { display: flex; align-items: center; gap: var(--space-12); height: var(--row-64); padding: 0 var(--space-16); }
+.k-more { width: var(--control-24); height: var(--control-24); display: inline-flex; align-items: center; justify-content: center; color: var(--text2); border-radius: var(--radius-6); flex: none; }
+.k-more:hover { color: var(--text); background: var(--hover-card); }
+.k-more:active { color: var(--text); background: var(--pressed); }
+
+/* TerminalPane, OutputText */
+.k-term { display: flex; flex-direction: column; background: var(--subtle); border-radius: var(--radius-8); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent); overflow: hidden; }
+.k-term-bar { display: flex; align-items: center; gap: var(--space-8); height: var(--control-32); padding: 0 var(--space-8) 0 var(--space-12); font-size: 12px; line-height: 16px; border-bottom: 1px solid var(--border); flex: none; }
+.k-term-body { padding: var(--space-12); white-space: pre; overflow: auto; color: var(--text); min-height: 64px; }
+.k-term-empty { display: flex; align-items: center; justify-content: center; min-height: 96px; color: var(--text3); }
+.k-output { padding: var(--space-12); white-space: pre-wrap; color: var(--text); }
+
+/* Sidebar: inset 12, places 32 */
+.k-sidebar { background: var(--window); width: var(--sidebar-width); padding: var(--space-16) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-2); }
+.k-navitem { display: flex; align-items: center; gap: var(--space-8); height: var(--row-32); padding: 0 var(--space-8); border-radius: var(--radius-8); font-size: 13px; line-height: 16px; color: var(--text2); cursor: pointer; flex: none; }
+.k-navitem:hover { background: var(--hover-window); }
+.k-navitem:active { background: var(--pressed); }
+.k-navitem.on { position: relative; color: var(--text); background: var(--panel); box-shadow: inset 0 0 0 1px var(--border); }
+/* The selected marker: a 2pt accent bar at the leading edge, 16 high, centred. */
+.k-navitem.on::before, .k-listrow.on::before { content: ""; position: absolute; left: 0; top: 50%; width: var(--line-strong); height: 16px; margin-top: -8px; border-radius: var(--radius-full); background: var(--selected-marker); }
+.k-navitem-count { font-size: 12px; line-height: 16px; color: var(--text3); font-variant-numeric: tabular-nums; font-weight: 400; }
+.k-navitem-count.tone { color: var(--c); font-weight: 500; }
+.k-navitem-key { font-size: 11px; line-height: 16px; color: var(--text3); font-weight: 400; }
+.k-grouprow { display: flex; flex-direction: column; justify-content: center; gap: var(--space-4); height: var(--row-40); padding: 0 var(--space-8); border-radius: var(--radius-8); font-size: 13px; line-height: 16px; flex: none; }
+.k-grouprow:hover { background: var(--hover-window); }
+.k-status { display: flex; align-items: center; gap: var(--space-8); font-size: 12px; line-height: 16px; color: var(--text2); padding: 0 var(--space-8); }
+
+/* Panel header 52, tabs 28 */
+.k-header { display: flex; align-items: center; gap: var(--space-4); height: var(--header-height); padding: 0 var(--space-24); border-bottom: 1px solid var(--border); background: var(--panel); flex: none; }
+.k-header-title { font-size: 17px; line-height: 24px; font-weight: 600; padding-left: var(--space-8); }
+.k-tab { display: inline-flex; align-items: center; gap: var(--space-8); height: var(--control-28); max-width: 220px; padding: 0 var(--space-8); border-radius: var(--radius-8); font-size: 13px; line-height: 16px; color: var(--text2); cursor: pointer; flex: none; }
+.k-tab.home { padding-right: var(--space-12); }
+.k-tab:hover { background: var(--hover-tab); }
+.k-tab.on { position: relative; background: var(--subtle); color: var(--text); }
+.k-tab.on::after { content: ""; position: absolute; left: var(--space-8); right: var(--space-8); bottom: 0; height: var(--line-strong); border-radius: var(--radius-full); background: var(--selected-marker); }
+/* The tab's symbol and title are one button, its close x another, so both are reached with Tab. */
+.k-tab-main { display: inline-flex; align-items: center; gap: var(--space-8); align-self: stretch; min-width: 0; outline: none; }
+.k-tab:has(.k-tab-main:focus-visible) { outline: var(--line-strong) solid var(--focus); outline-offset: var(--focus-offset); }
+.k-tab .k-tab-x { width: 16px; height: 16px; border-radius: var(--radius-4); display: inline-flex; align-items: center; justify-content: center; color: var(--text3); opacity: 0; flex: none; }
+.k-tab.on .k-tab-x, .k-tab:hover .k-tab-x, .k-tab:focus-within .k-tab-x { opacity: 1; }
+.k-tab .k-tab-x:hover { background: var(--border); }
+
+/* ProfileCard */
+.k-logo { display: block; flex: none; }
+.k-profile { display: flex; align-items: center; gap: var(--space-12); height: var(--row-52); padding: 0 var(--space-12); }
+.k-avatar { width: 32px; height: 32px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; line-height: 16px; font-weight: 600; color: #ffffff; background: var(--avatar); }
+
+/* Menus and the command palette */
+.k-popover { background: var(--panel); border-radius: var(--radius-12); box-shadow: 0 0 0 1px var(--border), var(--shadow-palette); padding: var(--space-8); width: var(--menu-width); display: flex; flex-direction: column; gap: var(--space-2); }
+.k-menurow { display: flex; align-items: center; gap: var(--space-12); height: var(--row-52); padding: 0 var(--space-12) 0 var(--space-8); border-radius: var(--radius-8); cursor: pointer; }
+.k-menurow:hover, .k-menurow.on { background: var(--hover-panel); }
+.k-menurow:active { background: var(--pressed); }
+.k-palette { width: var(--palette-width); max-width: 100%; background: var(--panel); border-radius: var(--radius-16); box-shadow: inset 0 0 0 1px var(--border), var(--shadow-palette); overflow: hidden; }
+.k-palette-input { display: flex; align-items: center; gap: var(--space-12); height: 56px; padding: 0 var(--space-16); }
+.k-palette-input:focus-within { box-shadow: var(--focus-ring); border-radius: var(--radius-16) var(--radius-16) 0 0; }
+.k-palette-input .k-input { font-size: 17px; line-height: 24px; height: 24px; }
+.k-palette-list { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-8); }
+.k-palette-row { display: flex; align-items: center; gap: var(--space-12); height: var(--row-40); padding: 0 var(--space-12); border-radius: var(--radius-8); font-size: 13px; line-height: 16px; cursor: pointer; }
+.k-palette-row:hover, .k-palette-row.on { background: var(--hover-panel); }
+.k-scrim { background: var(--scrim); padding: var(--space-40) var(--space-16); display: flex; justify-content: center; }
+
+/* FormHeader */
+.k-formheader { display: flex; align-items: center; gap: var(--space-16); }
+.k-formheader-title { font-size: 20px; line-height: 24px; font-weight: 600; }
+
+/* The window */
+.k-traffic { height: var(--traffic-lights); display: flex; align-items: center; gap: var(--space-8); padding: 0 var(--space-12) 0 var(--space-20); flex: none; }
+.k-traffic .k-btn { color: var(--text3); }
+.k-traffic i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.k-traffic .r { background: #ff5f57; } .k-traffic .y { background: #febc2e; } .k-traffic .g { background: #28c840; }
+.k-window { display: flex; background: var(--window); height: 100vh; min-height: 640px; }
+.k-window-side { width: var(--sidebar-width); flex: none; display: flex; flex-direction: column; }
+.k-window-panel { flex: 1 1 auto; min-width: 0; margin: var(--window-inset) var(--window-inset) var(--window-inset) 0; background: var(--panel); border-radius: var(--radius-12); box-shadow: inset 0 0 0 1px var(--border), var(--shadow-panel); overflow: hidden; display: flex; flex-direction: column; }
+.k-window-panel > .k-header { background: transparent; }
+.k-window-body { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.k-window-body.flush { display: flex; flex-direction: column; }
+.k-actline { display: flex; align-items: center; gap: var(--space-12); height: var(--row-40); }
+
+/* Terminal */
+.k-terminal { background: var(--term-bg); color: var(--term-fg); font-family: var(--font-mono); font-size: 13px; line-height: 16px; padding: var(--space-12) var(--space-16); overflow: hidden; white-space: pre; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: flex-start; }
+/* An inactive pane keeps its text at full strength: the hollow cursor and the pane head mark it, never a fade. */
+.k-terminal-line { min-height: 16px; }
+.k-terminal-cursor { display: inline-block; width: 8px; background: var(--term-cursor); }
+.k-terminal-cursor.hollow { background: transparent; box-shadow: inset 0 0 0 1px var(--term-cursor); }
+.a-red { color: var(--ansi-red); } .a-green { color: var(--ansi-green); } .a-yellow { color: var(--ansi-yellow); } .a-blue { color: var(--ansi-blue); }
+.a-magenta { color: var(--ansi-magenta); } .a-cyan { color: var(--ansi-cyan); } .a-dim { color: var(--term-dim); } .a-bold { font-weight: 700; }
+.a-sel { background: var(--term-selection); }
+.k-statusbar { display: flex; align-items: center; gap: var(--space-16); height: var(--statusbar-height); padding: 0 var(--space-12); border-top: 1px solid var(--border); font-size: 12px; line-height: 16px; color: var(--text2); background: var(--panel); flex: none; white-space: nowrap; }
+
+/* Segmented: 28 outer, 24 thumb */
+.k-seg { display: inline-flex; align-items: center; height: var(--control-28); padding: 0 var(--space-2); gap: var(--space-2); border-radius: var(--radius-8); background: var(--subtle); box-shadow: inset 0 0 0 1px var(--border); flex: none; }
+.k-seg-item { display: inline-flex; align-items: center; height: var(--control-24); font-size: 12px; line-height: 16px; padding: 0 var(--space-8); border-radius: var(--radius-6); color: var(--text2); white-space: nowrap; }
+.k-seg-item:hover { color: var(--text); }
+.k-seg-item.on { background: var(--card); color: var(--text); box-shadow: 0 0 0 1px var(--border), var(--shadow-control); }
+
+/* DataTable: header 28, rows 32 (dense 28) */
+.k-table-wrap { background: var(--card); border-radius: var(--radius-12); box-shadow: inset 0 0 0 1px var(--border); overflow: hidden; }
+.k-table-wrap.bare { background: transparent; border-radius: 0; box-shadow: none; }
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 16px; }
+.k-table thead tr { height: var(--control-28); }
+.k-table tbody tr { height: var(--row-32); }
+.k-table.dense tbody tr { height: var(--control-28); }
+.k-table th { font-size: 11px; line-height: 16px; font-weight: 500; color: var(--text2); text-align: left; padding: 0 var(--space-12); border-bottom: 1px solid var(--border); background: var(--panel); white-space: nowrap; }
+.k-table td { padding: 0 var(--space-12); border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent); color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
+.k-table tr:last-child td { border-bottom: 0; }
+.k-table td.mono { font-family: var(--font-mono); font-size: 12px; }
+.k-table tbody tr:hover td { background: var(--hover-card); }
+.k-table tr.on td { background: color-mix(in srgb, var(--accent) 10%, var(--card)); }
+.k-table tr.on td:first-child { box-shadow: inset var(--line-strong) 0 0 var(--selected-marker); }
+/* Secondary text on a selected or highlighted row moves up to text2: text3 drops below 4.5:1 on the accent tint. */
+.k-table tr.on .k-t3, .k-table tr.on .k-meta, .k-table tr.on .k-null, .k-table tr.on .k-mono-s,
+.k-listrow.on .k-t3, .k-listrow.on .k-meta, .k-listrow.on .k-mono-s,
+.k-menurow.on .k-t3, .k-menurow.on .k-meta, .k-menurow.on .k-navitem-key,
+.k-palette-row.on .k-t3, .k-palette-row.on .k-meta { color: var(--text2); }
+.k-null { color: var(--text3); font-style: italic; font-family: var(--font-mono); font-size: 11px; }
+
+/* Agent */
+.k-msg { display: flex; gap: var(--space-12); }
+.k-msg.user { justify-content: flex-end; }
+.k-msg-bubble { max-width: 560px; padding: var(--space-8) var(--space-12); border-radius: var(--radius-12) var(--radius-12) var(--radius-4) var(--radius-12); background: var(--subtle); font-size: 13px; line-height: 20px; color: var(--text); }
+.k-agent-mark { width: 28px; height: 28px; flex: none; border-radius: var(--radius-tile); display: inline-flex; align-items: center; justify-content: center; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.k-msg-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--space-12); font-size: 13px; line-height: 20px; color: var(--text); }
+/* the 28 mark's centre (14) meets the first line's centre: a 20-high line 4 down, a 32 tool head 2 up */
+.k-msg-body > p:first-child { padding-top: var(--space-4); }
+.k-msg-body > .k-tool:first-child { margin-top: calc(-1 * var(--space-2)); }
+.k-msg-body p { margin: 0; }
+.k-tool { border-radius: var(--radius-8); box-shadow: inset 0 0 0 1px var(--border); background: var(--card); overflow: hidden; }
+.k-tool-head { display: flex; align-items: center; gap: var(--space-8); height: var(--row-32); padding: 0 var(--space-12); }
+.k-tool-head .k-meta, .k-tool-head .k-pill { white-space: nowrap; flex: none; }
+.k-tool-out { padding: var(--space-12); border-top: 1px solid var(--border); background: var(--subtle); white-space: pre; color: var(--text); overflow: hidden; }
+.k-approval { display: flex; flex-direction: column; gap: var(--space-12); padding: var(--space-16); border-radius: var(--radius-12); background: color-mix(in srgb, var(--warn) 5%, var(--card)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) calc(var(--opacity-attention-stroke) * 100%), transparent); }
+.k-composer { display: flex; flex-direction: column; gap: var(--space-12); padding: var(--space-12); background: var(--card); border-radius: var(--radius-16); box-shadow: inset 0 0 0 1px var(--border); }
+.k-composer-input { font-size: 13px; line-height: 20px; min-height: 40px; color: var(--text); padding: 0 var(--space-4); }
+.k-composer-input.empty { color: var(--text3); }
+.k-ctx { display: inline-flex; align-items: center; gap: var(--space-8); height: var(--control-28); padding: 0 var(--space-8) 0 var(--space-4); border-radius: var(--radius-6); background: var(--subtle); font-size: 12px; line-height: 16px; color: var(--text); box-shadow: inset 0 0 0 1px var(--border); }
+/* The scope chip's x: a 16 target around the 8 glyph, pulled in by 4 each side so the chip keeps its width. */
+.k-ctx-x { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin: 0 calc(-1 * var(--space-4)); border-radius: var(--radius-4); color: var(--text3); flex: none; }
+.k-ctx-x:hover { color: var(--text); background: var(--border); }
+
+/* Screen layout helpers */
+.k-toolbar { display: flex; align-items: center; gap: var(--space-8); height: var(--toolbar-height); padding: 0 var(--space-12) 0 var(--space-16); border-bottom: 1px solid var(--border); flex: none; }
+.k-hsplit { display: flex; flex: 1 1 auto; min-height: 0; }
+.k-hsplit > * { min-width: 0; }
+.k-vsplit { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; min-height: 0; }
+.k-pane { display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; min-height: 0; }
+.k-pane + .k-pane { border-left: 1px solid var(--border); }
+.k-vsplit > .k-pane + .k-pane { border-left: 0; border-top: 1px solid var(--border); }
+.k-pane-head { display: flex; align-items: center; gap: var(--space-8); height: var(--pane-head); padding: 0 var(--space-12); font-size: 12px; line-height: 16px; color: var(--text2); border-bottom: 1px solid var(--border); background: var(--panel); flex: none; box-shadow: inset 0 2px 0 transparent; }
+.k-pane-head.on { color: var(--text); box-shadow: inset 0 2px 0 var(--term-cursor); }
+.k-sidepanel { width: var(--side-panel-width); flex: none; border-left: 1px solid var(--border); background: var(--panel); display: flex; flex-direction: column; min-height: 0; }
+.k-sidepanel.left { border-left: 0; border-right: 1px solid var(--border); }
+.k-inspector { width: var(--inspector-width); flex: none; border-left: 1px solid var(--border); background: var(--panel); display: flex; flex-direction: column; gap: var(--space-16); padding: var(--space-20); overflow: hidden; }
+.k-listrow { display: flex; align-items: center; gap: var(--space-12); height: var(--row-32); padding: 0 var(--space-12); border-radius: var(--radius-8); font-size: 13px; line-height: 16px; cursor: pointer; flex: none; }
+.k-listrow.r40 { height: var(--row-40); }
+.k-listrow.r52 { height: var(--row-52); }
+/* ListRow spacing (K.Row): rows 2 apart; a side list holds them 8 from its edges, so text sits at 20; inside a
+   card a row's highlight is 4 in on every side (12 - 4 = the row's 8 radius), so text sits at 16. */
+.k-listrow + .k-listrow { margin-top: var(--space-2); }
+.k-sidelist { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-8); }
+.k-sidelist > .k-listrow + .k-listrow { margin-top: 0; }   /* the gap already parts them, around labels too, as SideListStack does */
+.k-sidelist .k-seclabel { padding: var(--space-12) var(--space-12) var(--space-4); }
+.k-cardrow { height: var(--row-32); margin: var(--space-4); }
+.k-listrow:hover, .k-listrow.is-hover { background: var(--hover-card); }
+.k-sidelist .k-listrow:hover, .k-sidelist .k-listrow.is-hover { background: var(--hover-panel); }
+.k-listrow:active { background: var(--pressed); }
+.k-listrow.on { position: relative; background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+/* Overlays, pickers and progress */
+.k-window { position: relative; }
+.k-popup { cursor: pointer; }
+.k-sheet-scrim { position: absolute; inset: 0; background: var(--scrim); display: flex; align-items: flex-start; justify-content: center; padding-top: var(--space-48); z-index: 10; }
+.k-sheet { width: var(--sheet-width); background: var(--panel); border-radius: var(--radius-16); box-shadow: inset 0 0 0 1px var(--border), var(--shadow-palette); padding: var(--space-24); display: flex; flex-direction: column; gap: var(--space-20); }
+.k-sheet-head { display: flex; align-items: center; gap: var(--space-16); }
+.k-sheet-title { font-size: 20px; line-height: 24px; font-weight: 600; color: var(--text); }
+.k-sheet-body { display: flex; flex-direction: column; gap: var(--space-16); }
+.k-sheet-foot { display: flex; justify-content: flex-end; gap: var(--space-8); }
+.k-alert { width: 260px; background: var(--panel); border-radius: var(--radius-12); box-shadow: inset 0 0 0 1px var(--border), var(--shadow-palette); padding: var(--space-20) var(--space-16) var(--space-16); display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-8); }
+.k-alert-title { font-size: 13px; line-height: 16px; font-weight: 600; color: var(--text); margin-top: var(--space-4); }
+.k-alert-msg { font-size: 12px; line-height: 16px; color: var(--text2); }
+.k-alert-actions { display: flex; flex-direction: column; gap: var(--space-8); width: 100%; margin-top: var(--space-8); }
+.k-btn-destructive { color: var(--danger) !important; }
+/* A still placeholder in subtle (owner decision 2026-11-15: no shimmer). It shows only after delay-spinner, so fast loads never show one. */
+.k-skel { display: inline-block; flex: none; border-radius: var(--radius-4); background: var(--subtle); }
+
+/* The sidebar's places and groups scroll inside a ScrollView in the app: they clip, the footer stays. */
+.k-window-side > .k-sidebar { min-height: 0; overflow: hidden; }
+.k-window-side > .k-sidebar { -webkit-mask-image: linear-gradient(to bottom, var(--text) calc(100% - 24px), transparent); mask-image: linear-gradient(to bottom, var(--text) calc(100% - 24px), transparent); }
+.k-sheet-head { gap: var(--space-12); }
+.k-formheader { gap: var(--space-12); }
+.k-mono-s { font-family: var(--font-mono); font-size: 11px; line-height: 16px; color: var(--text3); }
+.k-alert-msg { white-space: pre-line; }
+.k-navitem.k-navmore { color: var(--text3); }
+.k-navitem.k-navmore:hover { color: var(--text2); }
+.k-btn-ghost:disabled { color: var(--text3); background: transparent; }
+.k-table-wrap { box-shadow: 0 0 0 1px var(--border); }
+.k-table-wrap.bare { box-shadow: none; }
+
+.k-send { width: var(--control-28); height: var(--control-28); flex: none; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-6); background: var(--subtle); color: var(--text3); }
+.k-send.on { background: var(--accent); color: var(--onAccent); }
+
+/* Spacing pass (2026-11-09): one rhythm everywhere.
+   Header icon buttons sit 8 apart (the agent and refresh were 4, tighter than any other pair). */
+.k-header > .k-btn-ghost + .k-btn-ghost { margin-left: var(--space-4); }
+/* Every menu separator: 4 above and below the hairline, inset 8, so groups split the same in every popover
+   (some menus had 5 in all, others 13). */
+.k-popover > .k-rule { margin: var(--space-4) var(--space-8); }
+/* A long menu item (a saved query, a long name) ends in an ellipsis inside the menu instead of running out of it. */
+.k-popover .k-btn-wide > span:not(.k-spacer):not(.k-kbd-in) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* iPhone and iPad. iOS text styles at the default size, each class exactly its ios-* token (m-title ios-title, m-headline ios-headline, m-body ios-body, m-small ios-small, m-caption ios-caption, m-tiny ios-tiny, m-mono MK.mono, m-mono-small MK.monoSmall), touch targets of touch-44 or more,
+   inset grouped lists on window with card cells. The system draws these; the cards redraw them to measure. */
+.m-device { position: relative; display: flex; flex-direction: column; overflow: hidden; background: var(--window); color: var(--text); border-radius: var(--radius-16); box-shadow: inset 0 0 0 var(--line) var(--border); font-family: var(--font-sans); }
+.m-status { flex: none; height: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--space-20); font-size: 12px; line-height: 16px; font-weight: 600; color: var(--text); }
+.m-title { font-size: 20px; line-height: 25px; font-weight: 600; }
+.m-headline { font-size: 17px; line-height: 22px; font-weight: 600; }
+.m-body { font-size: 15px; line-height: 20px; }
+.m-body-strong { font-size: 15px; line-height: 20px; font-weight: 600; }
+.m-small { font-size: 13px; line-height: 18px; }
+.m-caption { font-size: 12px; line-height: 16px; }
+.m-tiny { font-size: 11px; line-height: 13px; font-weight: 500; }
+.m-mono { font-family: var(--font-mono); font-size: 13px; line-height: 18px; }
+.m-mono-small { font-family: var(--font-mono); font-size: 12px; line-height: 16px; }
+.m-t2 { color: var(--text2); } .m-t3 { color: var(--text3); } .m-accent { color: var(--accent); }
+.m-navbar { flex: none; height: 52px; display: flex; align-items: center; gap: var(--space-12); padding: 0 var(--space-16); }
+.m-navbar .m-headline { flex: 1 1 auto; min-width: 0; }
+.m-navbar.center .m-headline { text-align: center; }
+.m-iconbtn { width: 44px; height: 44px; flex: none; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-full); color: var(--accent); }
+.m-scroll { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: var(--space-24); padding: var(--space-8) 0 var(--space-24); }
+.m-readable { width: 100%; max-width: var(--readable-width); margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-24); }
+.m-section { display: flex; flex-direction: column; gap: var(--space-8); padding: 0 var(--space-16); }
+.m-section-head { padding: 0 var(--space-16); font-size: 13px; line-height: 18px; color: var(--text2); }
+.m-section-foot { padding: 0 var(--space-16); font-size: 12px; line-height: 16px; color: var(--text2); }
+.m-group { background: var(--card); border-radius: var(--radius-12); overflow: hidden; }
+.m-row { position: relative; display: flex; align-items: center; gap: var(--space-12); min-height: var(--touch-44); padding: var(--space-8) var(--space-16); }
+.m-row + .m-row { box-shadow: inset 0 var(--line) 0 var(--border); }
+.m-row.tall { min-height: var(--row-64); }
+.m-row .m-grow { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.m-row.on { background: var(--accent); color: var(--onAccent); }
+.m-row.on .m-t2, .m-row.on .m-t3, .m-row.on .m-accent { color: var(--onAccent); }
+.m-search { height: var(--touch-44); display: flex; align-items: center; gap: var(--space-8); padding: 0 var(--space-12); border-radius: var(--radius-12); background: var(--subtle); color: var(--text3); font-size: 15px; line-height: 20px; }
+.m-sidebar { flex: none; width: 280px; display: flex; flex-direction: column; gap: var(--space-4); padding: 0 var(--space-12); background: var(--window); box-shadow: inset calc(-1 * var(--line)) 0 0 var(--border); }
+.m-sideitem { display: flex; align-items: center; gap: var(--space-12); height: var(--touch-44); padding: 0 var(--space-12); border-radius: var(--radius-12); font-size: 17px; line-height: 22px; color: var(--text); }
+.m-sideitem .k-sym { color: var(--accent); }
+.m-sideitem.on { background: var(--accent); color: var(--onAccent); font-weight: 600; }
+.m-sideitem.on .k-sym { color: var(--onAccent); }
+.m-tabbar-top { align-self: center; flex: none; display: flex; gap: var(--space-4); padding: var(--space-4); border-radius: var(--radius-full); background: var(--subtle); box-shadow: inset 0 0 0 var(--line) var(--border); }
+.m-tabbar-top .m-tab { height: var(--touch-44); display: inline-flex; align-items: center; padding: 0 var(--space-16); border-radius: var(--radius-full); font-size: 15px; line-height: 20px; font-weight: 500; color: var(--text2); }
+.m-tabbar-top .m-tab.on { background: var(--card); color: var(--accent); font-weight: 600; box-shadow: inset 0 0 0 var(--line) var(--selected-marker); }
+.m-tabbar { flex: none; display: flex; justify-content: space-around; padding: var(--space-4) var(--space-8) var(--space-32); background: var(--card); box-shadow: inset 0 var(--line) 0 var(--border); }
+.m-tabbar .m-tab { width: 64px; height: var(--touch-44); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2); font-size: 11px; line-height: 13px; font-weight: 500; color: var(--text2); }
+.m-tabbar .m-tab.on { color: var(--accent); }
+.m-pill { flex: none; display: inline-flex; align-items: center; height: var(--pill-height); padding: 0 var(--space-8); border-radius: var(--radius-full); font-size: 11px; line-height: 13px; font-weight: 500; color: var(--c); background: color-mix(in srgb, var(--c) 10%, var(--card)); }
+.m-btn { min-height: var(--touch-44); display: flex; align-items: center; justify-content: center; gap: var(--space-8); padding: 0 var(--space-16); border-radius: var(--radius-12); font-size: 15px; line-height: 20px; font-weight: 600; }
+.m-btn.primary { background: var(--accent); color: var(--onAccent); }
+.m-btn.plain { color: var(--accent); }
+.m-key { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 var(--space-4); border-radius: var(--radius-6); background: var(--subtle); box-shadow: inset 0 0 0 var(--line) var(--border); font-size: 12px; line-height: 16px; font-weight: 600; color: var(--text); }
+
+/* SplitDivider: a 1pt hairline with a 4-wide hit area and a 4 by 24 grip in text3 (accent while it is dragged or hovered).
+   .k-split is between columns (col-resize), .k-split.row between stacked areas (row-resize). Sizes snap to 4. */
+.k-split { position: relative; flex: none; width: var(--line); align-self: stretch; background: var(--border); cursor: col-resize; z-index: 2; }
+.k-split::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(-1 * var(--space-2)); width: 4px; }
+.k-split > i { position: absolute; top: 50%; left: 50%; width: 4px; height: 24px; margin: -12px 0 0 -2px; border-radius: var(--radius-full); background: var(--text3); }
+.k-split.row { width: auto; height: var(--line); cursor: row-resize; }
+.k-split.row::before { left: 0; right: 0; top: calc(-1 * var(--space-2)); bottom: auto; width: auto; height: 4px; }
+.k-split.row > i { width: 24px; height: 4px; margin: -2px 0 0 -12px; }
+.k-split.hover > i, .k-split.on > i { background: var(--accent); }
+.k-split.on { background: var(--accent); }
+.k-split.focus > i { background: var(--accent); outline: var(--line-strong) solid var(--focus); outline-offset: var(--focus-offset); }
+.k-split-tip { position: absolute; top: 50%; left: var(--space-8); margin-top: -10px; height: var(--pill-height); display: inline-flex; align-items: center; padding: 0 var(--space-8); border-radius: var(--radius-full); background: var(--panel); box-shadow: 0 0 0 var(--line) var(--border), var(--shadow-control); font-family: var(--font-mono); font-size: 11px; line-height: 16px; color: var(--text); white-space: nowrap; }
+.k-split.row .k-split-tip { top: var(--space-8); left: 50%; margin: 0 0 0 var(--space-16); }
+/* The sidebar's edge: no hairline (the sidebar sits on window), only the grip, shown under the pointer or while dragged. */
+.k-side-edge { position: relative; flex: none; width: 0; cursor: col-resize; z-index: 2; }
+.k-side-edge::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(-1 * var(--space-4)); width: 4px; }
+.k-side-edge.on::after { content: ""; position: absolute; top: 50%; left: calc(-1 * var(--space-4)); width: 4px; height: 24px; margin-top: -12px; border-radius: var(--radius-full); background: var(--accent); }
+.k-window-panel.alone { margin-left: var(--window-inset); }
+/* HopList: the steps komando goes through, in order. */
+.k-hops { display: flex; flex-direction: column; gap: var(--space-8); }
+.k-hops-list { display: flex; flex-direction: column; padding: var(--space-4) 0; }
+.k-hop { display: flex; align-items: center; gap: var(--space-8); height: var(--row-32); padding: 0 var(--space-8) 0 var(--space-12); }
+.k-hop + .k-hop { border-top: 1px solid var(--border); }
+.k-hop-n { width: 16px; flex: none; text-align: right; font-size: 12px; line-height: 16px; color: var(--text3); font-variant-numeric: tabular-nums; }
+.k-hop-name { min-width: 0; font-family: var(--font-mono); font-size: 12px; line-height: 16px; color: var(--text); }
+.k-hop .k-btn:disabled { opacity: var(--opacity-disabled); }
+/* TargetsField: komando's target words as chips. */
+.k-targets { display: flex; flex-direction: column; gap: var(--space-8); }
+.k-targets-box { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); min-height: var(--control-32); height: auto; padding: var(--space-4) var(--space-4) var(--space-4) var(--space-8); }
+.k-targets .k-ctx { height: var(--control-24); padding-left: var(--space-8); }
+.k-palette-runon { display: flex; flex-direction: column; gap: var(--space-8); padding: 0 var(--space-16) var(--space-12); }

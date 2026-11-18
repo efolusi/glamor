@@ -1,0 +1,24 @@
+<!-- @dsCard group="Navigation" height=384 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>SidebarItem preview</title></head>
+<body>
+<div id="root" class="k-on-window"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('nav', { className: 'k-sidebar', 'aria-label': 'Places' },
+      h(K.SidebarItem, { symbol: 'house', title: 'Home', selected: true }),
+      h(K.SidebarItem, { symbol: 'server.rack', title: 'Hosts', count: 12 }),
+      h(K.SidebarItem, { symbol: 'cylinder.split.1x2', title: 'Connections', count: 11 }),
+      h(K.SidebarItem, { symbol: 'folder', title: 'Files', count: 2, countTone: 'accent', countHelp: '2 transfers running' }),
+      h(K.SidebarItem, { symbol: 'arrow.left.arrow.right', title: 'Port Forwarding', count: 3 }),
+      h(K.SidebarItem, { symbol: 'curlybraces', title: 'Recipes', count: 14 }),
+      h('button', { type: 'button', className: 'k-navitem k-navmore open', 'aria-expanded': true }, h(K.SFSymbol, { name: 'chevron.down', size: 12, weight: 'semibold', color: 'text3', style: { margin: '0 var(--space-2)' } }), h('span', null, 'More')),
+      h(K.SidebarItem, { symbol: 'gearshape.2', title: 'Jobs', count: 3 }),
+      h(K.SidebarItem, { symbol: 'key', title: 'Keychain', count: 9 }),
+      h(K.SidebarItem, { symbol: 'clock.arrow.circlepath', title: 'Audit Log' }))
+  );
+</script>
+</body>
+</html>

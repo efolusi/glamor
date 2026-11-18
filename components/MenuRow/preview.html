@@ -1,0 +1,16 @@
+<!-- @dsCard group="Navigation" height=156 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>MenuRow preview</title></head>
+<body>
+<div id="root" class="k-stage k-on-window"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { className: 'k-popover' },
+      h(K.MenuRow, { symbol: 'server.rack', tint: 'tint-servers', title: 'New Host', help: 'A server you reach over SSH', shortcut: '\u2318N', highlighted: true }),
+      h(K.MenuRow, { symbol: 'cylinder.split.1x2', tint: 'tint-databases', title: 'New Connection', help: 'A database, cache, bucket, registry or queue', shortcut: '\u21e7\u2318N' }))
+  );
+</script>
+</body>
+</html>

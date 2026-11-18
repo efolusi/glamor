@@ -1,0 +1,18 @@
+<!-- @dsCard group="Retired" height=216 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>GroupRow preview</title></head>
+<body>
+<div id="root" class="k-on-window"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { className: 'k-sidebar' },
+      h('div', { className: 'k-seclabel' }, 'Groups'),
+      h(K.GroupRow, { name: 'production', protected: 4, total: 4 }),
+      h(K.GroupRow, { name: 'staging', protected: 1, total: 3, active: true }),
+      h(K.GroupRow, { name: 'lab', protected: 0, total: 2 }))
+  );
+</script>
+</body>
+</html>

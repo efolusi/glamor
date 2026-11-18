@@ -1,0 +1,14 @@
+<!-- @dsCard group="Inputs" height=56 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Checkbox preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null, h(K.Checkbox, { label: 'Read-only', on: true }), h(K.Checkbox, { label: 'Dry run' }), h(K.Checkbox, { label: 'Allow writes' }))
+  );
+</script>
+</body>
+</html>

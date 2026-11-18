@@ -1,0 +1,218 @@
+<!-- @dsCard group="Foundations" height=2320 width=1280 subtitle="Motion only explains a change: the tokens, each one live with Replay, the start and end frames the app draws, a Reduce Motion switch, and what stays still on purpose" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>MotionSpec preview</title>
+<style>
+  .mv { display: flex; flex-direction: column; gap: var(--space-24); padding: var(--space-24) var(--space-32); background: var(--window); min-height: 100vh; }
+  .mv-head { display: flex; align-items: flex-start; gap: var(--space-16); }
+  .mv-head > :first-child { flex: 1; }
+  .mv-switch { display: inline-flex; align-items: center; gap: var(--space-8); }
+  .mv-tokens { display: grid; grid-template-columns: 136px 112px 1fr; border-radius: var(--radius-12); background: var(--card); box-shadow: inset 0 0 0 1px var(--border); overflow: hidden; }
+  .mv-tokens > span { display: flex; align-items: center; min-height: 28px; padding: 0 var(--space-12); border-top: 1px solid var(--border); font-size: 12px; line-height: 16px; color: var(--text2); }
+  .mv-tokens > span.th { border-top: 0; font-weight: 600; color: var(--text); background: var(--subtle); }
+  .mv-tokens > span.k { font-family: var(--font-mono); color: var(--text); }
+  .mv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-16); }
+  .mv-tile { display: flex; flex-direction: column; gap: var(--space-12); padding: var(--space-16); border-radius: var(--radius-12); background: var(--card); box-shadow: inset 0 0 0 1px var(--border); }
+  .mv-tile-head { display: flex; align-items: center; gap: var(--space-8); }
+  .mv-tile-head > :first-child { flex: 1; }
+  .mv-stage { position: relative; height: 112px; border-radius: var(--radius-8); background: var(--panel); box-shadow: inset 0 0 0 1px var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center; padding: var(--space-12); }
+  .mv-stage.top { align-items: flex-start; }
+  .mv-stage.bottom { align-items: flex-end; }
+  .mv-note { font-size: 12px; line-height: 16px; color: var(--text2); }
+  .mv-note b { color: var(--text); font-weight: 600; }
+
+  /* The tokens as CSS: base and slow are springs with bounce 0 (ease-spring); fast is ease-out. */
+  .mv-appear { opacity: 0; transition: opacity var(--motion-base) var(--ease-spring), transform var(--motion-base) var(--ease-spring); }
+  .mv-appear.from-top { transform: translateY(calc(-1 * var(--motion-shift))); }
+  .mv-appear.from-bottom { transform: translateY(var(--motion-shift)); }
+  .mv-appear.in { opacity: 1; transform: none; }
+  .mv-swap { position: relative; display: inline-flex; width: 16px; height: 16px; }
+  .mv-swap > span { position: absolute; inset: 0; transition: opacity var(--motion-fast) var(--ease-out), transform var(--motion-fast) var(--ease-out); }
+  .mv-swap > span.out { opacity: 0; transform: scale(0.5); }
+  .mv-drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 0; background: var(--card); box-shadow: inset 1px 0 0 var(--border); transition: width var(--motion-slow) var(--ease-spring); overflow: hidden; }
+  .mv-drawer.in { width: 160px; }
+  .mv-drawer > div { width: 160px; padding: var(--space-12); display: flex; flex-direction: column; gap: var(--space-8); }
+  .mv-guard .k-btn { pointer-events: none; opacity: 0.5; }
+
+  /* Reduce Motion: nothing travels or scales, every move is a motion-fast fade, the drawer's width jumps. */
+  .k-reduce-motion .mv-appear,
+  .k-reduce-motion .mv-appear.from-top,
+  .k-reduce-motion .mv-appear.from-bottom { transform: none; transition: opacity var(--motion-fast) var(--ease-out); }
+  .k-reduce-motion .mv-swap > span.out { transform: none; }
+  .k-reduce-motion .mv-drawer { transition: opacity var(--motion-fast) var(--ease-out); opacity: 0; }
+  .k-reduce-motion .mv-drawer.in { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .mv-appear, .mv-appear.from-top, .mv-appear.from-bottom { transform: none; transition: opacity var(--motion-fast) var(--ease-out); }
+    .mv-swap > span.out { transform: none; }
+  }
+
+  .mv-frames { display: grid; grid-template-columns: 200px 1fr 1fr; gap: var(--space-12) var(--space-16); align-items: center; }
+  .mv-frames > .th { font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); }
+  .mv-frame { height: 88px; border-radius: var(--radius-8); background: var(--panel); box-shadow: inset 0 0 0 1px var(--border); display: flex; align-items: center; padding: 0 var(--space-12); overflow: hidden; }
+  .mv-still { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var K = window.Komando, h = React.createElement, useState = React.useState, useRef = React.useRef;
+  var FAST = 120, BASE = 200, SLOW = 250, SPIN_DELAY = 300, SPIN_HOLD = 500, CONFIRM = 1500, GUARD = 300;
+
+  function later(ms, f) { return setTimeout(f, ms); }
+  function Tile(p) {
+    return h('div', { className: 'mv-tile' },
+      h('div', { className: 'mv-tile-head' },
+        h(K.SectionTitle, { title: p.title, subtitle: p.token }),
+        h(K.Button, { variant: 'ghost', size: 'sm', symbol: 'arrow.clockwise', onClick: p.replay }, 'Replay')),
+      h('div', { className: 'mv-stage ' + (p.align || '') }, p.children),
+      h('span', { className: 'mv-note' }, p.note));
+  }
+
+  function CopyDemo() {
+    var s = useState(false), copied = s[0], set = s[1];
+    function play() { set(true); later(CONFIRM, function () { set(false); }); }
+    return h(Tile, { title: 'Copy', token: 'motion-fast · hold-confirm', replay: play,
+      note: 'The copy icon is replaced by a check in ok for 1.5 s (120 ms Magic Replace), then the icon comes back. VoiceOver says "Copied". iPhone: success haptic.' },
+      h('div', { className: 'k-row', style: { gap: 'var(--space-8)' } },
+        h('span', { className: 'k-mono' }, 'komando exec web-1 -- uptime'),
+        h('span', { className: 'mv-swap' },
+          h('span', { className: copied ? 'out' : '' }, h(K.SFSymbol, { name: 'square.on.square', size: 16, color: 'text2' })),
+          h('span', { className: copied ? '' : 'out' }, h(K.SFSymbol, { name: 'checkmark', size: 16, weight: 'semibold', color: 'ok' })))));
+  }
+
+  function NoticeDemo() {
+    var s = useState(true), shown = s[0], set = s[1];
+    function play() { set(false); later(400, function () { set(true); }); }
+    return h(Tile, { title: 'Notice arrives', token: 'motion-base · motion-shift', align: 'top', replay: play,
+      note: 'It fades in moving 8 down from above (spring 200 ms, bounce 0); the page below makes room with the same spring. A success leaves after 8 s with a fade. iPhone: success or error haptic, for the person’s own action.' },
+      h('div', { className: 'mv-appear from-top' + (shown ? ' in' : ''), style: { width: '100%' } },
+        h(K.Banner, { tone: 'ok', title: 'Forward started', detail: 'localhost:15432 → prod-db:5432' })));
+  }
+
+  function ApprovalDemo() {
+    var s = useState(true), shown = s[0], set = s[1];
+    var g = useState(false), guarded = g[0], setG = g[1];
+    function play() { set(false); setG(true); later(400, function () { set(true); later(GUARD, function () { setG(false); }); }); }
+    return h(Tile, { title: 'Approval card arrives', token: 'motion-base · guard-click', align: 'bottom', replay: play,
+      note: 'It fades in moving 8 up from below and the conversation scrolls to it. Clicks wait 300 ms (dimmed here only to show it; the app does not dim). iPhone: warning haptic.' },
+      h('div', { className: 'mv-appear from-bottom' + (shown ? ' in' : '') + (guarded ? ' mv-guard' : ''), style: { width: '100%' } },
+        h('div', { className: 'k-stack', style: { gap: 'var(--space-8)', padding: 'var(--space-8) var(--space-12)', borderRadius: 'var(--radius-8)', background: 'color-mix(in srgb, var(--warn) 5%, var(--card))', boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--warn) 55%, transparent)' } },
+          h('span', { className: 'k-row', style: { gap: 'var(--space-8)' } }, h(K.SFSymbol, { name: 'exclamationmark.triangle.fill', size: 16, color: 'warn' }), h('span', { className: 'k-rowtitle' }, 'web-1 is protected')),
+          h('span', { className: 'k-row', style: { gap: 'var(--space-8)', justifyContent: 'flex-end' } }, h(K.Button, { variant: 'ghost', size: 'sm' }, 'Don’t Run'), h(K.Button, { variant: 'secondary', size: 'sm' }, 'Allow Once')))));
+  }
+
+  function DrawerDemo() {
+    var s = useState(true), shown = s[0], set = s[1];
+    function play() { set(false); later(500, function () { set(true); }); }
+    return h(Tile, { title: 'Agent drawer', token: 'motion-slow', replay: play,
+      note: 'It slides in from the trailing edge and the page narrows with it (spring 250 ms). With Reduce Motion it fades and the width changes at once.' },
+      h('span', { className: 'mv-note', style: { alignSelf: 'flex-start', marginRight: 'auto' } }, 'The page'),
+      h('div', { className: 'mv-drawer' + (shown ? ' in' : '') },
+        h('div', null, h('span', { className: 'k-row', style: { gap: 'var(--space-8)' } }, h(K.SFSymbol, { name: 'text.bubble', size: 16, color: 'accent' }), h('span', { className: 'k-rowtitle' }, 'Agent')),
+          h(K.Skeleton, { width: '80%', height: 12 }), h(K.Skeleton, { width: '56%', height: 12 }))));
+  }
+
+  function ProgressDemo() {
+    var s = useState(72), value = s[0], set = s[1];
+    function play() { set(0); [20, 45, 72, 100].forEach(function (v, i) { later(400 * (i + 1), function () { set(v); }); }); }
+    return h(Tile, { title: 'Progress', token: 'motion-progress', replay: play,
+      note: 'The bar moves to each new value over 250 ms, linear, so it never jumps. The number beside it changes at once. With Reduce Motion the bar jumps.' },
+      h('div', { className: 'k-row', style: { width: '100%', gap: 'var(--space-12)' } },
+        h('div', { style: { flex: 1 } }, h(K.ProgressBar, { value: value, tone: value >= 100 ? 'ok' : 'accent' })),
+        h('span', { className: 'k-mono', style: { width: '40px', textAlign: 'right' } }, value + '%')));
+  }
+
+  function SpinnerDemo() {
+    var s = useState('idle'), state = s[0], set = s[1];
+    var sp = useState(false), spin = sp[0], setSpin = sp[1];
+    var shownAt = useRef(0);
+    function run(ms) {
+      set('running'); setSpin(false);
+      var t = later(SPIN_DELAY, function () { shownAt.current = Date.now(); setSpin(true); });
+      later(ms, function () {
+        clearTimeout(t);
+        var left = shownAt.current && ms > SPIN_DELAY ? Math.max(0, SPIN_HOLD - (Date.now() - shownAt.current)) : 0;
+        later(left, function () { setSpin(false); shownAt.current = 0; set('done'); });
+      });
+    }
+    return h('div', { className: 'mv-tile' },
+      h('div', { className: 'mv-tile-head' },
+        h(K.SectionTitle, { title: 'Spinner', subtitle: 'delay-spinner · hold-spinner' }),
+        h(K.Button, { variant: 'ghost', size: 'sm', onClick: function () { run(150); } }, 'Fast (150 ms)'),
+        h(K.Button, { variant: 'ghost', size: 'sm', onClick: function () { run(1200); } }, 'Slow (1.2 s)')),
+      h('div', { className: 'mv-stage' },
+        h('div', { className: 'k-row', style: { gap: 'var(--space-8)' } },
+          h('span', { style: { width: '16px', height: '16px', display: 'inline-flex' } }, spin ? h('span', { className: 'k-spinner' }) : null),
+          h('span', null, state === 'running' ? 'Running…' : state === 'done' ? 'Done' : 'Press Fast or Slow'))),
+      h('span', { className: 'mv-note' }, 'The spinner waits 300 ms, so fast work never flashes one, and once shown it stays at least 500 ms. Its place is kept, so nothing shifts. A skeleton follows the same rule and is still.'));
+  }
+
+  function SymbolDemo() {
+    var s = useState(false), done = s[0], set = s[1];
+    function play() { set(false); later(900, function () { set(true); }); }
+    return h(Tile, { title: 'Run ends', token: 'motion-fast (symbol only)', replay: play,
+      note: 'The word and the exit code change at once. Only the symbol is replaced, over 120 ms. Colors never fade. iPhone: success or error haptic, for a run the person started.' },
+      h('div', { className: 'k-row', style: { gap: 'var(--space-8)' } },
+        h('span', { className: 'mv-swap' },
+          h('span', { className: done ? 'out' : '', style: { display: 'inline-flex' } }, h('span', { className: 'k-spinner' })),
+          h('span', { className: done ? '' : 'out' }, h(K.SFSymbol, { name: 'checkmark.circle.fill', size: 16, color: 'ok' }))),
+        h('span', { className: 'k-mono' }, 'systemctl restart nginx'),
+        done ? h(K.Pill, { tone: 'ok' }, 'Done · exit 0') : h(K.Pill, { tone: 'text2' }, 'Running')));
+  }
+
+  // The start and end frames the app's gallery draws (KOMANDO_APP_PAGE=motion), for side-by-side checks.
+  function Frames(p) {
+    var rm = p.reduce;
+    function at(y, op) { return { width: '100%', opacity: op, transform: rm ? 'none' : 'translateY(' + y + 'px)' }; }
+    var rows = [
+      ['Copy', 'icon, 0 ms', h(K.SFSymbol, { name: 'square.on.square', size: 16, color: 'text2' }), 'check, after 120 ms', h(K.SFSymbol, { name: 'checkmark', size: 16, weight: 'semibold', color: 'ok' })],
+      ['Notice', rm ? 'opacity 0 (drawn at 25%)' : 'opacity 0, 8 above (drawn at 25%)', h('div', { style: at(-8, 0.25) }, h(K.Banner, { tone: 'ok', title: 'Forward started' })), 'at rest, after 200 ms', h('div', { style: at(0, 1) }, h(K.Banner, { tone: 'ok', title: 'Forward started' }))],
+      ['Progress', '45%', h('div', { style: { width: '100%' } }, h(K.ProgressBar, { value: 45 })), '72%, after 250 ms', h('div', { style: { width: '100%' } }, h(K.ProgressBar, { value: 72 }))],
+      ['Spinner', '0–300 ms: nothing', h('span', { className: 'k-row', style: { gap: 'var(--space-8)' } }, h('span', { style: { width: '16px', height: '16px' } }), 'Running…'), 'from 300 ms, at least 500 ms', h('span', { className: 'k-row', style: { gap: 'var(--space-8)' } }, h('span', { className: 'k-spinner' }), 'Running…')],
+      ['Run ends', 'running', h('span', { className: 'k-row', style: { gap: 'var(--space-8)' } }, h('span', { className: 'k-spinner' }), h(K.Pill, { tone: 'text2' }, 'Running')), 'done, symbol after 120 ms', h('span', { className: 'k-row', style: { gap: 'var(--space-8)' } }, h(K.SFSymbol, { name: 'checkmark.circle.fill', size: 16, color: 'ok' }), h(K.Pill, { tone: 'ok' }, 'Done · exit 0'))]
+    ];
+    var kids = [h('span', { key: 'a', className: 'th' }, 'Moment'), h('span', { key: 'b', className: 'th' }, 'Start'), h('span', { key: 'c', className: 'th' }, 'End')];
+    rows.forEach(function (r) {
+      kids.push(h('span', { key: r[0], className: 'k-rowtitle' }, r[0]));
+      kids.push(h('div', { key: r[0] + 's', className: 'k-stack', style: { gap: 'var(--space-4)' } }, h('div', { className: 'mv-frame' }, r[2]), h('span', { className: 'mv-note' }, r[1])));
+      kids.push(h('div', { key: r[0] + 'e', className: 'k-stack', style: { gap: 'var(--space-4)' } }, h('div', { className: 'mv-frame' }, r[4]), h('span', { className: 'mv-note' }, r[3])));
+    });
+    return h('div', { className: 'mv-frames' }, kids);
+  }
+
+  var TOKENS = [
+    ['motion-fast', '120 ms', 'ease-out. Symbol replace, copied check, drop ring, and the Reduce Motion fade.'],
+    ['motion-base', '200 ms', 'Spring, bounce 0. A notice, a banner, an approval card appearing or leaving.'],
+    ['motion-slow', '250 ms', 'Spring, bounce 0. A panel: the agent drawer, the transfer queue folding. The longest there is.'],
+    ['motion-progress', '250 ms', 'Linear. A progress bar moving to its new value.'],
+    ['motion-shift', '8', 'How far something travels as it appears (K.Space.s8). Zero with Reduce Motion.'],
+    ['delay-spinner', '300 ms', 'A spinner or skeleton waits this long before it shows.'],
+    ['hold-spinner', '500 ms', 'Once shown, the shortest time it stays.'],
+    ['hold-confirm', '1.5 s', 'The copied check, before the icon comes back.'],
+    ['hold-notice', '8 s', 'A success notice. A failure stays until Dismiss.'],
+    ['guard-click', '300 ms', 'A card that arrives on its own ignores clicks this long. Never the keyboard.']
+  ];
+
+  function MotionSpec() {
+    var media = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var s = useState(!!media), reduce = s[0], set = s[1];
+    var cells = [h('span', { key: 'h1', className: 'th' }, 'Token'), h('span', { key: 'h2', className: 'th' }, 'Value'), h('span', { key: 'h3', className: 'th' }, 'Use')];
+    TOKENS.forEach(function (t) {
+      cells.push(h('span', { key: t[0], className: 'k' }, t[0]), h('span', { key: t[0] + 'v', className: 'k' }, t[1]), h('span', { key: t[0] + 'u' }, t[2]));
+    });
+    return h('div', { className: 'mv' + (reduce ? ' k-reduce-motion' : '') },
+      h('div', { className: 'mv-head' },
+        h(K.SectionTitle, { title: 'Motion', subtitle: 'Only to explain a change: what changed, where it went, or that it is still working. Short, calm, never in the way.' }),
+        h('span', { className: 'mv-switch' }, h('span', { id: 'rm-label' }, 'Reduce Motion'), h(K.Switch, { on: reduce, labelId: 'rm-label', onClick: function () { set(!reduce); } }))),
+      h('div', { className: 'mv-tokens' }, cells),
+      h('div', { className: 'mv-grid' }, h(CopyDemo), h(NoticeDemo), h(ApprovalDemo), h(ProgressDemo), h(SpinnerDemo), h(SymbolDemo), h(DrawerDemo)),
+      h(K.SectionTitle, { title: 'Start and end frames', subtitle: 'What the app’s gallery draws (KOMANDO_APP_PAGE=motion), so the two can be compared side by side.' }),
+      h(Frames, { reduce: reduce }),
+      h(K.SectionTitle, { title: 'Still on purpose', subtitle: 'Frequent, keyboard-driven or status: these never animate.' }),
+      h('div', { className: 'mv-still' }, ['⌘K palette', 'Switching places and tabs', 'Keyboard moves in lists', 'Terminal and log text', 'Command output', 'Selection', 'Status dots and pills', 'Rows in long lists', 'Hover coming in', 'System sheets, alerts and menus'].map(function (t) { return h(K.Chip, { key: t }, t); })));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(MotionSpec));
+</script>
+</body>
+</html>

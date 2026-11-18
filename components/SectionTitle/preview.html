@@ -1,0 +1,19 @@
+<!-- @dsCard group="Content" height=120 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>SectionTitle preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { style: { display: 'flex', flexDirection: 'column', gap: 'var(--space-24)', width: '100%' } },
+      h('div', { className: 'k-row', style: { alignItems: 'flex-start' } },
+        h(K.SectionTitle, { title: 'Needs attention', subtitle: '2 findings from komando\u2019s doctor' }),
+        h('span', { className: 'k-spacer' }),
+        h(K.LinkButton, null, 'View all 4')),
+      h(K.SectionTitle, { title: 'Hosts', detail: '12' }))
+  );
+</script>
+</body>
+</html>

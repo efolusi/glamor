@@ -1,0 +1,24 @@
+<!-- @dsCard group="Agent" height=260 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ApprovalCard preview</title>
+<style>
+  /* The chip at the drawer's bottom edge while an approval waits out of view (the person scrolled up). */
+  .ac-waiting { align-self: center; display: inline-flex; align-items: center; gap: var(--space-8); height: var(--control-28); padding: 0 var(--space-12); border-radius: var(--radius-full); background: var(--card); box-shadow: inset 0 0 0 1px var(--border); font-size: 12px; line-height: 16px; font-weight: 500; color: var(--text); cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="root" class="k-stack"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(React.Fragment, null,
+      h(K.ApprovalCard, { title: 'This command looks destructive', detail: 'It deletes files on web-1. komando will run it with --allow-dangerous once you allow it.', command: 'komando exec web-1 --allow-dangerous -- rm -rf ~/releases/2026-0[1-8]*' }),
+      h('span', { className: 'ac-waiting', role: 'button' },
+        h(K.SFSymbol, { name: 'exclamationmark.triangle.fill', size: 12, color: 'warn' }),
+        '1 approval waiting',
+        h(K.SFSymbol, { name: 'arrow.down', size: 12, color: 'text3', weight: 'semibold' })))
+  );
+</script>
+</body>
+</html>

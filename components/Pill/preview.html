@@ -1,0 +1,20 @@
+<!-- @dsCard group="Foundations" height=56 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Pill preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h(React.Fragment, null,
+      h(K.Pill, { tone: 'ok' }, 'Free'),
+      h(K.Pill, { tone: 'text2' }, 'Coming'),
+      h(K.Pill, { tone: 'ok' }, 'Up'),
+      h(K.Pill, { tone: 'warn' }, 'failed'),
+      h(K.Pill, { tone: 'danger' }, 'Stopped'),
+      h(K.Pill, { tone: 'text2' }, 'Job'))
+  );
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!-- @dsCard group="Content" height=184 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AttentionCard preview</title></head>
+<body>
+<div id="root" class="k-stack"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  // Full width, failures first, as on Home: one sentence, what the action does, one button.
+  ReactDOM.createRoot(document.getElementById('root')).render([
+    h(K.AttentionCard, { key: 'p', tone: 'danger', subject: 'prod-db’s password is missing from the keychain.', message: 'komando can’t connect to prod-db until you add it.', actionTitle: 'Add Password' }),
+    h(K.AttentionCard, { key: 'f', tone: 'warn', subject: 'web-1 allows root to log in with a password.', message: 'Fix turns this off, so root can only log in with a key.', actionTitle: 'Fix' })
+  ]);
+</script>
+</body>
+</html>

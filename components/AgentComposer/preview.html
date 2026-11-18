@@ -1,0 +1,16 @@
+<!-- @dsCard group="Agent" height=336 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AgentComposer preview</title></head>
+<body>
+<div id="root" class="k-stack"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  // Allow changes off (the agent only looks), then ticked.
+  ReactDOM.createRoot(document.getElementById('root')).render([
+    h(K.AgentComposer, { key: 'off', value: 'Why did the nightly backup on backup-1 fail?', targets: [{ symbol: 'server.rack', tint: 'tint-servers', title: 'backup-1' }, { symbol: 'archivebox', tint: 'tint-storage', title: 'assets' }] }),
+    h(K.AgentComposer, { key: 'on', allowChanges: true, value: 'Run the backup again on backup-1.', targets: [{ symbol: 'server.rack', tint: 'tint-servers', title: 'backup-1' }] })
+  ]);
+</script>
+</body>
+</html>

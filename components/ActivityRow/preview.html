@@ -1,0 +1,18 @@
+<!-- @dsCard group="Content" height=164 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ActivityRow preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { style: { width: '520px' } },
+      h(K.Card, null,
+        h(K.ActivityRow, { symbol: 'gearshape.2', tint: 'tint-clusters', title: 'web-1', detail: 'apt-get upgrade -y', meta: ['started 4 minutes ago', 'job 4121'] }),
+        h('div', { className: 'k-rule' }),
+        h(K.ActivityRow, { symbol: 'arrow.left.arrow.right', tint: 'tint-storage', title: 'localhost:15432', detail: '-L 15432:localhost:5432 prod-db', meta: ['12 minutes ago', 'Local'] })))
+  );
+</script>
+</body>
+</html>

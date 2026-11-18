@@ -1,0 +1,17 @@
+<!-- @dsCard group="Foundations" height=188 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>SFSymbol preview</title></head>
+<body>
+<div id="root" class="k-stage"></div>
+<script>
+  var K = window.Komando, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-12) var(--space-16)', width: '100%' } },
+      ['square.grid.2x2','server.rack','cylinder.split.1x2','network.badge.shield.half.filled','arrow.left.arrow.right','gearshape.2','curlybraces','key','clock.arrow.circlepath','terminal','stethoscope','memorychip','archivebox','circle.hexagongrid','shippingbox','questionmark.circle','magnifyingglass','plus','arrow.clockwise','ellipsis','lock.fill','text.bubble','checkmark.circle.fill','exclamationmark.triangle.fill'].map(function (n) {
+        return h('div', { key: n, className: 'k-row' }, h(K.SFSymbol, { name: n, size: 16, color: 'text2' }), h('span', { className: 'k-meta k-trunc' }, n));
+      }))
+  );
+</script>
+</body>
+</html>
