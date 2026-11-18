@@ -55,3 +55,4 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 21 | Phase 2: move design (Page cards, components/bundle.js) out of komando-apps into Glamor | glamor, komando-apps | open | plan agreed with the komando coordinator |
 | 22 | Glamor's own logo (the Komando icon and logo guide were removed; the AppLogo card leaves with item 12) | glamor | open | a design |
 | 23 | Rename env vars `KOMANDO_APP_SNAPSHOT` / `KOMANDO_APP_SCROLL` to `GLAMOR_SNAPSHOT` / `GLAMOR_SCROLL`, in Glamor and komando-apps' scripts together, no alias (coordinator 2026-11-18) | glamor, komando-apps | open | 9 |
+| 24 | Remove the obsolete `tokens/` folder and its README and ARCHITECTURE rows (design-tokens owns exports) | glamor | done | |

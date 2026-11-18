@@ -7,7 +7,6 @@ How Glamor's pieces fit. Read this before moving or renaming public paths.
 ```
 glamor/
 ├── tokens.json · design-system.json
-├── tokens/                 # export home (swift/, css/ later)
 ├── assets/ · components/   # brand files; flat HTML preview cards
 ├── guidelines/
 ├── Package.swift         # one library: Glamor (macOS 15, iOS 18)
@@ -30,7 +29,6 @@ glamor/
 | `tokens.json`, `Sources/` (except `Generated/`), `components/`, `guidelines/` | Authors | Commit these |
 | `Sources/Glamor/Generated/GlamorTokens.swift` | `scripts/vendor-tokens.sh` from design-tokens (pinned tag) | Commit it; never edit by hand |
 | `build/design-preview/` | `scripts/design-preview.py` | Local only, gitignored |
-| `tokens/swift/`, `tokens/css/` | Future generators | Not present yet |
 
 Do not edit files under `build/`. Regenerate them.
 
