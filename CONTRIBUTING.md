@@ -17,6 +17,7 @@ python3 scripts/design-preview.py --no-open
 scripts/check-colors.sh
 scripts/check-sizes.sh
 scripts/check-motion.sh
+scripts/vendor-tokens.sh --check
 swift test
 ```
 
