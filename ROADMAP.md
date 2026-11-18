@@ -13,7 +13,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 ## How Glamor consumes design-tokens
 
 1. design-tokens owns `tokens.json`. Glamor stops keeping its own copy.
-2. A design-tokens generator writes `tokens/native/swift/GlamorTokens.swift`: plain values only (hex `UInt32` light/dark/increased-contrast sets, sizes, durations). No AppKit, UIKit, or SwiftUI imports.
+2. A design-tokens generator writes `tokens/native/GlamorTokens.swift`: plain values only (hex `UInt32` light/dark/increased-contrast sets, sizes, durations). No AppKit, UIKit, or SwiftUI imports.
 3. Glamor vendors that file into `Sources/Glamor/Generated/` with a script and a check that fails when it is stale.
 4. Glamor's own `Tokens.swift` turns those values into `Color` and layout constants per platform (AppKit on Mac, UIKit on iPhone and iPad).
 5. Names stay the same as on the web (Meridian). Only values may differ by theme or density.
@@ -34,7 +34,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 |---|---|---|---|---|
 | 1 | Decide the framework path: SwiftUI-first, Skip later for Android | glamor | done | |
 | 2 | Pick one token format shared with Meridian: DTCG | design-tokens | done | |
-| 3 | Swift generator: `tokens/native/swift/GlamorTokens.swift` | design-tokens | open | 2 |
+| 3 | Swift generator: `tokens/native/GlamorTokens.swift` | design-tokens | done | v0.0.1 |
 | 4 | Add `Package.swift` and the `Glamor` library | glamor | done | |
 | 5 | Remove `KomandoKit` / `KomandoMobileCore` imports | glamor | done | |
 | 6 | Merge `K` and `MK` into one namespace (`G`; motion helpers `gAnimation`, `gTransition`, `withGAnimation`) | glamor | done | |
@@ -51,3 +51,5 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 17 | Rename `K.`/`MK.` to `G.` in `components/` cards and `guidelines/logo.md` | glamor | open | Komando-specific cards decision (12) |
 | 18 | Same token names on Mac and iOS where the meaning is the same (`G.Opacity.pill` vs `G.pillOpacity`, fonts) | glamor | open | 9, 10 |
 | 19 | Apache-2.0 license | glamor | done | |
+| 20 | design-tokens `native` theme with Glamor values, missing roles, increased-contrast pairs (mapping in the shared notes, 2026-11-18) | design-tokens | open | design-tokens session |
+| 21 | Phase 2: move design (Page cards, components/bundle.js) out of komando-apps into Glamor | glamor, komando-apps | open | plan agreed with the komando coordinator |
