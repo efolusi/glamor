@@ -14,7 +14,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 DIRS=(Sources/Glamor)
 
-ALLOWED='^Sources/Glamor/'
+ALLOWED='^Sources/Glamor/(macOS/Tokens\.swift|iOS/Tokens\+iOS\.swift|Generated/)'
 
 PATTERN='Color\(hex:|Color\(red:|Color\(\.sRGB|Color\.adaptive\(|NSColor\(hex:|UIColor\(hex:'
 PATTERN+='|\.shadow\(color:|\.shadow\(radius:'
