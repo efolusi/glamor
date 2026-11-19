@@ -5,7 +5,7 @@ import SwiftUI
 /// and Smart Invert leaves its colors alone.
 public struct IconTile: View {
     public let symbol: String
-    public var tint: Color = G.accent
+    public var tint: Color = G.accentFg
     public var size: CGFloat = G.Tile.t32
     @ScaledMetric(relativeTo: .body) private var scale: CGFloat = 1
     @Environment(\.colorSchemeContrast) private var contrast
@@ -20,7 +20,7 @@ public struct IconTile: View {
             .accessibilityHidden(true)   // decorative: the row's own text names the thing
     }
 
-    public init(symbol: String, tint: Color = G.accent, size: CGFloat = G.Tile.t32) {
+    public init(symbol: String, tint: Color = G.accentFg, size: CGFloat = G.Tile.t32) {
         self.symbol = symbol
         self.tint = tint
         self.size = size

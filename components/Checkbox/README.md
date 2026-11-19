@@ -1,6 +1,6 @@
 # Checkbox
 
-A checkbox with its label: 16 square, `radius-4`, `accent` when on, 8 to the label in `caption`. In Swift, `Toggle(…).toggleStyle(.checkbox)`.
+A checkbox with its label: 16 square, `radius-4`, `focus` (the brand's brown) when on, 8 to the label in `caption`. In Swift, `Toggle(…).toggleStyle(.checkbox)`.
 
 **Provide:** the label and the state.
 

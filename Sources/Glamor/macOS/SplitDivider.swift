@@ -283,13 +283,13 @@ public struct SplitHandle: View {
 
     /// Increase Contrast draws the grip in `text` instead of `text3`.
     private var gripColor: Color {
-        if state != .rest { return G.accent }
+        if state != .rest { return G.focus }
         return contrast == .increased || IncreasedContrast.forced ? G.text : G.text3
     }
 
     private var lineColor: Color {
         guard hairline else { return .clear }
-        return state == .dragging ? G.accent : G.border
+        return state == .dragging ? G.focus : G.border
     }
 
     public var body: some View {

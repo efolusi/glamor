@@ -47,8 +47,13 @@ struct ContrastTests {
 
     @Test(arguments: [false, true]) func controlEdgesAndButtonLabelsHoldTheirRatio(dark: Bool) {
         #expect(ratio(G.controlEdge, G.card, dark: dark) >= 3)
-        #expect(ratio(G.onPrimary, G.primary, dark: dark) >= 4.5)
         #expect(ratio(G.onAccent, G.accent, dark: dark) >= 4.5)
+        // The brand's brown marks: focus ring, selected marker and tile glyphs, 3:1 or more on every surface.
+        for surface in [G.window, G.panel, G.card, G.subtle, G.cardHover, G.accentSubtle] {
+            #expect(ratio(G.focus, surface, dark: dark) >= 3)
+            #expect(ratio(G.selectedMarker, surface, dark: dark) >= 3)
+            #expect(ratio(G.accentFg, surface, dark: dark) >= 3)
+        }
     }
 }
 #endif

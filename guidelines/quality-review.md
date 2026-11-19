@@ -2,6 +2,21 @@
 
 Where Glamor breaks its own design-system rules, and the fix for each. Nothing is removed: every component stays, used or not. Written 2026-11-19 against main at `3dd35fc45101e44bff46eab58da4bd981553451e`, with antislop, antislop-ui, antislop-human, antislop-copywriting and design-taste-frontend. Every contrast ratio below comes from `antislop-human/contrast-check.py`. A tint drawn at an opacity was first blended over its real ground, then checked.
 
+## Status
+
+The findings below are as written on 2026-11-19. What was done about each fix group:
+
+| Group | Pull request | Status |
+|---|---|---|
+| 1. Contrast and focus | glamor#12 | Done. Known limit: a `Menu` has no pressed fill, because SwiftUI exposes no pressed state for it and a press opens the menu. `FocusRing` turns the system focus effect off on the menu, so only Glamor's ring draws. |
+| 2. Checks that check | glamor#13 | Done. |
+| 3. One colour source | glamor (this PR) | Done: every colour and text size comes from design-tokens (v0.2.1, which fixed the palette's own contrast). Mac titles moved from 20, 17 and 15 to 21, 18 and 16. |
+| 4. iOS sizes onto tokens | glamor#14, #18 | Done. `.touchTarget()` is deferred until the first iOS control that taps. |
+| 5. One vocabulary | glamor#15 | Done. Fonts across platforms are still open (ROADMAP #18). |
+| 6. Copy and docs | glamor#16, #17 | Done. `guidelines/journeys.md` and `guidelines/ux-review.md` moved to komando-apps in glamor#17. |
+
+Left as found: the macOS 16 and 24-point click targets (low; they follow the Mac's own sizes) and the disabled primary button's text (exempt in WCAG).
+
 ## Counts
 
 | Kind | Where | Count | Severity |

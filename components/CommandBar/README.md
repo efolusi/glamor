@@ -12,6 +12,6 @@ CommandBar(placeholder: "Command for \(target.name), for example: df -h", text: 
 
 **Provide:** a placeholder with an example, a binding, the running state, a run action, an optional stop action, and options as checkboxes.
 
-- The prompt `chevron.right` is `accent`. The run button is `accent` with text and `text3` when empty. ⌘↩ runs.
+- The prompt `chevron.right` is `accentFg`. The run button is `accentFg` with text and `text3` when empty. ⌘↩ runs.
 - While running, show a small spinner and a ghost **Stop** in place of the run button.
 - Each option checkbox has a `.help` that says what it changes ("Show what would run, changing nothing.").

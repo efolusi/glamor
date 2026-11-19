@@ -16,7 +16,7 @@ public struct FieldBox<Content: View>: View {
             .frame(height: compact ? G.Height.control28 : G.Height.control32)
             .background(G.field, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous)
-                .strokeBorder(focused ? G.accent.opacity(G.Opacity.ring) : G.controlEdge, lineWidth: focused ? G.Line.strong : G.Line.hair))
+                .strokeBorder(focused ? G.focus.opacity(G.Opacity.ring) : G.controlEdge, lineWidth: focused ? G.Line.strong : G.Line.hair))
     }
 
     public init(focused: Bool = false, compact: Bool = false, @ViewBuilder content: @escaping () -> Content) {
@@ -261,7 +261,7 @@ public struct SearchBar<Accessory: View>: View {
         .frame(height: G.Height.control40)
         .background(G.field, in: RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous)
-            .strokeBorder(focused ? G.accent.opacity(G.Opacity.ring) : G.controlEdge, lineWidth: focused ? G.Line.strong : G.Line.hair))
+            .strokeBorder(focused ? G.focus.opacity(G.Opacity.ring) : G.controlEdge, lineWidth: focused ? G.Line.strong : G.Line.hair))
     }
 }
 

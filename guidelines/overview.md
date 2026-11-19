@@ -13,7 +13,7 @@ The interface stays quiet: a grey window, one white panel floating on it, hairli
 | | Command line | Desktop (Mac) | Mobile |
 | --- | --- | --- | --- |
 | Status | Built | Built, the source of this system | Built: on call (findings with Face ID fixes, targets with quick checks, the agent), over SSH to the machine komando runs on |
-| Shares | Voice, the four status meanings (`ok`, `warn`, `danger`, `accent`), the names of things | Everything on these pages | Tokens, voice, SF Symbols, the family tints, the components' anatomy |
+| Shares | Voice, the four status meanings (`ok`, `warn`, `danger`, `accentFg`), the names of things | Everything on these pages | Tokens, voice, SF Symbols, the family tints, the components' anatomy |
 | Its own | Plain text and `--output json`, read by people and agents | Sidebar, floating panel, ⌘K, hover states | Navigation and sizes from the iOS conventions |
 
 - **Everything shared comes from here.** A color, a status word or a symbol that means one thing on the Mac means the same in the command line and on iPhone. Add a token here before using it on a new platform.
@@ -218,9 +218,9 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 - Hover has three levels, each the same strength wherever it appears, and it comes in and goes at once (no motion).
   - **Items** (list, table and side-list rows, menu and palette rows, chips, the ⋯, ghost buttons, sidebar places, panel-header tabs): a fill chosen by the ground under it, `hover-card` (G.Hover.onCard), `hover-panel` (G.Hover.onPanel) or `hover-window` (G.Hover.onWindow); a panel-header tab takes `hover-tab` (G.Hover.onTab), quieter than the active tab's `subtle`. All sit at about 1.06 to 1.12:1 in both themes, so text3 keeps 4.5:1 on it. Words in `text2` may turn `text`.
   - **Raised controls** (secondary button, MenuPicker, HoverCard, the profile row, the sidebar Search): `card` to `cardHover`. Only a HoverCard also gains `shadow-hover`.
-  - **Primary**: `primary` to `primaryHover`, an opaque mix, so the ground never shows through.
+  - **Primary**: `accent` to `accentHover`, an opaque mix, so the ground never shows through.
   - Never use `accent`, a status color or a family tint as a hover fill. A destructive action (Remove…) hovers like its level; only its word is `danger`.
-- Pressed: one step past hover. Items and raised controls take `pressed` (G.Hover.pressed); the primary button takes `primaryPressed`. Nothing fades or dims on press. text3 sits at 4.2:1 on `pressed` only while the mouse is down.
+- Pressed: one step past hover. Items and raised controls take `pressed` (G.Hover.pressed); the primary button takes `accentPressed`. Nothing fades or dims on press. text3 keeps 4.5:1 on `pressed` too.
 - Disabled: the primary button at `opacity-disabled` with no shadow; secondary text in `text3`.
 - Focus, fields: an input's border becomes `accent` at `opacity-ring`, 2pt (`focus-ring`). Never add a glow.
 - Focus, everything else you can press (buttons, chips, sidebar places, tabs, list rows, cards, switches): a `line-strong` (2pt) line in `focus` with a `focus-offset` (2pt) gap, one recipe on the Mac and in these cards. Around a control: `RoundedRectangle(cornerRadius: r + 4).strokeBorder(G.focus, lineWidth: 2).padding(-4)`, so the line sits 2 to 4pt outside the shape and never touches its fill. A selectable row (**ListRow**) draws it on its own highlight, inside: `RoundedRectangle(cornerRadius: G.Row.radius).strokeBorder(G.focus, lineWidth: 2)`, so a card's clip or the next row never cuts it. 4.8:1 or more against what surrounds it in both themes (WCAG 2.4.7 and 2.4.13). Every custom `ButtonStyle` reads `@Environment(\.isFocused)` to draw it; a control that hides until hover (a tab's ×) shows while it has focus (UX audit P1-9, P1-10).

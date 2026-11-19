@@ -6,40 +6,37 @@ import UIKit
 // Mac. Sizes and navigation follow iOS (Platforms table: "Navigation and sizes from the iOS conventions").
 
 public extension Color {
-    /// A color for light and dark, and, when `increased` is given, its pair for Increase Contrast
-    /// (design/README.md: `border` becomes `controlEdge`, `text3` becomes `text2`).
-    static func adaptive(_ light: UInt32, _ dark: UInt32, increased: (light: UInt32, dark: UInt32)? = nil) -> Color {
-        Color(uiColor: UIColor { t in
-            let pair = t.accessibilityContrast == .high ? (increased ?? (light, dark)) : (light, dark)
-            return UIColor(hex: t.userInterfaceStyle == .dark ? pair.1 : pair.0)
+    /// A design-tokens colour (Generated/GlamorTokens.swift): its light and dark values, and their pair
+    /// for Increase Contrast.
+    init(_ pair: GlamorTokens.ColorPair) {
+        self.init(uiColor: UIColor { t in
+            let high = t.accessibilityContrast == .high
+            let c = t.userInterfaceStyle == .dark ? (high ? pair.increasedDark : pair.dark) : (high ? pair.increasedLight : pair.light)
+            return UIColor(red: c.red, green: c.green, blue: c.blue, alpha: c.alpha)
         })
     }
 }
 
-public extension UIColor {
-    convenience init(hex: UInt32) {
-        self.init(red: CGFloat((hex >> 16) & 0xFF) / 255, green: CGFloat((hex >> 8) & 0xFF) / 255,
-                  blue: CGFloat(hex & 0xFF) / 255, alpha: 1)
-    }
-}
+private typealias T = GlamorTokens.Color
 
 public enum G {
-    public static let window = Color.adaptive(0xF3F3F1, 0x0F1115)
-    public static let card = Color.adaptive(0xFFFFFF, 0x1D2028)
-    public static let subtle = Color.adaptive(0xF4F4F2, 0x20232C)
-    public static let border = Color.adaptive(0xE4E4E1, 0x2A2E39, increased: (0x8C8C91, 0x6D717D))   // decorative; controlEdge with Increase Contrast
-    public static let controlEdge = Color.adaptive(0x8C8C91, 0x6D717D)   // a control's outline, 3:1 or more
-    public static let text = Color.adaptive(0x1C1C1E, 0xECEDF1)
-    public static let text2 = Color.adaptive(0x505056, 0xB3B7C4)
-    public static let text3 = Color.adaptive(0x69696F, 0x9296A4, increased: (0x505056, 0xB3B7C4))   // text2 with Increase Contrast
-    public static let accent = Color.adaptive(0x1659FF, 0x6292FF, increased: (0x074EFF, 0x6F9BFF))   // increased pair: 4.6:1 inside a 16% pill
-    public static let ok = Color.adaptive(0x247A43, 0x45C46A, increased: (0x227440, 0x45C46A))
-    public static let warn = Color.adaptive(0xB24A00, 0xF2A445, increased: (0xA84600, 0xF2A445))
-    public static let danger = Color.adaptive(0xCA282E, 0xF36368, increased: (0xBD252B, 0xF47478))
-    public static let primary = Color.adaptive(0x1C1C1E, 0xECEDF1)
-    public static let onPrimary = Color.adaptive(0xFFFFFF, 0x111216)
-    public static let onAccent = Color.adaptive(0xFFFFFF, 0x111216)      // on an accent fill: 5.4:1 light, 6.2:1 dark
-    public static let avatar = Color(uiColor: UIColor(hex: 0x247A43))    // one solid fill in both themes, white initial 5.3:1
+    // Every colour comes from design-tokens, with the Mac's names (one brand with Meridian).
+    public static let window = Color(T.surfacePage)
+    public static let card = Color(T.surfaceCard)
+    public static let subtle = Color(T.surfaceSunken)
+    public static let border = Color(T.borderDefault)              // decorative; the control edge with Increase Contrast
+    public static let controlEdge = Color(T.borderControl)         // a control's outline, 3:1 or more
+    public static let text = Color(T.textPrimary)
+    public static let text2 = Color(T.textSecondary)
+    public static let text3 = Color(T.textMuted)                   // text2 with Increase Contrast
+    public static let accent = Color(T.accent)                     // the ink fill of the main button
+    public static let onAccent = Color(T.accentContrast)
+    public static let accentFg = Color(T.accentSubtleFg)           // the brand's brown for a glyph on a tint
+    public static let ok = Color(T.success600)
+    public static let warn = Color(T.warning600)
+    public static let danger = Color(T.danger600)
+    public static let avatar = Color(T.avatarBg)
+    public static let onAvatar = Color(T.avatarFg)
     /// iPad: the widest a column of sentences gets (readable-width), centred.
     public static let readableWidth: CGFloat = 672
     /// iPad split view: the Targets list column (PageiPad 360; 320 at Split View 2/3, PageiPadSizes).
