@@ -168,7 +168,7 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 
 **In each card's README**, a line in one shape: `Motion: <moment> → <token> (<what moves>). Reduce Motion: <fallback>. iPhone: <haptic or none>.`
 
-**In Swift**, use only `G.Motion` (`gAnimation(.base, value:)`, `gTransition(.appear)`, `withGAnimation(.base) { }`). On the phone the same tokens are `G.Motion` (`gAnimation(.fast, value:)`, `withGAnimation(.base, reduceMotion:) { }`). `scripts/check-motion.sh` (`make lint`, both apps) fails on a literal curve, `withAnimation` or `.repeatForever` outside `Motion.swift`. Debug snapshots turn every G.Motion animation off, so renders are the same every time.
+**In Swift**, use only `G.Motion` (`gAnimation(.base, value:)`, `gTransition(.appear)`, `withGAnimation(.base) { }`). On the phone the same tokens are `G.Motion` (`gAnimation(.fast, value:)`, `withGAnimation(.base, reduceMotion:) { }`). `scripts/check-motion.sh` (`make lint`, both platforms) fails on a literal curve, `withAnimation` or `.repeatForever` outside `Motion.swift`. Debug snapshots turn every G.Motion animation off, so renders are the same every time.
 
 ## Iconography
 
