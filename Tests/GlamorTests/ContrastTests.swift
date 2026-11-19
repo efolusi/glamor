@@ -48,6 +48,10 @@ struct ContrastTests {
     @Test(arguments: [false, true]) func controlEdgesAndButtonLabelsHoldTheirRatio(dark: Bool) {
         #expect(ratio(G.controlEdge, G.card, dark: dark) >= 3)
         #expect(ratio(G.onAccent, G.accent, dark: dark) >= 4.5)
+        // A selected row's fill shows against the card and panel it sits on; the marker carries the meaning.
+        for ground in [G.card, G.panel] {
+            #expect(ratio(G.accentSubtle, ground, dark: dark) >= 1.05)
+        }
         // A ProgressBar's fill against its track (non-text, 3:1), for the default tone and every status tone.
         for tone in [G.accent, G.ok, G.warn, G.danger] {
             #expect(ratio(tone, G.border, dark: dark) >= 3)

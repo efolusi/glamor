@@ -273,7 +273,7 @@ public enum G {
 
     public enum Line {
         public static let hair: CGFloat = 1    // hairlines and borders
-        public static let strong: CGFloat = 2  // the selected underline tab, the focus ring, the selected marker
+        public static let strong: CGFloat = 2  // the selected underline tab, the focus ring
         public static let focusOffset: CGFloat = 2  // focus-offset: the gap between a control and its focus ring
         public static let bar: CGFloat = 4     // progress bars
     }
@@ -400,6 +400,11 @@ public enum G {
         /// A one-line row (name, maybe a count) and a two-line row (a name over one line of help).
         public static let oneLine: CGFloat = Height.row32
         public static let twoLine: CGFloat = Height.row52
+        /// The selected marker: a capsule this wide, this far in from the highlight's leading edge, and this
+        /// share of the highlight's height, centred, so a selected row reads by shape as well as by fill.
+        public static let markerWidth: CGFloat = 4
+        public static let markerInset: CGFloat = Space.s4
+        public static let markerHeight: CGFloat = 0.6
     }
 
     public enum Inset {

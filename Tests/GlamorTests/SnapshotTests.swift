@@ -14,10 +14,10 @@ struct SnapshotTests {
     private var gallery: some View {
         VStack(alignment: .leading, spacing: G.Space.s16) {
             CardList {
-                Text("web-1").rowLook()
-                Text("db-primary (selected)").rowLook(selected: true)
-                Text("cache-eu (focused)").rowLook(focus: true)
-                Text("queue-3").rowLook()
+                ListRow(action: {}) { Text("web-1") }
+                ListRow(selected: true, action: {}) { Text("db-primary (selected)") }
+                Text("cache-eu (focused)").rowLook(focus: true, height: G.Height.row40 - 2 * G.Row.cardInset)
+                ListRow(action: {}) { Text("queue-3") }
             }
             HStack(spacing: G.Space.s16) {
                 Button("Save") {}.buttonStyle(PrimaryButtonStyle())

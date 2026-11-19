@@ -82,14 +82,19 @@ public extension ButtonStyle where Self == PlainFocusStyle {
 // MARK: Selection (design system: selected-marker)
 
 public extension View {
-    /// A selected sidebar place or list row: a 2-pt bar, 16 high, centred at its leading edge. The
-    /// fill alone is 1.1:1; the bar is 4.4:1 or more on every fill it sits on.
+    /// A selected list row: a capsule in `selectedMarker`, G.Row.markerWidth wide and G.Row.markerHeight of
+    /// the row's height, centred, G.Row.markerInset in from the leading edge. The fill alone is faint;
+    /// the capsule is 3:1 or more on every fill it sits on (ContrastTests).
     func selectedMarker(_ on: Bool) -> some View {
         overlay(alignment: .leading) {
             if on {
-                Capsule().fill(G.selectedMarker)
-                    .frame(width: G.Line.strong, height: G.Height.line16)
-                    .accessibilityHidden(true)
+                GeometryReader { row in
+                    Capsule().fill(G.selectedMarker)
+                        .frame(width: G.Row.markerWidth, height: row.size.height * G.Row.markerHeight)
+                        .frame(maxHeight: .infinity)
+                        .padding(.leading, G.Row.markerInset)
+                }
+                .accessibilityHidden(true)
             }
         }
     }
