@@ -87,8 +87,8 @@ public struct ListSkeleton: View {
                         HStack(spacing: G.Space.s12) {
                             RoundedRectangle(cornerRadius: G.Radius.r8).fill(G.subtle).frame(width: G.Tile.t32, height: G.Tile.t32)
                             VStack(alignment: .leading, spacing: G.Space.s4) {
-                                Text("web-1 placeholder").font(G.bodyStrong)
-                                Text("deploy@10.0.0.4:22").font(G.monoSmall)
+                                Text("Loading item name").font(G.bodyStrong)
+                                Text("Loading detail line").font(G.monoSmall)
                             }
                             .redacted(reason: .placeholder)
                         }
