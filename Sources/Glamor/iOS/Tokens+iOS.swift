@@ -31,8 +31,8 @@ public enum G {
     public static let controlEdge = Color.adaptive(0x8C8C91, 0x6D717D)   // a control's outline, 3:1 or more
     public static let text = Color.adaptive(0x1C1C1E, 0xECEDF1)
     public static let text2 = Color.adaptive(0x505056, 0xB3B7C4)
-    public static let text3 = Color.adaptive(0x6E6E75, 0x8A8E9C, high: (0x505056, 0xB3B7C4))   // text2 with Increase Contrast
-    public static let accent = Color.adaptive(0x1659FF, 0x6090FF, high: (0x074EFF, 0x6F9BFF))   // increased pair: 4.6:1 inside a 16% pill
+    public static let text3 = Color.adaptive(0x69696F, 0x9296A4, high: (0x505056, 0xB3B7C4))   // text2 with Increase Contrast
+    public static let accent = Color.adaptive(0x1659FF, 0x6292FF, high: (0x074EFF, 0x6F9BFF))   // increased pair: 4.6:1 inside a 16% pill
     public static let ok = Color.adaptive(0x247A43, 0x45C46A, high: (0x227440, 0x45C46A))
     public static let warn = Color.adaptive(0xB24A00, 0xF2A445, high: (0xA84600, 0xF2A445))
     public static let danger = Color.adaptive(0xCA282E, 0xF36368, high: (0xBD252B, 0xF47478))

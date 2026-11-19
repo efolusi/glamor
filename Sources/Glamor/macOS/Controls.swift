@@ -280,6 +280,7 @@ public struct MenuPicker<Value: Hashable, Options: View>: View {
     @ViewBuilder public var options: () -> Options
     @Environment(\.controlSize) private var controlSize
     @State private var hover = false
+    @FocusState private var focused: Bool
     public var body: some View {
         let small = compact || controlSize == .small || controlSize == .mini
         let radius = small ? G.Radius.r6 : G.Radius.r8
@@ -297,6 +298,8 @@ public struct MenuPicker<Value: Hashable, Options: View>: View {
         .background(hover ? G.cardHover : G.card, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(G.border))
         .shadow(G.Shadow.control)
+        .focused($focused)
+        .focusRing(radius, isFocused: focused)
         .onHover { hover = $0 }
     }
 

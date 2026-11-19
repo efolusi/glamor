@@ -6,8 +6,11 @@ import SwiftUI
 // rectangle is off: it ignores rounded shapes, and a CardList's clip cuts it.
 
 public struct FocusRing: ViewModifier {
-    @Environment(\.isFocused) private var focused
+    @Environment(\.isFocused) private var environmentFocused
     public let radius: CGFloat
+    /// Set by a control that tracks its own focus with @FocusState (a Menu, which no ButtonStyle reaches).
+    /// Otherwise the ring follows the focus of the view it sits in.
+    public var isFocused: Bool?
     public var capsule: Bool = false
     /// A list row draws its ring inside, on the ListRow highlight's own shape (G.Row.radius): outside, a
     /// CardList's clip and the next row would cut it.
@@ -16,7 +19,7 @@ public struct FocusRing: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .overlay {
-                if focused {
+                if isFocused ?? environmentFocused {
                     Group {
                         if inside {
                             RoundedRectangle(cornerRadius: G.Row.radius, style: .continuous)
@@ -34,16 +37,19 @@ public struct FocusRing: ViewModifier {
             .focusEffectDisabled()
     }
 
-    public init(radius: CGFloat, capsule: Bool = false, inside: Bool = false) {
+    public init(radius: CGFloat, capsule: Bool = false, inside: Bool = false, isFocused: Bool? = nil) {
         self.radius = radius
         self.capsule = capsule
         self.inside = inside
+        self.isFocused = isFocused
     }
 }
 
 public extension View {
     /// The keyboard focus ring for a control whose shape has corner radius `radius`.
     func focusRing(_ radius: CGFloat) -> some View { modifier(FocusRing(radius: radius)) }
+    /// The ring for a control that tracks its own focus, such as a Menu: pair it with `.focused(_:)`.
+    func focusRing(_ radius: CGFloat, isFocused: Bool) -> some View { modifier(FocusRing(radius: radius, isFocused: isFocused)) }
     func focusRingCapsule() -> some View { modifier(FocusRing(radius: 0, capsule: true)) }
     /// The ring inside a list row, on its highlight's shape (a host, connection or job row).
     func focusRingInside() -> some View { modifier(FocusRing(radius: 0, inside: true)) }
