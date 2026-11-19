@@ -24,13 +24,13 @@ public struct DelayedProgress: View {
     public let text: String
     @State private var shown = false
     public var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: G.Space.s8) {
             if shown {
                 ProgressView()
                 Text(text).foregroundStyle(G.text3)
             }
         }
-        .frame(minHeight: 20)
+        .frame(minHeight: G.Icon.lg)
         .accessibilityElement(children: .combine)
         .task {
             try? await Task.sleep(for: PhoneMotion.loadingDelay)
@@ -84,9 +84,9 @@ public struct ListSkeleton: View {
             if shown {
                 Section {
                     ForEach(0..<rows, id: \.self) { _ in
-                        HStack(spacing: 12) {
-                            RoundedRectangle(cornerRadius: G.Radius.r8).fill(G.subtle).frame(width: 32, height: 32)
-                            VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: G.Space.s12) {
+                            RoundedRectangle(cornerRadius: G.Radius.r8).fill(G.subtle).frame(width: G.Tile.t32, height: G.Tile.t32)
+                            VStack(alignment: .leading, spacing: G.Space.s4) {
                                 Text("web-1 placeholder").font(G.bodyStrong)
                                 Text("deploy@10.0.0.4:22").font(G.monoSmall)
                             }

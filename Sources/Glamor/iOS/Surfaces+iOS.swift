@@ -6,13 +6,13 @@ import SwiftUI
 public struct IconTile: View {
     public let symbol: String
     public var tint: Color = G.accent
-    public var size: CGFloat = 32
+    public var size: CGFloat = G.Tile.t32
     @ScaledMetric(relativeTo: .body) private var scale: CGFloat = 1
     @Environment(\.colorSchemeContrast) private var contrast
     public var body: some View {
         let side = size * scale
         Image(systemName: symbol)
-            .font(.system(size: side * 0.5, weight: .medium))
+            .font(.system(size: G.Tile.glyph(size) * scale, weight: .medium))
             .foregroundStyle(tint)
             .frame(width: side, height: side)
             .background(tint.opacity(G.Tint.tile(contrast)), in: RoundedRectangle(cornerRadius: side * 0.25, style: .continuous))
@@ -20,7 +20,7 @@ public struct IconTile: View {
             .accessibilityHidden(true)   // decorative: the row's own text names the thing
     }
 
-    public init(symbol: String, tint: Color = G.accent, size: CGFloat = 32) {
+    public init(symbol: String, tint: Color = G.accent, size: CGFloat = G.Tile.t32) {
         self.symbol = symbol
         self.tint = tint
         self.size = size
@@ -30,7 +30,7 @@ public struct IconTile: View {
 /// 8 at the default text size, growing with Dynamic Type.
 public struct StatusDot: View {
     public var color: Color
-    @ScaledMetric(relativeTo: .subheadline) private var side: CGFloat = 8
+    @ScaledMetric(relativeTo: .subheadline) private var side: CGFloat = G.Dot.d8
     public var body: some View { Circle().fill(color).frame(width: side, height: side) }
 
     public init(color: Color) {
@@ -47,7 +47,7 @@ public struct Pill: View {
         // A 10% tint on an opaque card ground, so the row behind never shows through: every status color
         // reads 4.6:1 or more in both themes (the same value as the Mac's G.Opacity.pill).
         Text(DisplayText.line(text)).font(G.tiny.weight(.medium))
-            .padding(.horizontal, 8).padding(.vertical, 4)
+            .padding(.horizontal, G.Space.s8).padding(.vertical, G.Space.s4)
             .foregroundStyle(color)
             .background(color.opacity(G.Tint.pill(contrast)), in: Capsule())
             .background(G.card, in: Capsule())
@@ -65,7 +65,7 @@ public struct Pill: View {
 public struct SeverityMark: View {
     public let problem: Bool
     /// One width for both shapes, so every finding's sentence starts at the same place.
-    @ScaledMetric(relativeTo: .title3) private var side: CGFloat = 20
+    @ScaledMetric(relativeTo: .title3) private var side: CGFloat = G.Icon.lg
     public var body: some View {
         Image(systemName: problem ? "exclamationmark.circle.fill" : "exclamationmark.triangle.fill")
             .font(G.icon)

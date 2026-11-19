@@ -11,6 +11,7 @@
 #   widths/heights   multiples of 4, or 1 and 2 (hairlines, strong lines)
 #   line widths      1 2
 #   stored sizes     a CGFloat or @ScaledMetric default: multiples of 4, like widths
+#   derived sizes    size: x * n is never allowed: name the size with a token instead
 # The token files (macOS/Tokens.swift, iOS/Tokens+iOS.swift, Generated/) define the scale and are skipped.
 #
 # Usage: scripts/check-sizes.sh [directory]
@@ -66,6 +67,7 @@ check "row height"     'rowHeight *= *[0-9.]+'                                  
 check "line width"     'lineWidth: *[0-9.]+'                                             list "$LINES"
 check "stored size"    ': *CGFloat *= *[0-9.]+'                                          grid
 check "scaled size"    '@ScaledMetric[^=]*= *[0-9.]+'                                    grid
+check "derived size"   'size: *[A-Za-z_.]+ *\* *[0-9.]+'                                 never
 
 if [[ -s "$out" ]]; then
     sort -t: -k1,1 -k2,2n "$out"

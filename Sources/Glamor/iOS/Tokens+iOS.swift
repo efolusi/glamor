@@ -65,6 +65,42 @@ public enum G {
         public static let r12: CGFloat = 12
     }
 
+    /// Spacing, from the vendored tokens (space-1 to space-3), with the Mac's names.
+    public enum Space {
+        public static let s4 = CGFloat(GlamorTokens.Length.space1)
+        public static let s8 = CGFloat(GlamorTokens.Length.space2)
+        public static let s12 = CGFloat(GlamorTokens.Length.space3)
+    }
+
+    /// Symbol boxes, from the vendored tokens (icon.sm to icon.lg), with the Mac's names.
+    public enum Icon {
+        public static let sm = CGFloat(GlamorTokens.Length.iconSm)
+        public static let md = CGFloat(GlamorTokens.Length.iconMd)
+        public static let lg = CGFloat(GlamorTokens.Length.iconLg)
+    }
+
+    /// Icon tiles and their glyphs, as on the Mac: 20 → 12, 28 and 32 → 16, 40 and up → 20.
+    public enum Tile {
+        public static let t20: CGFloat = 20
+        public static let t32: CGFloat = 32
+        public static let t40: CGFloat = 40
+        public static func glyph(_ tile: CGFloat) -> CGFloat {
+            switch tile {
+            case ...t20: Icon.sm
+            case ...t32: Icon.md
+            default: Icon.lg
+            }
+        }
+    }
+
+    /// A status dot, as the Mac's G.Dot.d8.
+    public enum Dot {
+        public static let d8: CGFloat = 8
+    }
+
+    /// The least side of anything a finger taps (touch-44, the vendored tap.min).
+    public static let touch = CGFloat(GlamorTokens.Length.tapMin)
+
     // Text: iOS text styles, so every size grows with the person's Dynamic Type setting, chosen so that at the
     // default setting each one is on the design system's scale: tokens ios-title, ios-headline, ios-body,
     // ios-small, ios-caption and ios-tiny (20 17 15 13 12 11). Touch targets are touch-44.
