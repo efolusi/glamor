@@ -3,7 +3,8 @@ import SwiftUI
 
 // Lists before cards (Layout rules): inventories are one-line rows in a card, filtered by chips.
 
-/// Rows in one card, with hairlines between them.
+/// Rows in one card, with hairlines between them: `inset` in from the left, where the text starts, and
+/// G.Row.cardInset in from the right, where a row's highlight ends.
 public struct CardList<Content: View>: View {
     public var inset: CGFloat = G.Space.s16
     @ViewBuilder public var content: () -> Content
@@ -12,7 +13,7 @@ public struct CardList<Content: View>: View {
             Group(subviews: content()) { subviews in
                 ForEach(Array(subviews.enumerated()), id: \.offset) { i, v in
                     v
-                    if i < subviews.count - 1 { Hairline(color: G.border.opacity(G.Opacity.softHairline)).padding(.leading, inset) }
+                    if i < subviews.count - 1 { Hairline(color: G.border.opacity(G.Opacity.softHairline)).padding(.leading, inset).padding(.trailing, G.Row.cardInset) }
                 }
             }
         }
