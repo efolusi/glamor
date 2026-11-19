@@ -18,12 +18,12 @@ Every screen follows these rules; a design that breaks one needs a reason writte
 
 ## Content fundamentals
 
-**Two names, two cases.** The app is **Komando**, capitalised. The command line is **komando**, always lower case, even at the start of a sentence ("komando did not answer"). Never write "Komando Pro" or any plan name into the product name.
+**Names keep their own case.** Write a product's name exactly as its brand writes it, even at the start of a sentence, and never add a plan name to it.
 
 **Plain, short and specific.** Say what happened and what to do next. Name the thing and the number, and skip adjectives and exclamation marks.
 
 - Empty: "Nothing is running." · "No activity yet." · "Everything looks fine."
-- Failure: "komando did not answer", followed by the error and its hint, then **Try Again**.
+- Failure: "The server did not answer", followed by the error and its hint, then **Try Again**.
 - Help: "Read the inventory again (⌘R)" · "Protected: changes need your confirmation"
 - Selling: "Every feature on every server. One key, no account." · "Browsing and connection tests stay free."
 
@@ -33,11 +33,11 @@ Every screen follows these rules; a design that breaks one needs a reason writte
 | --- | --- | --- |
 | Buttons and menu items | Title Case (macOS) | Fix · Protect · New Forward · Open Terminal |
 | Places in the sidebar | Title Case nouns | Home · Port Forwarding · Audit Log |
-| Tabs and segmented choices | Title Case, never starting with komando | SSH Agent · Saved Key · Password · SOCKS Proxy |
+| Tabs and segmented choices | Title Case, never starting with the product's name | SSH Agent · Saved Key · Password · SOCKS Proxy |
 | Section titles | Sentence case | Needs attention · Running now · Recent activity |
 | Form, checkbox and toggle labels | Sentence case | Connection name · Allow changes · Reach through a server or VPN |
-| Links (LinkButton) | Sentence case, as part of the sentence they finish; a place's name keeps its Title Case | View all 4 · Forgot your password · Use Komando without an account · Audit Log |
-| Tooltips | Sentence case, also on an icon button | New conversation · Log in again and check who komando is there; changes nothing |
+| Links (LinkButton) | Sentence case, as part of the sentence they finish; a place's name keeps its Title Case | View all 4 · Forgot your password · Continue without an account · Audit Log |
+| Tooltips | Sentence case, also on an icon button | New conversation · Sign in again; changes nothing |
 | Status pills | Sentence case, first word capital | Done · Failed · Blocked · Up · Changes the server · Read-only |
 | Section labels in panels | Capitals, `section-label` | IN SCOPE · PERMISSIONS |
 | Commands, flags, addresses | As typed, in `mono` | `--allow-dangerous` · `deploy@10.0.0.4` |
@@ -53,11 +53,11 @@ Every screen follows these rules; a design that breaks one needs a reason writte
 - **Choosing never changes weight.** A selected place, tab, chip, pane, tree row or list row keeps its weight; the fill, the underline or `text` color marks it. A bolder chosen item grows wider and pushes its neighbours.
 - **No bold inside a sentence** for emphasis; put the name in mono or the word in its tone instead.
 
-**Punctuation.** End a command that opens a dialog with an ellipsis ("Upgrade…", "Settings…", "Choose komando…"), and a status that is still in progress too ("Running uptime…", "Asking komando's doctor…"). Join metadata with a middle dot: "Local · on this Mac", "PostgreSQL · db.internal · via bastion". Write counts as fractions in `mono-small` ("3/5") and dates as relative times ("2 days ago", "since 09:14").
+**Punctuation.** End a command that opens a dialog with an ellipsis ("Upgrade…", "Settings…", "Choose a Folder…"), and a status that is still in progress too ("Running uptime…", "Checking the server…"). Join metadata with a middle dot: "Local · on this Mac", "PostgreSQL · db.internal · via bastion". Write counts as fractions in `mono-small` ("3/5") and dates as relative times ("2 days ago", "since 09:14").
 
 **Name the device.** Say "this iPad" on iPad, "this iPhone" on iPhone and "this Mac" on the Mac, from the device the app runs on, never "this phone" on an iPad; say "this device" only where the device does not matter.
 
-**Person.** Address the person as *you* only when it matters ("You confirm every protected change."). Refer to the tool by name ("komando will run it again with --yes."), never as "we". Use no emoji, ever.
+**Person.** Address the person as *you* only when it matters ("You confirm every protected change."). Refer to the app or tool by name ("Backup will run again tonight."), never as "we". Use no emoji, ever.
 
 **Safety copy is concrete.** A destructive confirmation names the risk in its title ("This target is protected", "This command looks destructive", "This changes data"), puts the exact command or flag in the message, and labels the button with what happens: **Run Anyway**, **Allow Once**, **Allow Writes**, never "OK".
 
@@ -86,7 +86,7 @@ Every screen follows these rules; a design that breaks one needs a reason writte
 - Use six sizes and nothing else: 11 (`small`, `section-label`, `mono-s`), 12 (`caption`, `mono`), 13 (`body`, `body-medium`, `body-strong`, `mono-l`), 15 (`title-s`), 17 (`title-m`, `input-l`) and 20 (`title-l`). No half sizes and, on the Mac, no system text styles.
 - **iPhone and iPad use iOS text styles** (owner decision 2026-11-12), so every size grows with Dynamic Type. At the default text size they land on the same six sizes: `ios-title` 20 (`.title3` semibold, `G.title`), `ios-headline` 17 (`.headline`), `ios-body` 15 (`.subheadline`), `ios-small` 13 (`.footnote`), `ios-caption` 12 (`.caption`) and `ios-tiny` 11 (`.caption2`); mono is the same style with `design: .monospaced`. Line heights are the system's. The Mac keeps fixed sizes, because macOS text styles change with its own settings.
 - Emphasise with weight before size. A selected sidebar row or tab changes from regular to semibold and from `text2` to `text`, with no other change.
-- Set anything komando prints or reads in `mono`: commands, output, addresses, ratios and counts. Use `.monospacedDigit()` for counts in proportional text.
+- Set anything a command line prints or reads in `mono`: commands, output, addresses, ratios and counts. Use `.monospacedDigit()` for counts in proportional text.
 
 ### Sizes
 
@@ -194,34 +194,32 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 
 ### Owner answers (R-37)
 
-- Agent glyph. Owner answer 2026-11-09: fix everything, so the agent's symbol is `text.bubble` everywhere (Mac, iPhone, KomandoKit Editions, previews, prototype, docs), because the agent is a colleague you talk to; `sparkles` and the unused `wand.and.stars` are gone.
-- Caches glyph. Owner answer 2026-11-09: fix everything, so caches are `memorychip` everywhere, because a cache lives in memory; `bolt.horizontal` is gone.
-- Gradients. Owner answer 2026-11-09: fix everything, so the avatar is one solid fill (`avatar`, #247A43, white initial 5.33:1), the filled IconTile and the license card's stripe (with `stripe-1` to `stripe-4`) are removed, and only the logo ground and the skeleton shimmer keep a gradient, each for the reason given under Layout rules. (Owner answer 2026-11-15: the skeleton is still too, so only the logo ground keeps one; see Motion.)
+- Gradients. Owner answer 2026-11-09: everything is one solid fill, the avatar included; only the logo ground and the skeleton shimmer keep a gradient, each for the reason given under Layout rules.
 - Composer shadow. Owner answer 2026-11-09: fix everything, so the agent's composer has no shadow and keeps its border.
 - Pill tint. Owner answer 2026-11-09: fix everything, so pills drop from 12% to 10% (`opacity-pill`), the value that gives every status color 4.6:1 or more in both themes.
 
 ## In Swift
 
-The tokens are the members of `enum K` in `Apps/macOS/Sources/Komando/DesignSystem/Tokens.swift`, with the same names. Each color is one `Color.adaptive(light, dark)`; every size is a named constant, so a view never writes a number.
+`G` is Glamor's namespace: `Sources/Glamor/macOS/Tokens.swift` on the Mac and `Sources/Glamor/iOS/Tokens+iOS.swift` on iPhone and iPad. It wraps the vendored `GlamorTokens` (`Sources/Glamor/Generated/GlamorTokens.swift`, copied from efolusi/design-tokens by `scripts/vendor-tokens.sh`) in SwiftUI colours, fonts and lengths, so a view never writes a colour or a number. `scripts/check-colors.sh` and `scripts/check-sizes.sh` enforce it.
 
-The building blocks live beside the tokens in `Apps/macOS/Sources/Komando/DesignSystem/`, one file per kind: `Typography.swift` (text styles, Appearance), `Buttons.swift`, `Controls.swift` (fields, ToggleCard, UnderlineTabs, Pill, SectionTitle, LinkButton, SearchBar), `Lists.swift` (CardList, InfoRow, ListRow and the row style, chips, MoreMenu), `Surfaces.swift` (IconTile, StatusDot, DashedDivider, HoverCard), `Feedback.swift` (Banner, EmptyState), `Layout.swift` (Page, PageSection, FormPage, FormHeader, SheetLayout), `Motion.swift` (G.Motion, gAnimation, gTransition, withGAnimation, clickGuard) and `AppLogo.swift`. `Feedback.swift` also holds DelayedProgress, DelayedLoading, Skeleton, CopyButton and ProgressBar. Screens live in `Apps/macOS/Sources/Komando/Features/`, one folder per place or feature, and use only these.
+The building blocks sit beside the tokens, one file per kind: `Typography.swift`, `Buttons.swift`, `Controls.swift`, `Lists.swift`, `Surfaces.swift`, `Feedback.swift`, `Layout.swift`, `Focus.swift`, `Hover.swift`, `Motion.swift`, `SplitDivider.swift` and `SpinnerGate.swift` on the Mac; `Surfaces+iOS.swift`, `Feedback+iOS.swift`, `Motion+iOS.swift` and `PhoneMotion+iOS.swift` on iOS.
 
 ```swift
-enum K {
-    static let window = Color.adaptive(0xF3F3F1, 0x0F1115)   // … every color token, same name
-    enum Font   { titleL, titleM, titleS, bodyStrong, bodyMedium, body, caption, small, sectionLabel, inputL, monoL, mono, monoS }
-    enum Space  { s2, s4, s8, s12, s16, s20, s24, s32, s40, s48 }
-    enum Radius { r4, r6, r8, r12, r16, tile /* 0.25 of the side */ }
-    enum Height { control24, control28, control32, control40, pill, row32, row40, row52, row64, tab, paneHead, statusBar, tableHeader, toolbar, header, windowMin, outputSheet, emptyStateMin, outputMax, settings }
-    enum Tile   { t20, t28, t32, t40, t48 }     // glyphs: 12, 16, 16, 20, 24
-    enum Icon   { i8, i12, i16, i20, i32 }
-    enum Dot    { d6, d8 }
-    enum Width  { sidebar, inspector, sidePanel, chat, palette, menu, sheet, windowMin, outputSheet, forwardName, forwardKind, numberField, settings, … }
-    enum Hover  { onCard, onPanel, onTab, onWindow, pressed }   // hover-card, hover-panel, hover-tab, hover-window, pressed
-    enum Shadow { control, hover, panel, palette }       // drawn with .shadow(G.Shadow.panel)
-    enum Opacity { tint, pill, increased, selected, banner, bannerEdge, attention, attentionEdge, ring, kbd, softHairline, chip }
-    enum Ansi   { blue, cyan, yellow, red }              // command output only
-    enum Motion { fast, base, slow, progress, shift, spinnerDelay, spinnerHold, confirmHold, noticeHold, clickGuard }   // MotionSpec
+enum G {
+    // Colours: window, panel, card, text, text2, text3, accent, focus, ok, warn, danger, …
+    enum Font    { titleL, titleM, titleS, bodyStrong, bodyMedium, body, caption, small, sectionLabel, inputL, monoL, mono, monoS }
+    enum Space   { s2, s4, s8, s12, s16, s20, s24, s32, s40, s48 }
+    enum Radius  { r4, r6, r8, r12, r16, tile }
+    enum Height  { control16 … control40, pill, row32 … row64, tab, toolbar, header, … }
+    enum Tile    { t20, t28, t32, t40, t48 }        // glyph(_:): 12, 16, 16, 20, 24
+    enum Icon    { xs, sm, md, lg, xl, xxl }        // 8 to 32, from design-tokens icon.*
+    enum Dot     { d6, d8 }
+    enum Line    { hair, strong, focusOffset, bar }
+    enum Width   { sidebar, inspector, sidePanel, chat, palette, menu, sheet, … }
+    enum Hover   { onCard, onPanel, onTab, onWindow, pressed }
+    enum Shadow  { control, hover, panel, palette }  // drawn with .shadow(G.Shadow.panel)
+    enum Opacity { tint, pill, increased, banner, bannerEdge, attention, attentionEdge, ring, kbd, softHairline, chip, disabled }
+    enum Motion  { fast, base, slow, progress, shift, … }   // MotionSpec
 }
 ```
 
@@ -229,9 +227,9 @@ enum K {
 // A section of a page
 VStack(alignment: .leading, spacing: G.Space.s16) {
     HStack(alignment: .top) {
-        SectionTitle("Needs attention", subtitle: "2 findings from komando's doctor")
+        SectionTitle("Needs attention", subtitle: "2 findings from the last check")
         Spacer()
-        LinkButton(title: "View all 4") { model.go(.doctor) }
+        LinkButton(title: "View all 4") { model.go(.findings) }
     }
     LazyVGrid(columns: [GridItem(.flexible(), spacing: G.Space.s16), GridItem(.flexible(), spacing: G.Space.s16)], spacing: G.Space.s16) {
         ForEach(items) { AttentionCard(item: $0, confirm: $confirm) }
