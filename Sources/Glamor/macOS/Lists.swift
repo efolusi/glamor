@@ -96,11 +96,13 @@ public extension View {
         modifier(RowHighlight(selected: selected, hover: hover))
     }
 
-    /// A ListRow's look for a debug gallery: padding, height and highlight, with the focus ring forced.
+    /// A ListRow's look for a debug gallery: padding, height and highlight, with the focus ring forced, and
+    /// the same G.Row.cardInset on every side as a ListRow, so it sits inside a CardList's corners.
     func rowLook(selected: Bool = false, hover: Bool = false, focus: Bool = false, height: CGFloat = G.Row.oneLine) -> some View {
         padding(.horizontal, G.Row.padding)
             .frame(maxWidth: .infinity, minHeight: height, alignment: .leading)
             .modifier(RowHighlight(selected: selected, hover: hover, showFocus: focus))
+            .padding(G.Row.cardInset)
     }
 }
 

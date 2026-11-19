@@ -1,6 +1,6 @@
 # SidebarItem
 
-A place in the sidebar: a 16 symbol, its name and a count, 32 high. The selected row is a `panel` fill with a `border` hairline and a 2pt `selected-marker` bar, 16 high, at its leading edge (the fill alone is 1.1:1). Focused, it gets the 2pt `focus` ring, 2pt outside. In Swift: `SidebarItem(place: .hosts)`.
+A place in the sidebar: a 16 symbol, its name and a count, 32 high. The selected row is a `panel` fill with a `border` hairline and the `selected-marker` capsule (4 wide, 60% of the row's height, centred, 4 in from the leading edge), since the fill alone is faint. Focused, it gets the 2pt `focus` ring, 2pt outside. In Swift: `SidebarItem(place: .hosts)`.
 
 **Provide:** the place's symbol, name and count (`text3`, tabular). No shortcut badges: shortcuts live in the Go menu and tooltips.
 

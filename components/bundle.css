@@ -207,8 +207,8 @@ button:disabled, [aria-disabled=true] { cursor: not-allowed; }
 .k-navitem:hover { background: var(--hover-window); }
 .k-navitem:active { background: var(--pressed); }
 .k-navitem.on { position: relative; color: var(--text); background: var(--panel); box-shadow: inset 0 0 0 1px var(--border); }
-/* The selected marker: a 2pt accent bar at the leading edge, 16 high, centred. */
-.k-navitem.on::before, .k-listrow.on::before { content: ""; position: absolute; left: 0; top: 50%; width: var(--line-strong); height: 16px; margin-top: -8px; border-radius: var(--radius-full); background: var(--selected-marker); }
+/* The selected marker: a capsule 4 wide and 60% of the row's height, centred, 4 in from the leading edge (G.Row.marker*). */
+.k-navitem.on::before, .k-listrow.on::before { content: ""; position: absolute; left: var(--space-4); top: 20%; width: var(--space-4); height: 60%; border-radius: var(--radius-full); background: var(--selected-marker); }
 .k-navitem-count { font-size: 12px; line-height: 16px; color: var(--text3); font-variant-numeric: tabular-nums; font-weight: 400; }
 .k-navitem-count.tone { color: var(--c); font-weight: 500; }
 .k-navitem-key { font-size: 11px; line-height: 16px; color: var(--text3); font-weight: 400; }
