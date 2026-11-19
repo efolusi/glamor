@@ -24,18 +24,18 @@ Every screen follows these rules; a design that breaks one needs a reason writte
 
 - Empty: "Nothing is running." · "No activity yet." · "Everything looks fine."
 - Failure: "The server did not answer", followed by the error and its hint, then **Try Again**.
-- Help: "Read the inventory again (⌘R)" · "Protected: changes need your confirmation"
+- Help: "Read the inventory again (⌘R)" · "Locked: changes need your confirmation"
 - Selling: "Every feature on every server. One key, no account." · "Browsing and connection tests stay free."
 
 **Casing.**
 
 | Where | Case | Real examples |
 | --- | --- | --- |
-| Buttons and menu items | Title Case (macOS) | Fix · Protect · New Forward · Open Terminal |
-| Places in the sidebar | Title Case nouns | Home · Port Forwarding · Audit Log |
+| Buttons and menu items | Title Case (macOS) | Save · Share · New Project · Open in New Window |
+| Places in the sidebar | Title Case nouns | Home · Library · Settings |
 | Tabs and segmented choices | Title Case, never starting with the product's name | SSH Agent · Saved Key · Password · SOCKS Proxy |
 | Section titles | Sentence case | Needs attention · Running now · Recent activity |
-| Form, checkbox and toggle labels | Sentence case | Connection name · Allow changes · Reach through a server or VPN |
+| Form, checkbox and toggle labels | Sentence case | Project name · Remember me · Start at login |
 | Links (LinkButton) | Sentence case, as part of the sentence they finish; a place's name keeps its Title Case | View all 4 · Forgot your password · Continue without an account · Audit Log |
 | Tooltips | Sentence case, also on an icon button | New conversation · Sign in again; changes nothing |
 | Status pills | Sentence case, first word capital | Done · Failed · Blocked · Up · Changes the server · Read-only |
@@ -47,19 +47,19 @@ Every screen follows these rules; a design that breaks one needs a reason writte
 | Weight | Used for | Real examples |
 | --- | --- | --- |
 | Semibold (600) | Titles and headings only | page, sheet, section and empty-state titles, a panel's heading, SECTION LABELS, the primary button |
-| Medium (500) | The name of a thing, a label you act on, a message's headline | host and connection names in lists, a job's or recipe's name, form labels, chips, secondary buttons, a finding's sentence, a banner's title |
+| Medium (500) | The name of a thing, a label you act on, a message's headline | item names in lists, a job's name, form labels, chips, secondary buttons, a finding's sentence, a banner's title |
 | Regular (400) | Everything else | descriptions, values, addresses, help, meta, ghost buttons, menu items |
 
 - **Choosing never changes weight.** A selected place, tab, chip, pane, tree row or list row keeps its weight; the fill, the underline or `text` color marks it. A bolder chosen item grows wider and pushes its neighbours.
 - **No bold inside a sentence** for emphasis; put the name in mono or the word in its tone instead.
 
-**Punctuation.** End a command that opens a dialog with an ellipsis ("Upgrade…", "Settings…", "Choose a Folder…"), and a status that is still in progress too ("Running uptime…", "Checking the server…"). Join metadata with a middle dot: "Local · on this Mac", "PostgreSQL · db.internal · via bastion". Write counts as fractions in `mono-small` ("3/5") and dates as relative times ("2 days ago", "since 09:14").
+**Punctuation.** End a command that opens a dialog with an ellipsis ("Upgrade…", "Settings…", "Choose a Folder…"), and a status that is still in progress too ("Running uptime…", "Checking the server…"). Join metadata with a middle dot: "Local · on this Mac", "PostgreSQL · db.internal · via proxy". Write counts as fractions in `mono-small` ("3/5") and dates as relative times ("2 days ago", "since 09:14").
 
 **Name the device.** Say "this iPad" on iPad, "this iPhone" on iPhone and "this Mac" on the Mac, from the device the app runs on, never "this phone" on an iPad; say "this device" only where the device does not matter.
 
-**Person.** Address the person as *you* only when it matters ("You confirm every protected change."). Refer to the app or tool by name ("Backup will run again tonight."), never as "we". Use no emoji, ever.
+**Person.** Address the person as *you* only when it matters ("You confirm every change before it runs."). Refer to the app or tool by name ("Backup will run again tonight."), never as "we". Use no emoji, ever.
 
-**Safety copy is concrete.** A destructive confirmation names the risk in its title ("This target is protected", "This command looks destructive", "This changes data"), puts the exact command or flag in the message, and labels the button with what happens: **Run Anyway**, **Allow Once**, **Allow Writes**, never "OK".
+**Safety copy is concrete.** A destructive confirmation names the risk in its title ("This item is locked", "This command looks destructive", "This changes data"), puts the exact command or flag in the message, and labels the button with what happens: **Run Anyway**, **Allow Once**, **Delete Project**, never "OK".
 
 ## Visual foundations
 
@@ -74,11 +74,11 @@ Every screen follows these rules; a design that breaks one needs a reason writte
 ### Color
 
 - Neutrals carry the interface. Write text in `text`, `text2` or `text3` only, on `window`, `panel`, `card`, `subtle` or `cardHover`.
-- Use status colors with one meaning each: `ok` means healthy or done, `warn` needs attention or is protected, `danger` failed or stopped, and `accent` is focus, the prompt and new items. Every status color appears next to a word or an icon, never alone.
+- Use status colors with one meaning each: `ok` means healthy or done, `warn` needs attention, `danger` failed or stopped. `accentFg`, the brand's brown, marks new items; focus has its own `focus` colour; `accent` is the ink fill of the main button.
 - Tint by opacity, never with a new hex: icon tiles use their color at `opacity-tint` (12%), pills at `opacity-pill` (10%), banners at `opacity-banner` (10%), and the attention card at `opacity-attention` (5%) with a stroke at `opacity-attention-stroke` (55%).
-- Give each target family its tint (`tint-servers`, `tint-databases`…) and use it only on that family's icon tile. A family tint never colours text.
+- Give each kind of item its tint (`tint-*`) and use it only on that kind's icon tile. A tint never colours text.
 - **Contrast.** Every text color, `text3` and the four status colors included, meets 4.5:1 on every surface in both themes, including inside its own pill. Family tints meet 3:1 as glyphs on their tiles, and the focus ring meets 3:1 on panel and field. Each token's note gives its numbers. Check a new color against the same grounds before adding it, and give it its own token instead of making a token lighter.
-- **The light theme's orange is a burnt orange** (`warn`, `#b24a00`): bright enough to read as a warning, dark enough to carry text. Don't swap in the system orange, which is under 2.5:1 on white.
+- **The light theme's orange is a burnt orange** (`warn`, design-tokens `warning.600`): bright enough to read as a warning, dark enough to carry text. Don't swap in the system orange, which is under 2.5:1 on white.
 
 ### Type
 
@@ -106,9 +106,9 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 | Sidebar place, list row, table row, menu item | 32 | 8 (table cells 12) | 8 | `body` |
 | Table header | 28 | 12 | – | `small` |
 | Palette row, info row, inventory row, group row | 40 | 8 to 16 | 8 | `body` |
-| Two-line row (menu with help, target in a list) | 52 | 12 | 8 | `body-strong` + `caption` |
+| Two-line row (menu with help, an item in a list) | 52 | 12 | 8 | `body-strong` + `caption` |
 | Activity line (Home's Recent activity, `k-actline`) | 40, one line, `k-rule` between | 0, `space-12` gaps | – | `icon-md` + `body` + `caption` (who · when) |
-| Three-line row (**ActivityRow**: jobs, forwards) | 64 | 16 | – | `body-strong` + `mono` + `caption` |
+| Three-line row (**ActivityRow**: a job with its command and metadata) | 64 | 16 | – | `body-strong` + `mono` + `caption` |
 | Panel header / tab inside it | 52 / 28 | 24 / 8 | – / 8 | `title-m` / `body` |
 | Toolbar in a tab / pane head / status bar | 44 / 28 / 28 | 16 / 12 / 12 | – | `body` / `caption` / `caption` |
 | Card, attention card, banner | content | 16 (banner 12) | 12 (banner 8) | – |
@@ -129,14 +129,14 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 - Every container is a rounded rectangle with `.continuous` corners, its radius chosen by its height: `radius-6` for compact controls (28), `radius-8` for standard controls (32) and rows, `radius-12` for cards, the panel and popovers, `radius-16` for the palette, sheets and the composer. Pills, dots and bars are capsules. **Shapes, one rule.** A **capsule** holds only words or shows an amount: Pills, filter Chips, ProgressBars, the Switch. A **circle** is a person (the avatar), a status dot, or a spinner. **Everything else is a rounded rectangle**, its corner set by its height: buttons (icon-only ones too, like ⋯, × on a tab, send and run), fields, icon tiles and the agent's mark, the composer's scope chips (they hold a tile), cards, menus, sheets. SF Symbols that are drawn as circles (`checkmark.circle.fill`, `xmark.circle.fill`) stay only as status glyphs.
 - Define a card with a 1pt `border` hairline (`strokeBorder`, drawn inside) on `card`. At rest a card has no shadow. A clickable **HoverCard** switches to `cardHover` and gains `shadow-hover` under the pointer.
 - `border` is decorative only. The outline of a thing that is a control (the off Switch track, an unchecked Checkbox, a text field) is `controlEdge`, which holds 3:1 on every surface in both themes.
-- A Pill draws its tint on an opaque ground: the status color at `opacity-pill` (10%) over `card`, so a hover or selected row behind it never shows through. The same goes for the Protected capsule on a target. Its text, in the status color, holds 4.6:1 or more on that ground in both themes: in light ok 4.66, warn 4.70, danger 4.68, accent 4.63; in dark ok 6.12, warn 6.58, danger 4.64, accent 4.65. At 12% accent and danger sat at 4.50, with no margin. With Increase Contrast the tint is 16% and the status colors take their increased pair (see States), so the text still holds 4.61:1 or more.
-- The avatar is one solid fill, `avatar` (#247A43), the same in both themes (it does not follow the theme), so its white initial holds 5.33:1 everywhere. Icon tiles are always the 12% tint; there is no filled tile.
+- A Pill draws its tint on an opaque ground: the status color at `opacity-pill` (10%) over `card`, so a hover or selected row behind it never shows through. Its text, in the status color, holds 4.5:1 or more on that ground in both themes, and at the 16% `increased` tint with Increase Contrast; design-tokens' `tests/contrast.test.mjs` and Glamor's `ContrastTests` check every pair.
+- The avatar is one solid fill, `avatar` with its initial in `onAvatar`, both from design-tokens. Icon tiles are always the 12% tint; there is no filled tile.
 - Keep shadows faint and functional: four shadows, all black, never colored. `shadow-control` (G.Shadow.control) on the primary and secondary buttons, a MenuPicker, the chosen segment and the split tip; `shadow-hover` (G.Shadow.hover) on a HoverCard under the pointer and nowhere else; `shadow-panel` (G.Shadow.panel) on the floating content panel; `shadow-palette` (G.Shadow.palette) on the ⌘K palette. Cards, rows, banners, pills, the agent's composer and the whole iPhone and iPad app have none. Draw them only as `.shadow(G.Shadow.x)` (`scripts/check-colors.sh`).
 
 ### States
 
 - Hover has three levels, each the same strength wherever it appears, and it comes in and goes at once (no motion).
-  - **Items** (list, table and side-list rows, menu and palette rows, chips, the ⋯, ghost buttons, sidebar places, panel-header tabs): a fill chosen by the ground under it, `hover-card` (G.Hover.onCard), `hover-panel` (G.Hover.onPanel) or `hover-window` (G.Hover.onWindow); a panel-header tab takes `hover-tab` (G.Hover.onTab), quieter than the active tab's `subtle`. All sit at about 1.06 to 1.12:1 in both themes, so text3 keeps 4.5:1 on it. Words in `text2` may turn `text`.
+  - **Items** (list, table and side-list rows, menu and palette rows, chips, the ⋯, ghost buttons, sidebar places, panel-header tabs): a fill chosen by the ground under it, `hover-card` (G.Hover.onCard), `hover-panel` (G.Hover.onPanel) or `hover-window` (G.Hover.onWindow); a panel-header tab takes `hover-tab` (G.Hover.onTab), quieter than the active tab's `subtle`. Each shows on its ground in both themes, and text3 keeps 4.5:1 on it; design-tokens' contrast test checks both. Words in `text2` may turn `text`.
   - **Raised controls** (secondary button, MenuPicker, HoverCard, the profile row, the sidebar Search): `card` to `cardHover`. Only a HoverCard also gains `shadow-hover`.
   - **Primary**: `accent` to `accentHover`, an opaque mix, so the ground never shows through.
   - Never use `accent`, a status color or a family tint as a hover fill. A destructive action (Remove…) hovers like its level; only its word is `danger`.
@@ -144,8 +144,8 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 - Disabled: the primary button at `opacity-disabled` with no shadow; secondary text in `text3`.
 - Focus, fields: an input's border becomes `accent` at `opacity-ring`, 2pt (`focus-ring`). Never add a glow.
 - Focus, everything else you can press (buttons, chips, sidebar places, tabs, list rows, cards, switches): a `line-strong` (2pt) line in `focus` with a `focus-offset` (2pt) gap, one recipe on the Mac and in these cards. Around a control: `RoundedRectangle(cornerRadius: r + 4).strokeBorder(G.focus, lineWidth: 2).padding(-4)`, so the line sits 2 to 4pt outside the shape and never touches its fill. A selectable row (**ListRow**) draws it on its own highlight, inside: `RoundedRectangle(cornerRadius: G.Row.radius).strokeBorder(G.focus, lineWidth: 2)`, so a card's clip or the next row never cuts it. 4.8:1 or more against what surrounds it in both themes (WCAG 2.4.7 and 2.4.13). Every custom `ButtonStyle` reads `@Environment(\.isFocused)` to draw it; a control that hides until hover (a tab's ×) shows while it has focus (UX audit P1-9, P1-10).
-- Selected: the fill still says "this one" (a `panel` fill with a `border` hairline in the sidebar; `subtle` on a tab; `accent` at 10% on a list row), but a fill is only 1.04 to 1.11:1, so every selected item also has a `selected-marker` (accent) mark of 3:1 or more: a 2pt bar, 16 high, at the leading edge of a sidebar place or list row (the first cell of a table row); a 2pt bar under the active panel-header tab; a 1pt ring around a selected chip (4.4:1 or more against the fill it sits on, both themes). Underline tabs keep their 2pt `text` rule (UX audit P1-8).
-- Increase Contrast (macOS and iOS): `border` becomes `controlEdge` (3:1), `text3` becomes `text2`, the hover and pressed fills take their `increased` pair (about 1.2:1), and pill and tile tints go from 10 to 16% (`opacity-increased`). At 16% the normal status colors fall to 4.2 to 4.3:1 inside their pill, so `accent`, `ok`, `warn` and `danger` take their `increased` pair from tokens.json (darker in light, lighter in dark) and hold 4.61:1 or more inside a 16% pill in both themes. Read it with `colorSchemeContrast` / `accessibilityContrast` (UX audit P2-3, P2-8).
+- Selected: the fill still says "this one" (a `panel` fill with a `border` hairline in the sidebar; `subtle` on a tab; `accentSubtle` on a list row), but a fill is faint, so every selected item also has a `selected-marker` (the brand's brown) mark of 3:1 or more: a 2pt bar, 16 high, at the leading edge of a sidebar place or list row (the first cell of a table row); a 2pt bar under the active panel-header tab; a 1pt ring around a selected chip. Underline tabs keep their 2pt `text` rule (UX audit P1-8).
+- Increase Contrast (macOS and iOS): `border` becomes `controlEdge` (3:1), `text3` becomes `text2`, the hover and pressed fills take their `increased` pair (about 1.2:1), and pill and tile tints go from 10 to 16% (`opacity-increased`). At 16% the status colors take their `increased` pair from design-tokens (darker in light, lighter in dark), so they keep 4.5:1 or more inside the pill in both themes; the contrast tests check it. Read it with `colorSchemeContrast` / `accessibilityContrast` (UX audit P2-3, P2-8).
 
 ### Motion
 
@@ -176,27 +176,23 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 
 | Meaning | Symbol |
 | --- | --- |
-| Home · Hosts · Connections | `house` · `server.rack` · `cylinder.split.1x2` |
-| VPN (in Connections) · Port Forwarding · Jobs | `network.badge.shield.half.filled` · `arrow.left.arrow.right` · `gearshape.2` |
-| Recipes · Keychain · Audit Log | `curlybraces` · `key` · `clock.arrow.circlepath` |
-| Terminal · findings | `terminal` · `stethoscope` |
-| Menu bar, idle · running · Import | `terminal` · `terminal.fill` · `square.and.arrow.down` |
-| Agent · Files · Split Right · Split Down · Broadcast Input | `text.bubble` · `folder` · `rectangle.split.2x1` · `rectangle.split.1x2` · `antenna.radiowaves.left.and.right` |
-| Caches · Storage · Clusters · Registries · Queues · Other | `memorychip` · `archivebox` · `circle.hexagongrid` · `shippingbox` · `tray.full` · `questionmark.circle` |
+| Home · Files · Settings | `house` · `folder` · `gearshape` |
 | Search · New · Close · Refresh · More | `magnifyingglass` · `plus` · `xmark` · `arrow.clockwise` · `ellipsis` |
 | Run or send · Prompt · Link | `arrow.up` on a 28 rounded square · `chevron.right` · `link` |
-| Error · Warning · Success · Protected | `exclamationmark.circle.fill` · `exclamationmark.triangle.fill` · `checkmark.circle.fill` · `lock.fill` |
+| Error · Warning · Success · Locked | `exclamationmark.circle.fill` · `exclamationmark.triangle.fill` · `checkmark.circle.fill` · `lock.fill` |
 
-- Put a target's symbol in an **IconTile**: its family tint at 12% behind the glyph, `.medium`, corner `radius-tile`. Tiles come in five sizes with fixed glyphs: 20 (glyph 12), 28 (16), 32 (16), 40 (20), 48 (24).
+A product's symbols for its own places and kinds of item belong in that product's design notes.
+
+- Put an item's symbol in an **IconTile**: its kind's tint at 12% behind the glyph, `.medium`, corner `radius-tile`. Tiles come in five sizes with fixed glyphs: 20 (glyph 12), 28 (16), 32 (16), 40 (20), 48 (24).
 - Icons come in `icon-xs`, `icon-sm`, `icon-md`, `icon-lg` and `icon-2xl`. Inline icons in rows are `icon-md` in `text3`, or `text` when the row is selected.
-- **When an icon has color.** Only three things are colored: a **tile for a kind of target** (IconTile in its family tint: servers, databases, caches and so on), the **agent's mark** (`text.bubble`) in `accent`, and **status** (`ok` check, `warn` lock or triangle, `danger` cross). Everything else is a plain glyph in `text3`, `text` when selected: places, actions in ⌘K (Add…, Run a Command…), feature lists in Settings, menu items, tree rows. A chosen item is never marked by turning its icon `accent`; use `text`, weight or a fill.
+- **When an icon has color.** Only two things are coloured: a **tile for a kind of item** (IconTile in its tint) and **status** (`ok` check, `warn` lock or triangle, `danger` cross). Everything else is a plain glyph in `text3`, or `text` when selected.
 - **Flag:** SF Symbols cannot be published outside Apple platforms, so the previews draw simple stand-in glyphs, keyed by the same names. Use the real symbol in Swift.
 
 ### Owner answers (R-37)
 
 - Gradients. Owner answer 2026-11-09: everything is one solid fill, the avatar included; only the logo ground and the skeleton shimmer keep a gradient, each for the reason given under Layout rules.
 - Composer shadow. Owner answer 2026-11-09: fix everything, so the agent's composer has no shadow and keeps its border.
-- Pill tint. Owner answer 2026-11-09: fix everything, so pills drop from 12% to 10% (`opacity-pill`), the value that gives every status color 4.6:1 or more in both themes.
+- Pill tint. Owner answer 2026-11-09: fix everything, so pills drop from 12% to 10% (`opacity-pill`), which keeps every status color at 4.5:1 or more on its pill; the contrast tests check it.
 
 ## In Swift
 

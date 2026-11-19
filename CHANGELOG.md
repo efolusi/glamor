@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- **Layout rules are Glamor's own.** `guidelines/overview.md` › Layout rules no longer names komando's places, shortcuts or safety control; the rules themselves (a few places, one primary button per view, one way in, a fact once, no decoration) stay.
+- **`guidelines/overview.md` is Glamor's own.** Layout rules, copy examples, the icon table and the owner answers no longer use komando's places, words or glyphs; In Swift describes Glamor's `G` and the vendored `GlamorTokens`. Values name their design-tokens token, and contrast ratios point to the contrast tests.
 - **`guidelines/overview.md` covers Glamor only.** Its komando sections (Platforms with the iPhone and iPad notes, Editions, Screens and Agent mode) are cut; komando-apps' `design/README.md` holds a newer copy, and one line points there.
 - **komando's journeys and UX review moved out.** `guidelines/journeys.md` and `guidelines/ux-review.md` were komando's product docs; they live in efolusi/komando-apps `design/`.
 - **Breaking: icon sizes use the design-tokens names.** `G.Icon.i8`, `i12`, `i16`, `i20`, `i24` and `i32` are now `G.Icon.xs`, `sm`, `md`, `lg`, `xl` and `xxl`, with no alias. `xxl` is `icon.2xl`, because a Swift name cannot start with a digit. The sizes come from the vendored design-tokens v0.2.0, and the docs and `tokens.json` use `icon-xs` to `icon-2xl`.
