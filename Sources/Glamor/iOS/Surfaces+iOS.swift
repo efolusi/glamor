@@ -15,7 +15,7 @@ public struct IconTile: View {
             .font(.system(size: G.Tile.glyph(size) * scale, weight: .medium))
             .foregroundStyle(tint)
             .frame(width: side, height: side)
-            .background(tint.opacity(G.Tint.tile(contrast)), in: RoundedRectangle(cornerRadius: side * 0.25, style: .continuous))
+            .background(tint.opacity(G.Opacity.tint(contrast)), in: RoundedRectangle(cornerRadius: side * 0.25, style: .continuous))
             .accessibilityIgnoresInvertColors()
             .accessibilityHidden(true)   // decorative: the row's own text names the thing
     }
@@ -45,11 +45,11 @@ public struct Pill: View {
     public var body: some View {
         // caption2 (11 at default) grows with Dynamic Type; padding instead of a fixed height so it never clips.
         // A 10% tint on an opaque card ground, so the row behind never shows through: every status color
-        // reads 4.6:1 or more in both themes (the same value as the Mac's G.Opacity.pill).
+        // reads 4.6:1 or more in both themes (G.Opacity.pill, as on the Mac).
         Text(DisplayText.line(text)).font(G.tiny.weight(.medium))
             .padding(.horizontal, G.Space.s8).padding(.vertical, G.Space.s4)
             .foregroundStyle(color)
-            .background(color.opacity(G.Tint.pill(contrast)), in: Capsule())
+            .background(color.opacity(G.Opacity.pill(contrast)), in: Capsule())
             .background(G.card, in: Capsule())
     }
 
