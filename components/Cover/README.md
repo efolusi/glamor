@@ -1,6 +1,6 @@
 # Cover
 
-The 960 by 288 cover image: the product name and a one-line tag at the bottom left, and on the right an arrangement of flat blocks in the design system's own colours (`primary`, `warn`, `text3`, `ok` on a `border` track). It has no Swift view; `preview.html` is the source, exported as an image.
+The 960 by 288 cover image: the product name and a one-line tag at the bottom left, and on the right an arrangement of flat blocks in the design system's own colours (`accent`, `warn`, `text3`, `ok` on a `border` track). It has no Swift view; `preview.html` is the source, exported as an image.
 
 **Provide:** the name and the tag line.
 

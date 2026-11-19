@@ -7,7 +7,7 @@ import SwiftUI
 /// A rounded square with an icon, tinted softly.
 public struct IconTile: View {
     public let symbol: String
-    public var tint: Color = G.accent
+    public var tint: Color = G.accentFg
     public var size: CGFloat = G.Tile.t32
     @Environment(\.colorSchemeContrast) private var contrast
     public var body: some View {
@@ -20,7 +20,7 @@ public struct IconTile: View {
             .accessibilityHidden(true)    // always beside the words it stands for
     }
 
-    public init(symbol: String, tint: Color = G.accent, size: CGFloat = G.Tile.t32) {
+    public init(symbol: String, tint: Color = G.accentFg, size: CGFloat = G.Tile.t32) {
         self.symbol = symbol
         self.tint = tint
         self.size = size

@@ -75,7 +75,7 @@ public struct RowHighlight: ViewModifier {
         let focused = isFocused || showFocus
         let shape = RoundedRectangle(cornerRadius: G.Row.radius, style: .continuous)
         content
-            .background(selected ? G.accent.opacity(G.Opacity.selected)
+            .background(selected ? G.accentSubtle
                         : G.Hover.item(hover: hover, pressed: pressed, on: ground), in: shape)
             .overlay { if focused { shape.strokeBorder(G.focus, lineWidth: G.Line.strong).allowsHitTesting(false) } }
             .selectedMarker(selected)

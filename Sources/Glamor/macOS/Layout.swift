@@ -130,7 +130,7 @@ public struct SheetResize: Equatable {
 /// adds `.closesOnEscape { ... }`.
 public struct SheetLayout<Content: View, Status: View, Buttons: View>: View {
     public let symbol: String
-    public var tint: Color = G.accent
+    public var tint: Color = G.accentFg
     public let title: String
     public var subtitle: String?
     public var width: CGFloat = G.Width.sheet
@@ -189,7 +189,7 @@ public struct SheetLayout<Content: View, Status: View, Buttons: View>: View {
         VStack(alignment: .leading, spacing: G.Space.s16) { content() }.frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    public init(symbol: String, tint: Color = G.accent, title: String, subtitle: String?, width: CGFloat = G.Width.sheet, resize: SheetResize?, @ViewBuilder content: @escaping () -> Content, @ViewBuilder status: @escaping () -> Status, @ViewBuilder buttons: @escaping () -> Buttons) {
+    public init(symbol: String, tint: Color = G.accentFg, title: String, subtitle: String?, width: CGFloat = G.Width.sheet, resize: SheetResize?, @ViewBuilder content: @escaping () -> Content, @ViewBuilder status: @escaping () -> Status, @ViewBuilder buttons: @escaping () -> Buttons) {
         self.symbol = symbol
         self.tint = tint
         self.title = title
@@ -219,7 +219,7 @@ private struct SheetFrame: ViewModifier {
 }
 
 public extension SheetLayout where Status == EmptyView {
-    init(symbol: String, tint: Color = G.accent, title: String, subtitle: String? = nil, width: CGFloat = G.Width.sheet,
+    init(symbol: String, tint: Color = G.accentFg, title: String, subtitle: String? = nil, width: CGFloat = G.Width.sheet,
          resize: SheetResize? = nil, @ViewBuilder content: @escaping () -> Content, @ViewBuilder buttons: @escaping () -> Buttons) {
         self.init(symbol: symbol, tint: tint, title: title, subtitle: subtitle, width: width, resize: resize,
                   content: content, status: { EmptyView() }, buttons: buttons)

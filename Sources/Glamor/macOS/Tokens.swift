@@ -5,34 +5,23 @@ import SwiftUI
 // The design system's tokens: colors (light and dark) and every size on the 4-point scale.
 // Views use only these names (G.*), never a literal color or size; scripts/check-sizes.sh enforces it.
 
-// MARK: Palette: light and dark, following the system (or the person's choice)
-
-public extension NSColor {
-    convenience init(hex: UInt32) {
-        self.init(srgbRed: CGFloat((hex >> 16) & 0xFF) / 255, green: CGFloat((hex >> 8) & 0xFF) / 255,
-                  blue: CGFloat(hex & 0xFF) / 255, alpha: 1)
-    }
-}
+// MARK: Palette: design-tokens colours, light and dark, following the system (or the person's choice)
 
 public extension Color {
-    init(hex: UInt32, opacity: Double = 1) {
-        self.init(.sRGB, red: Double((hex >> 16) & 0xFF) / 255, green: Double((hex >> 8) & 0xFF) / 255,
-                  blue: Double(hex & 0xFF) / 255, opacity: opacity)
-    }
-
-    /// One colour for light appearance, one for dark, and optionally a stronger pair for
-    /// System Settings › Accessibility › Display › Increase contrast.
-    static func adaptive(_ light: UInt32, _ dark: UInt32, increased: (light: UInt32, dark: UInt32)? = nil) -> Color {
-        Color(nsColor: NSColor(name: nil) { appearance in
+    /// A design-tokens colour (Generated/GlamorTokens.swift): its light and dark values, and their pair
+    /// for System Settings › Accessibility › Display › Increase contrast. `increased: false` keeps the
+    /// normal pair even then.
+    init(_ pair: GlamorTokens.ColorPair, increased: Bool = true) {
+        self.init(nsColor: NSColor(name: nil) { appearance in
             let match = appearance.bestMatch(from: [.aqua, .darkAqua, .accessibilityHighContrastAqua,
                                                     .accessibilityHighContrastDarkAqua])
             let isDark = match == .darkAqua || match == .accessibilityHighContrastDarkAqua
             // SwiftUI resolves a colour with its own appearance, which can drop the high-contrast name,
             // so the system setting itself is read too.
-            let isHigh = match == .accessibilityHighContrastAqua || match == .accessibilityHighContrastDarkAqua
-                || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast || IncreasedContrast.forced
-            if isHigh, let increased { return NSColor(hex: isDark ? increased.dark : increased.light) }
-            return NSColor(hex: isDark ? dark : light)
+            let isHigh = increased && (match == .accessibilityHighContrastAqua || match == .accessibilityHighContrastDarkAqua
+                || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast || IncreasedContrast.forced)
+            let c = isDark ? (isHigh ? pair.increasedDark : pair.dark) : (isHigh ? pair.increasedLight : pair.light)
+            return NSColor(srgbRed: c.red, green: c.green, blue: c.blue, alpha: c.alpha)
         })
     }
 }
@@ -40,62 +29,63 @@ public extension Color {
 /// Debug snapshots only: draw the Increase contrast colours without changing the person's settings.
 public enum IncreasedContrast { nonisolated(unsafe) static var forced = false }
 
+private typealias T = GlamorTokens.Color
+
+/// Every colour comes from design-tokens (one brand with Meridian); no value is typed here.
+/// tests in design-tokens (tests/contrast.test.mjs) keep text at 4.5:1 on every ground and hover.
 public enum G {
-    public static let window = Color.adaptive(0xF3F3F1, 0x0F1115)     // behind everything, and the sidebar
-    public static let panel = Color.adaptive(0xFFFFFF, 0x17191F)      // the content panel
-    public static let card = Color.adaptive(0xFFFFFF, 0x1D2028)
-    public static let cardHover = Color.adaptive(0xF7F7F5, 0x242833)
-    public static let subtle = Color.adaptive(0xF4F4F2, 0x20232C)     // code, chips, selected rows
-    public static let field = Color.adaptive(0xFFFFFF, 0x14161C)
-    /// Decorative hairlines only. With Increase contrast they take controlEdge, so cards and secondary
+    public static let window = Color(T.surfacePage)          // behind everything, and the sidebar
+    public static let panel = Color(T.surfacePanel)          // the content panel
+    public static let card = Color(T.surfaceCard)
+    public static let cardHover = Color(T.surfaceCardHover)
+    public static let subtle = Color(T.surfaceSunken)        // code, chips, wells
+    public static let field = Color(T.surfaceSubtle)
+    /// Decorative hairlines only. With Increase contrast they take the control edge, so cards and secondary
     /// buttons keep a 3:1 edge.
-    public static let border = Color.adaptive(0xE4E4E1, 0x2A2E39, increased: (0x8C8C91, 0x6D717D))
+    public static let border = Color(T.borderDefault)
     /// border's colour used as a fill (a pressed ghost button, the tab ×'s hover, an underline tab's hover
     /// bar). It does not darken with Increase contrast as the hairline does, so a glyph on it keeps 4.5:1.
-    public static let borderFill = Color.adaptive(0xE4E4E1, 0x2A2E39)
-    /// The outline of a control: an off switch track, an unchecked checkbox, a text field.
-    /// 3:1 or more on window, panel, card, cardHover, subtle and field in both themes.
-    public static let controlEdge = Color.adaptive(0x8C8C91, 0x6D717D)
-    public static let text = Color.adaptive(0x1C1C1E, 0xECEDF1)
-    public static let text2 = Color.adaptive(0x505056, 0xB3B7C4)
-    public static let text3 = Color.adaptive(0x69696F, 0x9296A4, increased: (0x505056, 0xB3B7C4))   // text2 with Increase contrast
-    /// The status colors take a darker (light) or lighter (dark) pair with Increase contrast, so their
-    /// text holds 4.6:1 or more inside a pill at the 16% tint (design/tokens.json lists every ratio).
-    public static let accent = Color.adaptive(0x1659FF, 0x6292FF, increased: (0x074EFF, 0x6F9BFF))
-    /// The keyboard focus ring (focus): 4.8:1 or more against what surrounds it, both themes.
-    public static let focus = accent
+    public static let borderFill = Color(T.borderDefault, increased: false)
+    /// The outline of a control: an off switch track, an unchecked checkbox, a text field. 3:1 or more.
+    public static let controlEdge = Color(T.borderControl)
+    public static let text = Color(T.textPrimary)
+    public static let text2 = Color(T.textSecondary)
+    public static let text3 = Color(T.textMuted)             // text2 with Increase contrast
+    /// The ink fill of the main button, a progress bar and a switch that is on.
+    public static let accent = Color(T.accent)
+    public static let accentHover = Color(T.accentHover)
+    public static let accentPressed = Color(T.accentActive)
+    /// A glyph or word on an accent fill.
+    public static let onAccent = Color(T.accentContrast)
+    /// A chosen row's or the active tab's fill, always with the selected marker.
+    public static let accentSubtle = Color(T.accentSubtle)
+    /// The brand's brown for a glyph or word on a light tint: icon tiles, an info banner.
+    public static let accentFg = Color(T.accentSubtleFg)
+    /// The keyboard focus ring (focus): brown, 3:1 or more against every ground.
+    public static let focus = Color(T.focusRingColor)
     /// The one mark of a chosen item (selected-marker), so selection never rests on a fill alone.
-    public static let selectedMarker = accent
-    /// A glyph or word on an accent fill (the agent's send button): 5.4:1 in light, 6.3:1 in dark.
-    public static let onAccent = Color.adaptive(0xFFFFFF, 0x111216)
-    public static let primary = Color.adaptive(0x1C1C1E, 0xECEDF1)    // the black (white) main button
-    /// The main button under the pointer and pressed: opaque mixes toward onPrimary, so the ground never shows
-    /// through. onPrimary on them: 11.9 / 12.5:1 and 9.0 / 10.4:1.
-    public static let primaryHover = Color.adaptive(0x373739, 0xD2D3D7)
-    public static let primaryPressed = Color.adaptive(0x49494B, 0xC0C1C5)
-    public static let onPrimary = Color.adaptive(0xFFFFFF, 0x111216)
-    public static let ok = Color.adaptive(0x247A43, 0x45C46A, increased: (0x227440, 0x45C46A))
-    public static let warn = Color.adaptive(0xB24A00, 0xF2A445, increased: (0xA84600, 0xF2A445))
-    public static let danger = Color.adaptive(0xCA282E, 0xF36368, increased: (0xBD252B, 0xF47478))
-    public static let scrim = Color.black.opacity(0.18)                     // behind sheets, alerts and ⌘K
-    /// The avatar's one solid fill, the same in both themes, so the white initial holds 5.3:1.
-    public static let avatar = Color(hex: 0x247A43)
-    public static let onAvatar = Color(hex: 0xFFFFFF)
+    public static let selectedMarker = Color(T.accentSubtleFg)
+    public static let link = Color(T.textLink)
+    public static let ok = Color(T.success600)
+    public static let warn = Color(T.warning600)
+    public static let danger = Color(T.danger600)
+    public static let scrim = Color(T.overlayScrim)          // behind sheets, alerts and ⌘K
+    public static let avatar = Color(T.avatarBg)
+    public static let onAvatar = Color(T.avatarFg)
 
-    /// What sits under an item while the pointer is on it (design system: hover-*). One fill per ground, so
-    /// every hover is about as visible as every other in both themes (1.06 to 1.12:1), and text3 and accent
-    /// keep 4.5:1 on it, the pressed fill included. A raised control (secondary button, HoverCard) uses cardHover instead; nothing hovers in accent.
+    /// What sits under an item while the pointer is on it (design system: hover-*). One fill per ground; a
+    /// raised control (secondary button, HoverCard) uses cardHover instead; nothing hovers in accent.
     public enum Hover {
         /// A list row, table row, ⋯ or ghost button inside a card.
-        public static let onCard = Color.adaptive(0xF4F4F2, 0x242833, increased: (0xE8E8E6, 0x2E323C))
+        public static let onCard = Color(T.stateHoverOnCard)
         /// A menu, palette or side-list row, a tab, a chip or a ghost button on the panel.
-        public static let onPanel = Color.adaptive(0xF4F4F2, 0x20232C, increased: (0xE8E8E6, 0x2A2E39))
-        /// A panel-header tab under the pointer: quieter than the active tab's subtle, 1.06:1 on panel.
-        public static let onTab = Color.adaptive(0xF8F8F7, 0x1C1F27, increased: (0xEDEDEB, 0x252831))
+        public static let onPanel = Color(T.stateHoverOnPanel)
+        /// A panel-header tab under the pointer, on the panel.
+        public static let onTab = Color(T.stateHoverOnTab)
         /// A sidebar place or the More row, on the window.
-        public static let onWindow = Color.adaptive(0xFAFAF9, 0x16181D, increased: (0xE8E8E6, 0x202329))
+        public static let onWindow = Color(T.stateHoverOnWindow)
         /// Any item or raised control while the mouse is down. Nothing fades on press.
-        public static let pressed = Color.adaptive(0xEBEBE9, 0x2A2E39, increased: (0xDEDEDC, 0x363A45))
+        public static let pressed = Color(T.statePressed)
     }
 
     /// How strongly a tint shows behind its glyph or word. Pills sit lower than tiles so every
@@ -105,8 +95,6 @@ public enum G {
         public static let pill: Double = 0.10  // status pills and the Protected capsule, over an opaque card
         /// Pills and tiles with Increase contrast (design/README.md), so the shape stands out from the card.
         public static let increased: Double = 0.16
-        /// accent behind a chosen row, always with the selected marker.
-        public static let selected: Double = 0.10
         /// A banner's fill and a diff line's tint; its border.
         public static let banner: Double = 0.10
         public static let bannerEdge: Double = 0.25
@@ -115,7 +103,7 @@ public enum G {
         public static let attentionEdge: Double = 0.25
         /// accent at 70%: a focused field's outline.
         public static let ring: Double = 0.7
-        /// onPrimary behind the shortcut badge in a primary button.
+        /// onAccent behind the shortcut badge in a primary button.
         public static let kbd: Double = 0.18
         /// border at 70%: separators inside a CardList or table, an output pane's frame.
         public static let softHairline: Double = 0.7
@@ -164,21 +152,23 @@ public enum G {
     // MARK: Sizes: everything sits on a 4-point grid
 
     /// Six sizes (11, 12, 13, 15, 17, 20) in three weights. No half sizes and no system text styles.
+    /// Text sizes from design-tokens (text-2xs 11 to text-2xl 21): titles 21, 18 and 16, body 13, caption 12, small 11.
     public enum Font {
-        public static let titleL = SwiftUI.Font.system(size: 20, weight: .semibold)      // form and sheet titles
-        public static let titleM = SwiftUI.Font.system(size: 17, weight: .semibold)      // the panel title, a target's name
-        public static let titleS = SwiftUI.Font.system(size: 15, weight: .semibold)      // section and empty-state titles
-        public static let bodyStrong = SwiftUI.Font.system(size: 13, weight: .semibold)  // the primary button and headings inside a panel (titles are semibold; names and labels are bodyMedium)
-        public static let bodyMedium = SwiftUI.Font.system(size: 13, weight: .medium)    // field labels, the secondary button
-        public static let body = SwiftUI.Font.system(size: 13)
-        public static let caption = SwiftUI.Font.system(size: 12)                        // help, subtitles, metadata
-        public static let small = SwiftUI.Font.system(size: 11, weight: .medium)         // pills, shortcut badges
-        public static let sectionLabel = SwiftUI.Font.system(size: 11, weight: .semibold) // GROUPS, with `sectionTracking`
+        private typealias S = GlamorTokens.Length
+        public static let titleL = SwiftUI.Font.system(size: S.text2xl, weight: .semibold)      // form and sheet titles
+        public static let titleM = SwiftUI.Font.system(size: S.textXl, weight: .semibold)      // the panel title, a target's name
+        public static let titleS = SwiftUI.Font.system(size: S.textLg, weight: .semibold)      // section and empty-state titles
+        public static let bodyStrong = SwiftUI.Font.system(size: S.textSm, weight: .semibold)  // the primary button and headings inside a panel (titles are semibold; names and labels are bodyMedium)
+        public static let bodyMedium = SwiftUI.Font.system(size: S.textSm, weight: .medium)    // field labels, the secondary button
+        public static let body = SwiftUI.Font.system(size: S.textSm)
+        public static let caption = SwiftUI.Font.system(size: S.textXs)                        // help, subtitles, metadata
+        public static let small = SwiftUI.Font.system(size: S.text2xs, weight: .medium)         // pills, shortcut badges
+        public static let sectionLabel = SwiftUI.Font.system(size: S.text2xs, weight: .semibold) // GROUPS, with `sectionTracking`
         public static let sectionTracking: CGFloat = 0.6
-        public static let inputL = SwiftUI.Font.system(size: 17)                         // the command palette's field
-        public static let monoL = SwiftUI.Font.system(size: 13, design: .monospaced)     // the command bar, mono fields
-        public static let mono = SwiftUI.Font.system(size: 12, design: .monospaced)      // output, commands on cards
-        public static let monoS = SwiftUI.Font.system(size: 11, design: .monospaced)     // ratios, fingerprints
+        public static let inputL = SwiftUI.Font.system(size: S.textXl)                         // the command palette's field
+        public static let monoL = SwiftUI.Font.system(size: S.textSm, design: .monospaced)     // the command bar, mono fields
+        public static let mono = SwiftUI.Font.system(size: S.textXs, design: .monospaced)      // output, commands on cards
+        public static let monoS = SwiftUI.Font.system(size: S.text2xs, design: .monospaced)     // ratios, fingerprints
 
         /// Body text that turns semibold when its row or tab is selected.
     }

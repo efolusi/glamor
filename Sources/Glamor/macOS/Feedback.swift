@@ -18,7 +18,7 @@ public struct Banner<Actions: View>: View {
         case .success: G.ok
         case .warning: G.warn
         case .danger: G.danger
-        case .info: G.accent
+        case .info: G.accentFg
         }
     }
 
