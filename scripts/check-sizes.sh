@@ -10,6 +10,8 @@
 #   corner radii     4 6 8 12 16, or a quarter of a side (size * 0.25)
 #   widths/heights   multiples of 4, or 1 and 2 (hairlines, strong lines)
 #   line widths      1 2
+#   stored sizes     a CGFloat or @ScaledMetric default: multiples of 4, like widths
+# The token files (macOS/Tokens.swift, iOS/Tokens+iOS.swift, Generated/) define the scale and are skipped.
 #
 # Usage: scripts/check-sizes.sh [directory]
 set -euo pipefail
@@ -30,7 +32,7 @@ trap 'rm -f "$out"' EXIT
 # "tile" (the multiplier must be 0.25) or "never" (any match is wrong).
 check() {
     local kind=$1 pattern=$2 rule=$3 allowed=${4:-}
-    { grep -rnoE --include='*.swift' -- "$pattern" "$DIR" || true; } |
+    { grep -rnoE --include='*.swift' -- "$pattern" "$DIR" || true; } | { grep -vE '^[^:]*/(macOS/Tokens\.swift|iOS/Tokens\+iOS\.swift|Generated/[^:]*):' || true; } |
         awk -v kind="$kind" -v rule="$rule" -v allowed="$allowed" '
             BEGIN { n = split(allowed, a, " "); for (i = 1; i <= n; i++) ok[a[i] + 0] = 1 }
             {
@@ -62,6 +64,8 @@ check "grid size"      '(minimum|maximum): *[0-9.]+'                            
 check "column width"   '[^A-Za-z](min|ideal|max): *[0-9.]+'                              grid
 check "row height"     'rowHeight *= *[0-9.]+'                                           grid
 check "line width"     'lineWidth: *[0-9.]+'                                             list "$LINES"
+check "stored size"    ': *CGFloat *= *[0-9.]+'                                          grid
+check "scaled size"    '@ScaledMetric[^=]*= *[0-9.]+'                                    grid
 
 if [[ -s "$out" ]]; then
     sort -t: -k1,1 -k2,2n "$out"
