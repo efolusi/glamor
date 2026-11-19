@@ -6,11 +6,11 @@ import UIKit
 // Mac. Sizes and navigation follow iOS (Platforms table: "Navigation and sizes from the iOS conventions").
 
 public extension Color {
-    /// A color for light and dark, and, when `high` is given, its pair for Increase Contrast
+    /// A color for light and dark, and, when `increased` is given, its pair for Increase Contrast
     /// (design/README.md: `border` becomes `controlEdge`, `text3` becomes `text2`).
-    static func adaptive(_ light: UInt32, _ dark: UInt32, high: (light: UInt32, dark: UInt32)? = nil) -> Color {
+    static func adaptive(_ light: UInt32, _ dark: UInt32, increased: (light: UInt32, dark: UInt32)? = nil) -> Color {
         Color(uiColor: UIColor { t in
-            let pair = t.accessibilityContrast == .high ? (high ?? (light, dark)) : (light, dark)
+            let pair = t.accessibilityContrast == .high ? (increased ?? (light, dark)) : (light, dark)
             return UIColor(hex: t.userInterfaceStyle == .dark ? pair.1 : pair.0)
         })
     }
@@ -27,36 +27,39 @@ public enum G {
     public static let window = Color.adaptive(0xF3F3F1, 0x0F1115)
     public static let card = Color.adaptive(0xFFFFFF, 0x1D2028)
     public static let subtle = Color.adaptive(0xF4F4F2, 0x20232C)
-    public static let border = Color.adaptive(0xE4E4E1, 0x2A2E39, high: (0x8C8C91, 0x6D717D))   // decorative; controlEdge with Increase Contrast
+    public static let border = Color.adaptive(0xE4E4E1, 0x2A2E39, increased: (0x8C8C91, 0x6D717D))   // decorative; controlEdge with Increase Contrast
     public static let controlEdge = Color.adaptive(0x8C8C91, 0x6D717D)   // a control's outline, 3:1 or more
     public static let text = Color.adaptive(0x1C1C1E, 0xECEDF1)
     public static let text2 = Color.adaptive(0x505056, 0xB3B7C4)
-    public static let text3 = Color.adaptive(0x6E6E75, 0x8A8E9C, high: (0x505056, 0xB3B7C4))   // text2 with Increase Contrast
-    public static let accent = Color.adaptive(0x1659FF, 0x6090FF, high: (0x074EFF, 0x6F9BFF))   // increased pair: 4.6:1 inside a 16% pill
-    public static let ok = Color.adaptive(0x247A43, 0x45C46A, high: (0x227440, 0x45C46A))
-    public static let warn = Color.adaptive(0xB24A00, 0xF2A445, high: (0xA84600, 0xF2A445))
-    public static let danger = Color.adaptive(0xCA282E, 0xF36368, high: (0xBD252B, 0xF47478))
+    public static let text3 = Color.adaptive(0x6E6E75, 0x8A8E9C, increased: (0x505056, 0xB3B7C4))   // text2 with Increase Contrast
+    public static let accent = Color.adaptive(0x1659FF, 0x6090FF, increased: (0x074EFF, 0x6F9BFF))   // increased pair: 4.6:1 inside a 16% pill
+    public static let ok = Color.adaptive(0x247A43, 0x45C46A, increased: (0x227440, 0x45C46A))
+    public static let warn = Color.adaptive(0xB24A00, 0xF2A445, increased: (0xA84600, 0xF2A445))
+    public static let danger = Color.adaptive(0xCA282E, 0xF36368, increased: (0xBD252B, 0xF47478))
     public static let primary = Color.adaptive(0x1C1C1E, 0xECEDF1)
     public static let onPrimary = Color.adaptive(0xFFFFFF, 0x111216)
     public static let onAccent = Color.adaptive(0xFFFFFF, 0x111216)      // on an accent fill: 5.4:1 light, 6.2:1 dark
     public static let avatar = Color(uiColor: UIColor(hex: 0x247A43))    // one solid fill in both themes, white initial 5.3:1
-    public static let pillOpacity: Double = 0.10                          // pill tint over card: every status color 4.6:1 or more
-    public static let pillOpacityHigh: Double = 0.16                      // pill and tile tints with Increase Contrast
     /// iPad: the widest a column of sentences gets (readable-width), centred.
     public static let readableWidth: CGFloat = 672
     /// iPad split view: the Targets list column (PageiPad 360; 320 at Split View 2/3, PageiPadSizes).
     public static let listColumn: CGFloat = 360
     public static let listColumnNarrow: CGFloat = 320
-    public static let bannerOpacity: Double = 0.10                        // opacity-banner: a banner's tint over the card
-    public static let edgeOpacity: Double = 0.25                          // opacity-attention-stroke: a warn card's outline, as a banner's; the full color with Increase Contrast
-    public static let tintOpacity: Double = 0.12                          // opacity-tint: an icon tile's fill
 
-    /// How strongly a tint shows for this contrast (`@Environment(\.colorSchemeContrast)`), as the Mac's
-    /// G.Opacity.tint(_:) and .pill(_:): with Increase Contrast every tint is the 16% `pillOpacityHigh`.
-    public enum Tint {
-        public static func tile(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? G.pillOpacityHigh : G.tintOpacity }
-        public static func pill(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? G.pillOpacityHigh : G.pillOpacity }
-        public static func banner(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? G.pillOpacityHigh : G.bannerOpacity }
+    /// How strongly a tint shows behind its glyph or word, with the Mac's names (G.Opacity). Pills sit lower
+    /// than tiles, over an opaque card, so every status color keeps 4.6:1 or more on its pill.
+    public enum Opacity {
+        public static let tint: Double = 0.12           // opacity-tint: an icon tile's fill
+        public static let pill: Double = 0.10           // a status pill over the card
+        /// Pills and tiles with Increase Contrast, so the shape stands out from the card.
+        public static let increased: Double = 0.16
+        public static let banner: Double = 0.10         // opacity-banner: a banner's tint over the card
+        public static let attentionEdge: Double = 0.25  // a warn card's outline, as a banner's
+
+        /// The tile tint for this contrast: read `@Environment(\.colorSchemeContrast)` in the view.
+        public static func tint(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? increased : tint }
+        /// The pill tint for this contrast.
+        public static func pill(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? increased : pill }
     }
 
     /// Corner radii (radius-8, radius-12): code and chips, cards and bubbles.
