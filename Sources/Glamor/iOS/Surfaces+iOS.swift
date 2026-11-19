@@ -15,7 +15,7 @@ public struct IconTile: View {
             .font(.system(size: G.Tile.glyph(size) * scale, weight: .medium))
             .foregroundStyle(tint)
             .frame(width: side, height: side)
-            .background(tint.opacity(G.Opacity.tint(contrast)), in: RoundedRectangle(cornerRadius: side * 0.25, style: .continuous))
+            .background(tint.opacity(G.Opacity.tint(contrast)), in: RoundedRectangle(cornerRadius: side * G.Tile.radiusRatio, style: .continuous))
             .accessibilityIgnoresInvertColors()
             .accessibilityHidden(true)   // decorative: the row's own text names the thing
     }

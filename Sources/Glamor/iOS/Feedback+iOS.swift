@@ -30,7 +30,7 @@ public struct DelayedProgress: View {
                 Text(text).foregroundStyle(G.text3)
             }
         }
-        .frame(minHeight: G.Icon.lg)
+        .frame(minHeight: G.Height.row20)
         .accessibilityElement(children: .combine)
         .task {
             try? await Task.sleep(for: PhoneMotion.loadingDelay)

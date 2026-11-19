@@ -84,6 +84,8 @@ public enum G {
 
     /// Icon tiles and their glyphs, as on the Mac: 20 → 12, 28 and 32 → 16, 40 and up → 20.
     public enum Tile {
+        /// A tile's corner is a quarter of its side, as on the Mac.
+        public static let radiusRatio: CGFloat = 0.25
         public static let t20: CGFloat = 20
         public static let t32: CGFloat = 32
         public static let t40: CGFloat = 40
@@ -94,6 +96,12 @@ public enum G {
             default: Icon.lg
             }
         }
+    }
+
+    /// Row heights on iOS.
+    public enum Height {
+        /// A one-line loading row: the spinner's height, so the row does not jump when its words appear.
+        public static let row20: CGFloat = 20
     }
 
     /// A status dot, as the Mac's G.Dot.d8.
