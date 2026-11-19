@@ -21,6 +21,8 @@ scripts/vendor-tokens.sh --check
 swift test
 ```
 
+To look at the components in light and dark, render the snapshot galleries to a folder: `GLAMOR_SNAPSHOT_DIR=/tmp/shots swift test --filter SnapshotTests` on the Mac, and `TEST_RUNNER_GLAMOR_SNAPSHOT_DIR=/tmp/shots xcodebuild test -scheme Glamor -destination 'platform=iOS Simulator,name=iPhone 18 Pro' -only-testing:GlamorTests/SnapshotTestsIOS` for iOS. A normal test run skips them.
+
 `design-preview.py` loads React from jsDelivr (needs network). Output is under `build/` (gitignored).
 
 ## Rules

@@ -48,6 +48,10 @@ struct ContrastTests {
     @Test(arguments: [false, true]) func controlEdgesAndButtonLabelsHoldTheirRatio(dark: Bool) {
         #expect(ratio(G.controlEdge, G.card, dark: dark) >= 3)
         #expect(ratio(G.onAccent, G.accent, dark: dark) >= 4.5)
+        // A ProgressBar's fill against its track (non-text, 3:1), for the default tone and every status tone.
+        for tone in [G.accent, G.ok, G.warn, G.danger] {
+            #expect(ratio(tone, G.border, dark: dark) >= 3)
+        }
         // The brand's brown marks: focus ring, selected marker and tile glyphs, 3:1 or more on every surface.
         for surface in [G.window, G.panel, G.card, G.subtle, G.cardHover, G.accentSubtle] {
             #expect(ratio(G.focus, surface, dark: dark) >= 3)

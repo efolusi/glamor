@@ -91,7 +91,7 @@ public struct RowHighlight: ViewModifier {
 }
 
 public extension View {
-    /// The ListRow highlight: the ground's hover fill under the pointer, `accent` at 10% and the marker when selected.
+    /// The ListRow highlight: the ground's hover fill under the pointer, `accentSubtle` and the marker when selected.
     func rowHighlight(selected: Bool = false, hover: Bool = false) -> some View {
         modifier(RowHighlight(selected: selected, hover: hover))
     }
