@@ -8,7 +8,7 @@ The one divider every resizable area in the Mac app uses: the sidebar, the agent
 
 - **Look.** A 1pt `border` hairline, as the line between two panes already is, with a 4 by 24 grip (`radius-full`) in `text3` at its middle, so a person can see that it moves. Between stacked areas the grip lies flat (24 by 4).
 - **Hit area.** 4 wide, centred on the hairline (2 each side; on the sidebar's edge it sits wholly on the sidebar's side, under the grip), so the hairline stays 1pt and the pointer still finds it. The cursor is the resize cursor (`NSCursor.resizeLeftRight`, `.resizeUpDown`) over that area.
-- **Under the pointer** the grip turns `accent`. **While dragging** the hairline turns `accent` too, and a small mono tip beside it shows the width ("288"). The width snaps to the 4-pt scale.
+- **Under the pointer** the grip turns `focus`. **While dragging** the hairline turns `focus` too, and a small mono tip beside it shows the width ("288"). The width snaps to the 4-pt scale.
 - **Range.** It stops at its smallest and largest; the tip then says "224 · smallest" or "400 · largest". It never jumps past a pane's content: panes have the smallest widths in the table.
 - **Double-click** puts it back to its default. An area with no default (the Files panes, the splits) starts at half the room and goes back to half.
 - **The room shrinks.** When the window or page leaves less room than the saved width, the divider gives way; when the room comes back, so does the saved width. Only a drag, a key or a double-click changes what is saved.

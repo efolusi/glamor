@@ -40,7 +40,7 @@ public struct ShortcutBadge: View {
         Text(text).textStyle(.small)
             .padding(.horizontal, G.Space.s4)
             .frame(height: G.Height.control16)
-            .background(onPrimary ? G.onPrimary.opacity(G.Opacity.kbd) : .clear, in: RoundedRectangle(cornerRadius: G.Radius.r4))
+            .background(onPrimary ? G.onAccent.opacity(G.Opacity.kbd) : .clear, in: RoundedRectangle(cornerRadius: G.Radius.r4))
             .overlay {
                 if !onPrimary { RoundedRectangle(cornerRadius: G.Radius.r4).strokeBorder(G.border) }
             }
@@ -64,15 +64,15 @@ public struct PrimaryButtonStyle: ButtonStyle {
         let m = ButtonMetrics(compact, controlSize)
         // primary at rest, then primaryHover and primaryPressed (opaque, so the ground never shows through);
         // 30% when disabled.
-        let fill: Color = !enabled ? G.primary.opacity(G.Opacity.disabled)
-            : (configuration.isPressed ? G.primaryPressed : (hover ? G.primaryHover : G.primary))
+        let fill: Color = !enabled ? G.accent.opacity(G.Opacity.disabled)
+            : (configuration.isPressed ? G.accentPressed : (hover ? G.accentHover : G.accent))
         HStack(spacing: G.Space.s8) {
             configuration.label.lineLimit(1)
             if let shortcut { ShortcutBadge(text: shortcut, onPrimary: true) }
         }
         .textStyle(.bodyStrong)
         .labelStyle(ButtonLabelStyle(icon: m.icon, weight: .semibold))
-        .foregroundStyle(G.onPrimary)
+        .foregroundStyle(G.onAccent)
         .padding(.horizontal, G.Space.s12)
         .frame(height: m.height)
         .frame(maxWidth: wide ? .infinity : nil)

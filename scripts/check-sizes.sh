@@ -5,7 +5,7 @@
 # (and a few relatives: line widths, grid sizes, table row heights) that is off the scale,
 # and exits 1 if it finds any. Opacities and shadow radii are exempt.
 #
-#   fonts            11 12 13 15 17 20, and no system text styles (.caption, .title2 ...)
+#   fonts            11 12 13 16 18 21 (the design-tokens text sizes), and no system text styles (.caption, .title2 ...)
 #   padding/spacing  0 1 2 4 8 12 16 20 24 32 40 48
 #   corner radii     4 6 8 12 16, or a quarter of a side (size * 0.25)
 #   widths/heights   multiples of 4, or 1 and 2 (hairlines, strong lines)
@@ -19,7 +19,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 DIR="${1:-Sources/Glamor}"
 
-FONTS="11 12 13 15 17 20"
+FONTS="11 12 13 16 18 21"
 SPACES="0 1 2 4 8 12 16 20 24 32 40 48"
 RADII="4 6 8 12 16"
 LINES="1 2"
