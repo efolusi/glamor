@@ -157,7 +157,7 @@ button:disabled, [aria-disabled=true] { cursor: not-allowed; }
 
 /* CardList, InfoRow: rows 40 */
 .k-cardlist { display: flex; flex-direction: column; }
-.k-cardlist-sep { height: var(--line); margin-left: var(--space-16); background: color-mix(in srgb, var(--border) 70%, transparent); }
+.k-cardlist-sep { height: var(--line); margin-left: var(--space-16); margin-right: var(--space-4); background: color-mix(in srgb, var(--border) 70%, transparent); }
 .k-inforow { display: flex; align-items: center; gap: var(--space-20); height: var(--row-40); padding: 0 var(--space-16); font-size: 13px; line-height: 16px; }
 .k-inforow-label { color: var(--text2); flex: 1 1 auto; }
 .k-inforow-value { color: var(--text); text-align: right; }
