@@ -4,18 +4,17 @@ komando's editions, screens and platform notes live in efolusi/komando-apps desi
 
 ## Layout rules
 
-Komando is for people who are new to servers as much as for experts. Every screen follows these rules; a design that breaks one needs a reason written next to it.
+Every screen follows these rules; a design that breaks one needs a reason written next to it.
 
-- **Six places.** Home, Hosts, Connections, Files, Port Forwarding, Recipes (⌘1 to ⌘6). Everything else lives under **More** (Jobs, Keychain, Audit Log), in ⌘K, or inside the page it belongs to. Never add a seventh place. (Owner decision 2026-11-14: Files became the sixth, because a pane can hold any server or storage.)
-- **Areas resize with one divider.** The sidebar, the agent drawer, side lists, inspectors and splits are resized with **SplitDivider**: a visible grip, a double-click to reset, widths on the 4-pt scale and remembered for the whole app. Each area's default, smallest and largest width is in its table.
-- **One primary button per screen.** The page's create button sits at the right of the panel header and is named for what it makes: **Add** on Hosts and Connections (⌘N), New Forward, New Recipe, New Secret. A tab's one primary is its main action (Open Terminal on a host). Everything else is secondary or ghost.
-- **One way in.** One search: ⌘K, which also connects to `user@address` and runs komando commands (**Run a Command…**). One way to open a thing: as a tab, never a tab and an inspector. One create button: **Add** opens one chooser for every kind (**PageAdd**), with the importers on it.
-- **Advanced features hide until asked.** Split Right (⌘D), Split Down (⇧⌘D), Broadcast Input, Dry Run, Restart Session and Open in Terminal App live in ⋯ menus and shortcuts, not in toolbars.
-- **A fact appears once per screen.** An address is in the subtitle or in a card, not both; a host's groups are pills or a row, not both.
-- **Lists before cards.** Inventories are one-line lists that keep long names whole, filtered by a chip row (All · production · staging · lab). Cards are for a few things that need attention or are running.
-- **Plain words before komando's.** Findings say what is wrong and offer one action ("web-1 allows root to log in with a password." · **Fix**), never a raw check name or a command to copy. Commands appear where a person ran them: terminals, the audit log, the agent's tool calls.
-- **One safety control.** ☐ **Allow changes**, off by default, everywhere something could change, the agent's composer included (no Ask or Act); protected targets still ask first. Taking a target out of the inventory is **Remove**, never Delete.
-- **No decoration.** No dates in headers, no counts repeated from the sidebar, no shortcut badges on rows (shortcuts live in menus and tooltips), no gradients. One gradient stays, for a reason: the logo's ground (the approved K-caret mark in `logo.md`). Everything else, the avatar and the skeleton included, is one solid fill.
+- **A few places, and no more.** The sidebar holds a small, fixed set of places, each with its own ⌘ number. Everything else lives under **More**, in ⌘K, or inside the page it belongs to.
+- **Areas resize with one divider.** Sidebars, drawers, side lists, inspectors and splits are resized with **SplitDivider**: a visible grip, a double-click to reset, widths on the 4-pt scale and remembered for the whole app. Each area has a default, smallest and largest width.
+- **One primary button per view.** It sits at the right of the panel header and is named for what it does or makes ("Add", "New Project"). Everything else is secondary or ghost.
+- **One way in.** One search (⌘K). One way to open a thing, never two. One create button that opens one chooser for every kind.
+- **Advanced features hide until asked.** They live in ⋯ menus and shortcuts, not in toolbars.
+- **A fact appears once per view.** An address is in the subtitle or in a card, not both.
+- **Lists before cards.** Inventories are one-line lists that keep long names whole, filtered by a chip row. Cards are for the few things that need attention or are running.
+- **Plain words first.** Say what is wrong and offer one action, never a raw check name or a command to copy. Commands appear where a person ran them.
+- **No decoration.** No dates in headers, no counts repeated from the sidebar, no shortcut badges on rows (shortcuts live in menus and tooltips), no gradients. One gradient stays, for a reason: the app logo's ground. Everything else, the avatar and the skeleton included, is one solid fill.
 
 ## Content fundamentals
 
