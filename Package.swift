@@ -12,5 +12,7 @@ let package = Package(
     targets: [
         .target(name: "Glamor", swiftSettings: [.swiftLanguageMode(.v5)]),
         .testTarget(name: "GlamorTests", dependencies: ["Glamor"], swiftSettings: [.swiftLanguageMode(.v5)]),
+        // A small Mac app that shows the components in a real window. Not a product, so it never ships.
+        .executableTarget(name: "GlamorGallery", dependencies: ["Glamor"], swiftSettings: [.swiftLanguageMode(.v5)]),
     ]
 )
