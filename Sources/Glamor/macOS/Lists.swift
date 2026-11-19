@@ -300,6 +300,7 @@ public struct MoreMenu<Items: View>: View {
     public var help: String = "More"
     @ViewBuilder public var items: () -> Items
     @State private var hover = false
+    @FocusState private var focused: Bool
     @Environment(\.hoverGround) private var ground
     public var body: some View {
         Menu { items() } label: { Image(systemName: "ellipsis").icon(G.Icon.md) }
@@ -312,12 +313,14 @@ public struct MoreMenu<Items: View>: View {
             .background(hover ? G.Hover.fill(on: ground) : .clear,
                         in: RoundedRectangle(cornerRadius: G.Radius.r6, style: .continuous))
             .contentShape(Rectangle())
+            .focused($focused)
+            .focusRing(G.Radius.r6, isFocused: focused)
             .onHover { hover = $0 }
             .help(help)
             .accessibilityLabel(MoreMenuWords.label(label))
     }
 
-    public init(size: CGFloat = G.Height.control28, label: String?, help: String = "", @ViewBuilder items: @escaping () -> Items) {
+    public init(size: CGFloat = G.Height.control28, label: String?, help: String = "More", @ViewBuilder items: @escaping () -> Items) {
         self.size = size
         self.label = label
         self.help = help
