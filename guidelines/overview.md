@@ -1,73 +1,6 @@
-> **Glamor** is the native design system home for this content.
-> Seeded in full from `efolusi/komando-apps` on 2026-11-18 so every Efolusi native app can share one standard.
-> The body below is the living Komando design system (source of the standard). Product-specific screens stay as reference while shared primitives are extracted.
+Glamor is the native design system for Efolusi's apps on Mac, iPhone and iPad, built in SwiftUI. Its colours and sizes come from `efolusi/design-tokens`, the same tokens Meridian uses on the web, so both share one brand. The previews here redraw the SwiftUI views in HTML; the Swift names in each guideline are the API to use.
 
----
-
-Komando is one DevOps tool for everything a team usually spreads across an SSH client, a database client, a cache browser and a VPN app: servers, databases, caches, buckets, clusters, registries, message queues and forwards, all from one inventory. It comes in three versions, all free: the **komando** command line, the **Komando** desktop app for Mac and the **Komando** app for iPhone and iPad (on call). All three share one voice, one set of status colors and one set of symbols.
-
-The interface stays quiet: a grey window, one white panel floating on it, hairline cards, one black button per view, and color used only for status. Build every Mac screen in SwiftUI from the `K` palette and the building blocks in `Apps/macOS/Sources/Komando/DesignSystem/`. The previews here redraw those views in HTML so you can see them; the Swift names in each guideline are the API to use.
-
-## Platforms
-
-| | Command line | Desktop (Mac) | Mobile |
-| --- | --- | --- | --- |
-| Status | Built | Built, the source of this system | Built: on call (findings with Face ID fixes, targets with quick checks, the agent), over SSH to the machine komando runs on |
-| Shares | Voice, the four status meanings (`ok`, `warn`, `danger`, `accentFg`), the names of things | Everything on these pages | Tokens, voice, SF Symbols, the family tints, the components' anatomy |
-| Its own | Plain text and `--output json`, read by people and agents | Sidebar, floating panel, ⌘K, hover states | Navigation and sizes from the iOS conventions |
-
-- **Everything shared comes from here.** A color, a status word or a symbol that means one thing on the Mac means the same in the command line and on iPhone. Add a token here before using it on a new platform.
-- **Name things the same everywhere.** A target, a group, a recipe, protected, the doctor: the app uses the command line's words, and the command line's names appear in mono ("secret:prod-db-pass", "@web").
-- **Safety looks the same everywhere.** komando stops a risky command and names the flag that would allow it; every app asks the same question with the same words before adding that flag.
-- **The terminal palette is shared.** The command line prints with the same six `ansi-*` colors the Mac terminal uses: green for ok, yellow for warnings, red for errors, cyan for host names, blue for paths.
-- **The iPhone and iPad app takes navigation and sizes from iOS.**
-  - Tabs Home, Targets, Agent and Settings; inset grouped lists; 44-point touch targets (`touch-44`); iOS text styles (the **iPhone and iPad** type group), not the Mac values on these pages.
-  - Most of its screens have no Page cards. The group **iPhone and iPad** draws the ones that differ from iOS's defaults:
-    - iPad with a sidebar and split view (**PageiPad**);
-    - portrait at a readable width with its keyboard shortcuts (**PageiPadHome**);
-    - Split View sizes (**PageiPadSizes**);
-    - the Agent at accessibility text sizes (**PageiPhoneAgent**; owner decision 2026-11-13);
-    - Import from a Computer, which opens komando's sealed file for the phone (**PageiPhoneImport**);
-    - Files, opened from a server's or storage's detail, with Save to Files, Share, Upload from Files and a copy between two servers that komando runs on its host, so nothing goes through the device (**PageiPhoneFiles**, **PageiPadFiles**; owner decision 2026-11-14).
-  - The app follows the size class: regular width gets the sidebar (`.sidebarAdaptable`); compact width (iPhone, Split View 1/3, Slide Over) gets the tab bar at the bottom. Selection there is the system's: an `accent` fill with `onAccent` text.
-  - Its second tab is **Targets**, not Hosts: it lists every target (servers, databases, caches, VPNs) in sections by family, and its search says "Find a target". On the Mac, Hosts holds servers only (owner decision 2026-11-12).
-  - Its screens live in `Apps/iOS/KomandoMobile.swiftpm`.
-  - The colors, status words and symbols are the same as on the Mac, and so is the component anatomy (IconTile, StatusDot, Pill, AttentionCard, RunningCard). Its Agent tab has the same one safety control, ☐ Allow changes, drawn as an iOS switch.
-
-## Editions
-
-The command line is the engine; the apps are a visual workspace that runs the same komando and never reimplements it. Both are free. Owner decision, 2026-11-12: no trial, no license key, nothing locked. An upgrade will add services that need a server; none is built, it has no price, and no screen has a buy button yet.
-
-| | **komando** (command line) | **Komando** (apps), free | Upgrade, *Coming* |
-| --- | --- | --- | --- |
-| Price | Free and open source (AGPL) | Free, with no trial | Not set; nothing to buy yet |
-| Platforms | macOS, Linux, Windows | Mac, iPhone and iPad | Mac, iPhone and iPad |
-| What it gives | Every command, as text for people and JSON for machines | Everything that works on the device: tabs and split panes, grids, one-click fixes, the menu bar, notifications, the agent on your own Anthropic key, on call from your phone | Sync between devices, Teams, Built-in AI, Approve from your phone |
-
-- **Everything local is free.** The apps never lock a screen, count down days or ask for a key. A feature that runs on the device is free, in the app as in the command line. `Feature` in `Packages/KomandoKit/Sources/KomandoKit/Product/Editions.swift` is the one list: `Plan.free` for every built feature, `Plan.upgrade` for the four services, which are `Availability.planned`.
-- **The upgrade is services that need a server.** Sync between devices, Teams, Built-in AI and Approve from your phone. The **Proposed** cards (Komando Cloud) draw how sync and teams would work; they are the upgrade, not built.
-- **One quiet place.** **What's Coming…** in the profile menu opens the What's Coming sheet (**PageUpgrade**): everything on this Mac is free, the four features marked Coming, and "Nothing to buy yet." No other screen, menu, notification or pill mentions a plan.
-- **Say it the same way everywhere.** "Everything on this Mac is free, like the komando command line." on the Mac ("on this iPhone" on the phone). A feature that is not built is "Coming", never "Pro" or "Locked".
-
-## Screens
-
-The **Pages** cards are one example screen per place and feature, all in the same window (**AppShell**). The layout follows the beginner review (see **Beginner UX review**): six places, one way into each thing, one primary button per screen.
-
-| Where | Screens |
-| --- | --- |
-| First run | Install, Welcome |
-| Home | Home: what needs attention (with all findings one click away, and How to Fix for a change komando can't make), what is running, recent activity |
-| Hosts | Hosts list, host detail (Overview · Terminal), Add (on Hosts it opens the Server form, New Host, straight away), Terminal (Split Right, Split Down), Terminal states |
-| Connections | Connections list (databases, caches, storage, clusters, registries, queues, VPNs), Add (one chooser for every kind, with the importers on it), New Connection (the form behind every kind but Server, VPN included), Import, a connection's Overview (quick checks and the connection test; the only tab of storage, a cluster, a registry, a queue or a VPN), Database client, Cache browser |
-| Files | Two panes that each show this Mac, a server or a storage, with Swap, paths and breadcrumbs, a right-click menu and one transfer queue for the whole app; copies between two servers go through this Mac (**PageFiles**, **PageFilesOptions**, **PageFilesStates**, **PageFilesTransfers**) |
-| Port Forwarding | Forwards, New Forward |
-| Recipes | Recipes, recipe results per host |
-| More | Jobs, Keychain, New Secret, Audit Log |
-| Everywhere | ⌘K palette (also Add… and Run a Command…), the Mac menus and their shortcuts, the agent drawer (⌘J), safety prompts, Upgrade, Settings, loading, error and empty states |
-| Outside the window | Menu bar (what is up, what needs attention, recent servers), Notifications (a forward or VPN stopped) |
-| Proposed, nothing built | Komando Cloud, the upgrade's sync and teams, phases 1 and 2 of `docs/sync.md` (group **Proposed**): Sign In, Sign Up, Emergency Kit, New Device, Approve Device, Recover, Account, Team, Invite, Member, Remove Member, Roles, Vaults, SSO. Sign In comes first only when an account exists, and "Use Komando without an account" keeps today's local app; signed in, the profile menu adds Account… and Team…, and Settings adds Account and Team tabs. The sidebar stays six places and More. |
-
-Each screen belongs to a journey; the **User journeys** section lists them step by step.
+komando's editions, screens and platform notes live in efolusi/komando-apps design/README.md.
 
 ## Layout rules
 
@@ -83,18 +16,6 @@ Komando is for people who are new to servers as much as for experts. Every scree
 - **Plain words before komando's.** Findings say what is wrong and offer one action ("web-1 allows root to log in with a password." · **Fix**), never a raw check name or a command to copy. Commands appear where a person ran them: terminals, the audit log, the agent's tool calls.
 - **One safety control.** ☐ **Allow changes**, off by default, everywhere something could change, the agent's composer included (no Ask or Act); protected targets still ask first. Taking a target out of the inventory is **Remove**, never Delete.
 - **No decoration.** No dates in headers, no counts repeated from the sidebar, no shortcut badges on rows (shortcuts live in menus and tooltips), no gradients. One gradient stays, for a reason: the logo's ground (the approved K-caret mark in `logo.md`). Everything else, the avatar and the skeleton included, is one solid fill.
-
-## Agent mode
-
-The agent is a colleague who can use komando: it answers questions about your servers and can fix things, and it does both by running komando commands as you.
-
-It is built, in the Mac app and in the iPhone app's Agent tab. It runs Claude Opus 5.5 on the person's own Anthropic API key, which they add in Settings → Agent; the key stays in the keychain and use is billed to their Anthropic account. Until a key is there, the drawer says "Add your Anthropic API key to start." with **Settings…** (**PageAgentStart**), which opens Settings, where the key goes on the Agent tab (**PageSettings**); on iPhone it goes in the Settings tab.
-
-- **Show the work.** Each command is a **ToolCall** row with the exact command, status, duration and output. The agent's prose explains what it found; it never claims a result a command did not show.
-- **One safety box.** ☐ Allow changes in the composer, off by default: the agent runs only commands that look. Ticked, it may change things, but every safety stop (protected target, write, destructive command) becomes an **ApprovalCard** with the exact command and **Allow Once** or **Don't Run**.
-- **Scope is visible.** The targets the agent may touch are chips in the composer. @ adds more.
-- **Everything is audited.** Commands the agent runs go to the audit log under "agent", with the person who allowed each change.
-- **One way in.** The agent is a drawer on the right of any screen, opened with ⌘J or the agent button (`text.bubble`) in the panel header. Opening it over a terminal attaches the terminal's last command; over a target or a run, that target joins the scope as a chip. It always knows komando's current findings, so there is no Ask button on a finding. It is not a place in the sidebar.
 
 ## Content fundamentals
 
