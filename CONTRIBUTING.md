@@ -21,6 +21,8 @@ scripts/vendor-tokens.sh --check
 swift test
 ```
 
+To see the components in a real Mac window, run `swift run GlamorGallery`: a CardList with a selected row, buttons, the menus and a ProgressBar. With `GLAMOR_GALLERY_SHOTS=/tmp/shots` it saves the window in light and dark and quits. Turn on Full Keyboard Access (System Settings › Keyboard › Keyboard navigation) to Tab through the focus rings.
+
 To look at the components in light and dark, render the snapshot galleries to a folder: `GLAMOR_SNAPSHOT_DIR=/tmp/shots swift test --filter SnapshotTests` on the Mac, and `TEST_RUNNER_GLAMOR_SNAPSHOT_DIR=/tmp/shots xcodebuild test -scheme Glamor -destination 'platform=iOS Simulator,name=iPhone 18 Pro' -only-testing:GlamorTests/SnapshotTestsIOS` for iOS. A normal test run skips them.
 
 `design-preview.py` loads React from jsDelivr (needs network). Output is under `build/` (gitignored).
