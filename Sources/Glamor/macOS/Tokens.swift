@@ -58,15 +58,15 @@ public enum G {
     public static let controlEdge = Color.adaptive(0x8C8C91, 0x6D717D)
     public static let text = Color.adaptive(0x1C1C1E, 0xECEDF1)
     public static let text2 = Color.adaptive(0x505056, 0xB3B7C4)
-    public static let text3 = Color.adaptive(0x6E6E75, 0x8A8E9C, increased: (0x505056, 0xB3B7C4))   // text2 with Increase contrast
+    public static let text3 = Color.adaptive(0x69696F, 0x9296A4, increased: (0x505056, 0xB3B7C4))   // text2 with Increase contrast
     /// The status colors take a darker (light) or lighter (dark) pair with Increase contrast, so their
     /// text holds 4.6:1 or more inside a pill at the 16% tint (design/tokens.json lists every ratio).
-    public static let accent = Color.adaptive(0x1659FF, 0x6090FF, increased: (0x074EFF, 0x6F9BFF))
+    public static let accent = Color.adaptive(0x1659FF, 0x6292FF, increased: (0x074EFF, 0x6F9BFF))
     /// The keyboard focus ring (focus): 4.8:1 or more against what surrounds it, both themes.
     public static let focus = accent
     /// The one mark of a chosen item (selected-marker), so selection never rests on a fill alone.
     public static let selectedMarker = accent
-    /// A glyph or word on an accent fill (the agent's send button): 5.4:1 in light, 6.2:1 in dark.
+    /// A glyph or word on an accent fill (the agent's send button): 5.4:1 in light, 6.3:1 in dark.
     public static let onAccent = Color.adaptive(0xFFFFFF, 0x111216)
     public static let primary = Color.adaptive(0x1C1C1E, 0xECEDF1)    // the black (white) main button
     /// The main button under the pointer and pressed: opaque mixes toward onPrimary, so the ground never shows
@@ -83,8 +83,8 @@ public enum G {
     public static let onAvatar = Color(hex: 0xFFFFFF)
 
     /// What sits under an item while the pointer is on it (design system: hover-*). One fill per ground, so
-    /// every hover is about as visible as every other in both themes (1.06 to 1.12:1) and text3 keeps 4.5:1
-    /// on it. A raised control (secondary button, HoverCard) uses cardHover instead; nothing hovers in accent.
+    /// every hover is about as visible as every other in both themes (1.06 to 1.12:1), and text3 and accent
+    /// keep 4.5:1 on it, the pressed fill included. A raised control (secondary button, HoverCard) uses cardHover instead; nothing hovers in accent.
     public enum Hover {
         /// A list row, table row, ⋯ or ghost button inside a card.
         public static let onCard = Color.adaptive(0xF4F4F2, 0x242833, increased: (0xE8E8E6, 0x2E323C))
