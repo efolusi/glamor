@@ -9,26 +9,26 @@ import SwiftUI
 public extension G {
     enum Motion {
         /// motion-fast: a symbol replaced, the copied check, the drop ring. Also the Reduce Motion fade.
-        public static let fast: Animation = .easeOut(duration: 0.12)
+        public static let fast: Animation = .easeOut(duration: GlamorTokens.Duration.durFast)
         /// motion-base: something arriving or leaving in place (a notice, a banner, an approval card).
-        public static let base: Animation = .spring(duration: 0.2, bounce: 0)
+        public static let base: Animation = .spring(duration: GlamorTokens.Duration.durBase, bounce: 0)
         /// motion-slow: a panel (the agent drawer, the transfer queue folding). Nothing is longer.
-        public static let slow: Animation = .spring(duration: 0.25, bounce: 0)
+        public static let slow: Animation = .spring(duration: GlamorTokens.Duration.durSlow, bounce: 0)
         /// motion-progress: a bar moving to its new value, so it never jumps.
-        public static let progress: Animation = .linear(duration: 0.25)
+        public static let progress: Animation = .linear(duration: GlamorTokens.Duration.durProgress)
         /// motion-shift: how far an arriving thing travels (G.Space.s8).
         public static let shift: CGFloat = G.Space.s8
 
         /// delay-spinner: a spinner or skeleton waits this long, so fast work never flashes one.
-        public static let spinnerDelay: Duration = .milliseconds(300)
+        public static let spinnerDelay: Duration = .seconds(GlamorTokens.Duration.holdSpinnerDelay)
         /// hold-spinner: once shown, the shortest time it stays.
-        public static let spinnerHold: Duration = .milliseconds(500)
+        public static let spinnerHold: Duration = .seconds(GlamorTokens.Duration.holdSpinnerMin)
         /// hold-confirm: how long the copied check stays.
-        public static let confirmHold: Duration = .milliseconds(1500)
+        public static let confirmHold: Duration = .seconds(GlamorTokens.Duration.holdConfirm)
         /// hold-notice: how long a success notice stays.
-        public static let noticeHold: Duration = .seconds(8)
+        public static let noticeHold: Duration = .seconds(GlamorTokens.Duration.holdNotice)
         /// guard-click: a card that arrives on its own ignores clicks this long. Never the keyboard.
-        public static let clickGuard: Duration = .milliseconds(300)
+        public static let clickGuard: Duration = .seconds(GlamorTokens.Duration.guardClick)
 
         /// Debug snapshots draw every G.Motion animation off, so renders are the same every time.
         public static let isOff = ProcessInfo.processInfo.environment["KOMANDO_APP_SNAPSHOT"] != nil
