@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **New: haptic tokens.** `GHaptic` (`selection`, `fast`, `base`, `success`, `warning`, `error`) and `View.gHaptic(_:trigger:)`. `fast` and `base` match the two motion sizes (`GHaptic(PhoneMotion.Token)`). iPhone and iPad play them, and the system leaves them out when System Haptics is off. With Reduce Motion `base` softens to `fast`. On the Mac the modifier does nothing.
 - **Row dividers stop where a row's highlight stops.** A CardList's hairlines are now inset `G.Row.cardInset` from the card's right edge as well as from the left, so they no longer run into the card's border.
 - **A selected row shows a capsule, not a sliver.** The selected marker is 4 wide, 60% of the row's height, centred and 4 in from the leading edge (`G.Row.markerWidth`, `markerHeight`, `markerInset`); it was a 2pt bar on the very edge. `rowLook` insets its highlight like a ListRow, and ContrastTests check that the selected fill shows against the card.
 - **`guidelines/overview.md` is Glamor's own.** Layout rules, copy examples, the icon table and the owner answers no longer use komando's places, words or glyphs; In Swift describes Glamor's `G` and the vendored `GlamorTokens`. Values name their design-tokens token, and contrast ratios point to the contrast tests.
