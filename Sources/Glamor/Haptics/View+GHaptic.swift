@@ -35,6 +35,7 @@ private struct GHapticModifier<T: Equatable>: ViewModifier {
 
 public extension GHaptic {
     /// The haptic that goes with a motion token: the same size as the change it accompanies.
+    /// iOS only: `PhoneMotion` does not exist on the Mac.
     init(_ token: PhoneMotion.Token) {
         self = token == .base ? .base : .fast
     }
