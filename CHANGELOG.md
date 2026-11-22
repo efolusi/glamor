@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## 0.1.0 — 2026-11-22
+## v0.1.0 - 2026-11-22
 
 - **New: haptic tokens.** `GHaptic` (`selection`, `fast`, `base`, `success`, `warning`, `error`) and `View.gHaptic(_:trigger:)`. `fast` and `base` match the two motion sizes (`GHaptic(PhoneMotion.Token)`). iPhone and iPad play them, and the system leaves them out when System Haptics is off. With Reduce Motion `base` softens to `fast`. On the Mac the modifier does nothing.
 - **New: `Decor`, decorative backdrops.** `Decor(.mesh | .noise | .grid | .dots, fade:)` draws a backdrop behind a hero or section from the accent and text colours, as Meridian's `Decor`. It is hidden from VoiceOver, takes no touches, never moves (so Reduce Motion has nothing to stop) and is left out under Increase Contrast. Use `G.text` or `G.text2` for text over it, not `G.text3`.
@@ -23,6 +23,6 @@
 - **Tokens come from design-tokens v0.2.1**, which adds control, icon, avatar and sidebar sizes (0.2.0) and fixes the palette's own contrast (0.2.1).
 - The copy button has an accessible name, the README lists the platforms, and the previews use no em dashes.
 
-## 0.0.1 — 2026-11-18
+## v0.0.1 - 2026-11-18
 
 - First release: SwiftUI components, guidelines and previews, with tokens vendored from design-tokens.
