@@ -180,7 +180,7 @@ public struct SheetLayout<Content: View, Status: View, Buttons: View>: View {
         }
         .padding(G.Space.s24)
         .modifier(SheetFrame(width: width, resize: resize))
-        .background(G.panel)
+        .background { SheetGround() }
     }
 
     private static var endID: String { "sheet-end" }
@@ -199,6 +199,14 @@ public struct SheetLayout<Content: View, Status: View, Buttons: View>: View {
         self.content = content
         self.status = status
         self.buttons = buttons
+    }
+}
+
+/// The sheet's ground: system glass on macOS 26, the solid panel color below that and with Reduce Transparency
+/// or Increase Contrast.
+private struct SheetGround: View {
+    var body: some View {
+        Color.clear.glassSurface(in: Rectangle(), fill: G.panel, edge: .clear)
     }
 }
 

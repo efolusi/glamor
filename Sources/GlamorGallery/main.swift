@@ -9,6 +9,9 @@ import SwiftUI
 
 struct Gallery: View {
     @State private var choice = "Daily"
+    @State private var segment = 0
+    @State private var search = ""
+    @State private var appearance = Appearance.light
     @FocusState private var saveFocused: Bool
     var body: some View {
         VStack(alignment: .leading, spacing: G.Space.s16) {
@@ -25,6 +28,14 @@ struct Gallery: View {
                 }
                 MoreMenu(label: "web-1") { Button("Rename") {}; Button("Remove") {} }
             }
+            HStack(spacing: G.Space.s16) {
+                Button("Deploy") {}.glassMainAction(fallback: PrimaryButtonStyle())
+                SegmentedControl(items: ["Day", "Week", "Month"], selection: $segment)
+                ThemeSwitch(appearance: $appearance)
+            }
+            SearchBar(placeholder: "Search hosts", text: $search)
+            Text("Toolbar").textStyle(.caption).foregroundStyle(G.text2)
+                .frame(maxWidth: .infinity, minHeight: G.Height.control32).glassBar()
             ProgressBar(value: 0.6)
         }
         .textStyle(.body)
@@ -40,7 +51,7 @@ struct Gallery: View {
 final class Delegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
     func applicationDidFinishLaunching(_ note: Notification) {
-        window = NSWindow(contentRect: NSRect(x: 200, y: 200, width: 460, height: 320), styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        window = NSWindow(contentRect: NSRect(x: 200, y: 200, width: 460, height: 460), styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = "Glamor gallery"
         window.contentView = NSHostingView(rootView: Gallery())
         window.makeKeyAndOrderFront(nil)
