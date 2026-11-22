@@ -9,7 +9,7 @@ Native design system for Mac, iPhone, and iPad, by [Efolusi](https://efolusi.com
 | Path | What it is |
 |---|---|
 | `tokens.json` | Authored tokens (color, type, space, motion, …) |
-| `assets/` | Brand files (no Glamor logo yet) |
+| `assets/` | Brand files: `glamor.svg`, the logo (one colour, shape only; paint it through a CSS mask). The same file is `public/glamor.svg` on efolusi.com |
 | `components/` | Flat HTML preview cards (`components/<Name>/`) |
 | `guidelines/` | Overview, iconography, ecosystem, quality review. komando's journeys and UX review live in efolusi/komando-apps `design/`. |
 | `Package.swift` | The `Glamor` library for macOS 15 and iOS 18 |
