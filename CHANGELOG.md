@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **New: `Decor`, decorative backdrops.** `Decor(.mesh | .noise | .grid | .dots, fade:)` draws a backdrop behind a hero or section from the accent and text colours, as Meridian's `Decor`. It is hidden from VoiceOver, takes no touches, never moves (so Reduce Motion has nothing to stop) and is left out under Increase Contrast. Use `G.text` or `G.text2` for text over it, not `G.text3`.
 - **Row dividers stop where a row's highlight stops.** A CardList's hairlines are now inset `G.Row.cardInset` from the card's right edge as well as from the left, so they no longer run into the card's border.
 - **A selected row shows a capsule, not a sliver.** The selected marker is 4 wide, 60% of the row's height, centred and 4 in from the leading edge (`G.Row.markerWidth`, `markerHeight`, `markerInset`); it was a 2pt bar on the very edge. `rowLook` insets its highlight like a ListRow, and ContrastTests check that the selected fill shows against the card.
 - **`guidelines/overview.md` is Glamor's own.** Layout rules, copy examples, the icon table and the owner answers no longer use komando's places, words or glyphs; In Swift describes Glamor's `G` and the vendored `GlamorTokens`. Values name their design-tokens token, and contrast ratios point to the contrast tests.
