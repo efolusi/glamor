@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **The Glamor logo is the logo-system file.** `assets/glamor.svg` is replaced byte for byte by the approved file (sha256 starts 942628b8a9a6): the same lipstick, now on the 64 artboard in the tall box, one path. The README names `efolusi/efolusi` as the source of the marks.
 - **New: the Glamor logo, `assets/glamor.svg`.** A leaning lipstick (one slanted tip, a collar, a base) at the angle of Meridian's bars, one colour, tight viewBox (ratio 0.863). It is the mark `efolusi.com` shows for Glamor.
 - **New: haptic tokens.** `GHaptic` (`selection`, `fast`, `base`, `success`, `warning`, `error`) and `View.gHaptic(_:trigger:)`. `fast` and `base` match the two motion sizes (`GHaptic(PhoneMotion.Token)`). iPhone and iPad play them, and the system leaves them out when System Haptics is off. With Reduce Motion `base` softens to `fast`. On the Mac the modifier does nothing.
 - **New: `Decor`, decorative backdrops.** `Decor(.mesh | .noise | .grid | .dots, fade:)` draws a backdrop behind a hero or section from the accent and text colours, as Meridian's `Decor`. It is hidden from VoiceOver, takes no touches, never moves (so Reduce Motion has nothing to stop) and is left out under Increase Contrast. Use `G.text` or `G.text2` for text over it, not `G.text3`.
