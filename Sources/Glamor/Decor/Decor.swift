@@ -41,8 +41,8 @@ public struct Decor: View {
         let top = pattern.strongest
         switch pattern {
         case .mesh:
-            blob(&context, size, at: CGPoint(x: 0.15, y: 0.1), radius: 0.6, color: G.accentSubtle, strength: top)
-            blob(&context, size, at: CGPoint(x: 0.85, y: 0.2), radius: 0.55, color: G.accentSubtle, strength: top * 0.7)
+            blob(&context, size, at: CGPoint(x: 0.15, y: 0.1), radius: 0.6, color: Color(GlamorTokens.Color.accentSubtle), strength: top)
+            blob(&context, size, at: CGPoint(x: 0.85, y: 0.2), radius: 0.55, color: Color(GlamorTokens.Color.accentSubtle), strength: top * 0.7)
             blob(&context, size, at: CGPoint(x: 0.5, y: 1), radius: 0.7, color: G.accent, strength: 0.06)
         case .grid:
             let step = 32.0
