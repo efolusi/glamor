@@ -13,7 +13,7 @@ Native design system for Mac, iPhone, and iPad, by [Efolusi](https://efolusi.com
 | `components/` | Flat HTML preview cards (`components/<Name>/`) |
 | `guidelines/` | Overview, iconography, ecosystem, quality review. komando's journeys and UX review live in efolusi/komando-apps `design/`. |
 | `Package.swift` | The `Glamor` library for macOS 15 and iOS 18 |
-| `Sources/Glamor/` | SwiftUI tokens (`G`) and components: `macOS/`, `iOS/`, `Text/`, `Decor/` (backdrops) |
+| `Sources/Glamor/` | SwiftUI tokens (`G`) and components: `macOS/`, `iOS/`, `Text/`, `Decor/` (backdrops), `Haptics/` |
 | `scripts/` | Preview build and color / size / motion checks |
 
 ## Principles
