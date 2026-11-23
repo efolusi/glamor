@@ -36,8 +36,10 @@ step swift-test swift test
 step ios-build xcodebuild build -scheme Glamor -destination 'generic/platform=iOS' -quiet
 
 if [ "$(sw_vers -productVersion | cut -d. -f1)" -ge 26 ]; then
-    step window-check scripts/check-window.sh "${STRICT[@]}"
-    echo "       window lines: PASS $(grep -c '^PASS' "$OUT/window-check.log"), FAIL $(grep -c '^FAIL' "$OUT/window-check.log"), UNPROVEN $(grep -c '^UNPROVEN' "$OUT/window-check.log")"
+    step window-check scripts/check-window.sh ${STRICT[@]+"${STRICT[@]}"}
+    # A CHECK line ends in PASS or FAIL (tab separated); an UNPROVEN line starts with UNPROVEN.
+    W="$OUT/window-check.log"; T=$'\t'
+    echo "       window lines: PASS $(grep -c -E "^CHECK${T}.*${T}PASS\$" "$W"), FAIL $(grep -c -E "^CHECK${T}.*${T}FAIL\$" "$W"), UNPROVEN $(grep -c -E "^UNPROVEN${T}" "$W")"
 else
     echo "FAIL   window-check (needs macOS 26 or later)"
     FAILED=$((FAILED + 1))
