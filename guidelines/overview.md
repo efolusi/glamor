@@ -163,7 +163,7 @@ Motion only explains a change (owner decision 2026-11-15). It answers one of thr
 9. **The system's motion stays the system's.** Sheets, alerts, popovers, menus, split dividers, pull to refresh, Face ID and Liquid Glass toolbars keep their own motion. We never re-animate them.
 10. **Haptics on iPhone only, for outcomes.** Success, warning or error when a run the person started ends while its screen is open, and warning when a safety question or approval card appears. Never for scrolling, hover, taps through a list or a background refresh. Always with something visual too. The Mac plays no success or error haptics, so its feedback is visual.
 
-**Copy.** Copying never happens silently: the copy icon becomes `checkmark` in `ok` for `hold-confirm` (1.5 s) with a `motion-fast` replace (**CopyButton**), and VoiceOver says "Copied". Where there is no icon (⌘C in a table, a menu item), the status bar says what was copied for the same time.
+**Copy.** Copying never happens silently: the copy icon becomes `checkmark` in `ok` for `hold-confirm` (1.5 s) with a `motion-fast` replace (**CopyButton**), and posts the accessibility announcement "Copied" (checked in code; VoiceOver speech is not machine-proven). Where there is no icon (⌘C in a table, a menu item), the status bar says what was copied for the same time.
 
 **Kept still on purpose:** the ⌘K palette, tab and place switches, keyboard moves and scroll-to-selection, terminal and log text, query results and command output, selection fills and markers, status dots and pills, rows inside long lists (no animated inserts or removals), hover coming in (instant), and the system's own sheets and menus. A card README says "Motion: none" when its stillness is on purpose.
 

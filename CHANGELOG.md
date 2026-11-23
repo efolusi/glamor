@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v0.1.0 - 2026-11-23
+
+- **New: warm glass (GL13).** System glass behind `#available(iOS 26, macOS 26, *)` on bars and sheets, `.glass` on the theme switch, the segmented control and the search field, and a tinted ember glass for the main action. Reduce Transparency and Increase Contrast swap to the solid path, which is also what macOS 15 and iOS 18 draw. Materials come from design-tokens v0.7.0 (`scripts/vendor-tokens.sh`).
+- **New: CI (GL15).** `.github/workflows/checks.yml` runs on every pull request and every push to `main`, on GitHub-hosted runners: the vendored tokens check, the colour, motion and size checks, `swift test`, and the generic iOS build.
+- **New: the window check (`scripts/check-window.sh`).** Runs `GlamorGallery` on macOS 26 and checks the real window with no person at the keyboard: contrast in pixels, the label-to-icon gap, VoiceOver strings and `AXPress`, Tab order, Space and Return. It captures only that window and changes no system setting. `scripts/release-gate.sh` runs it after the CI checks; CI does not run it.
 - **Fix: the search placeholder is readable on glass (GL18).** New `G.placeholder` (design-tokens `textMuted`): `SearchBar` and `FilterField` draw their placeholder in it instead of the system's colour. ContrastTests hold it at 4.5:1 or more on every surface a field sits on and on glass over them, light and dark (lowest 5.48:1).
 - **Fix: the main action's label reads on its ember fill (GL19).** `glassMainAction` no longer uses the system's `.glassProminent`, whose own label colour was light on the dark theme's ember (2.05:1). It draws its own tinted glass and sets the label to `G.onAccent`: white on the light ember (5.24:1), the dark ink on the dark ember (8.43:1). The shape is the solid primary button's (32 high, `r8`), no longer a capsule.
 - **Fix: one gap between a label and its icon (GL21).** New `G.Space.labelIcon` (design-tokens `space-2`, 8) is the gap in every control that pairs text with an icon: `MenuPicker` (its chevron was the system's, about 3 pt from the title; it is now drawn 8 away with `.menuIndicator(.hidden)`), `LinkButton` (was 4), button labels, `SearchBar`, `FilterField`, `Banner` and iOS `FailureLine`. `LabelIconGapTests` fails on a literal, another token or SwiftUI's default in any such `HStack` or `Label`.
@@ -28,6 +33,6 @@
 - **Tokens come from design-tokens v0.2.1**, which adds control, icon, avatar and sidebar sizes (0.2.0) and fixes the palette's own contrast (0.2.1).
 - The copy button has an accessible name, the README lists the platforms, and the previews use no em dashes.
 
-## 0.0.1 — 2026-11-18
+## v0.0.1 - 2026-11-18
 
 - First release: SwiftUI components, guidelines and previews, with tokens vendored from design-tokens.

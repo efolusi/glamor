@@ -7,7 +7,7 @@
 | `main` | Yes. Fixes land here first |
 | Tagged releases (when published) | Yes, for security fixes |
 
-No tagged release yet. Until the first tag, only `main` is supported.
+Supported: the newest tag (`v0.1.0` and later) and `main`. Older tags get no fixes.
 
 ## Reporting a vulnerability
 
