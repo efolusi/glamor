@@ -247,6 +247,7 @@ public struct SearchBar<Accessory: View>: View {
             TextField(text: $text, prompt: Text(placeholder).foregroundStyle(G.placeholder)) { Text(placeholder) }
                 .textFieldStyle(.plain)
                 .textStyle(.body)
+                .accessibilityLabel(placeholder)
                 .focused($focused)
                 .onSubmit { action?() }
             if !text.isEmpty {
@@ -288,31 +289,40 @@ public struct MenuPicker<Value: Hashable, Options: View>: View {
     @ViewBuilder public var options: () -> Options
     @Environment(\.controlSize) private var controlSize
     @State private var hover = false
+    @State private var face = CGSize.zero
     @FocusState private var focused: Bool
     public var body: some View {
         let small = compact || controlSize == .small || controlSize == .mini
         let radius = small ? G.Radius.r6 : G.Radius.r8
-        Menu {
-            Picker(title, selection: $selection) { options() }.pickerStyle(.inline).labelsHidden()
-        } label: {
-            // The chevron is drawn here, `G.Space.labelIcon` after the title: the system's own indicator sat
-            // about 3 pt from it, tighter than the button's side padding (GL21).
-            HStack(spacing: G.Space.labelIcon) {
-                Text(title).textStyle(.bodyMedium).foregroundStyle(G.text)
-                Image(systemName: "chevron.down").icon(G.Icon.xs, weight: .bold).foregroundStyle(G.text2)
-            }
+        let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+        // The face is drawn here, outside the Menu: the system re-lays out a Menu's label (it put the chevron
+        // first, 7 pt from the word), so the label is an empty rectangle of the face's size and the Menu covers
+        // the whole face: that is its hit and accessibility area (GL21).
+        HStack(spacing: G.Space.labelIcon) {
+            Text(title).textStyle(.bodyMedium).foregroundStyle(G.text)
+            Image(systemName: "chevron.down").icon(G.Icon.xs, weight: .bold).foregroundStyle(G.text2)
         }
-        .menuStyle(.borderlessButton)
-        .menuIndicator(.hidden)
-        .tint(G.text)    // a secondary control: text, not the accent (PageAuditLog)
-        .fixedSize()
+        .accessibilityHidden(true)
         .padding(.horizontal, G.Space.s12)
         .frame(height: small ? G.Height.control28 : G.Height.control32)
         // The secondary button's hover, as it is drawn like one.
-        .background(hover ? G.cardHover : G.card, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(G.border))
+        .background(hover ? G.cardHover : G.card, in: shape)
+        .overlay(shape.strokeBorder(G.border))
         .shadow(G.Shadow.control)
-        .focused($focused)
+        .onGeometryChange(for: CGSize.self, of: \.size) { face = $0 }
+        .overlay {
+            Menu {
+                Picker(title, selection: $selection) { options() }.pickerStyle(.inline).labelsHidden()
+            } label: { Color.clear }
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .tint(G.text)    // a secondary control: text, not the accent (PageAuditLog)
+                .fixedSize()
+                .frame(width: face.width, height: face.height)
+                .contentShape(shape)
+                .accessibilityLabel(title)
+                .focused($focused)
+        }
         .focusRing(radius, isFocused: focused)
         .onHover { hover = $0 }
     }

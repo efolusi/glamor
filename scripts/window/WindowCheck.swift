@@ -285,6 +285,7 @@ func pixelsMode(_ t: Target) {
         let neighbour = ci == 0 ? ci + 1 : ci - 1
         let gap = ci == 0 ? runs[neighbour].start - runs[ci].end - 1 : runs[ci].start - runs[neighbour].end - 1
         let side = ci == 0 ? "chevron first" : "chevron last"
+        check("label-icon-gap", theme, "Daily menu button draws the chevron after the word", side, "chevron last", ci == runs.count - 1)
         // Ink to ink is the layout gap plus the side bearings of the chevron and the letter (about 1 pt each).
         check("label-icon-gap", theme, "Daily menu button, ink gap between label and chevron (\(side), \(runs.count) ink runs)", "\(gap) px = \(f2(Double(gap) / shot.scale)) pt",
               "8 pt = \(Int(pt)) px, bearings allow up to +\(Int((3 * shot.scale).rounded())) px", Double(gap) >= pt - 1 && Double(gap) <= pt + 3 * shot.scale)
@@ -325,11 +326,13 @@ func stringsMode(_ t: Target) {
               "\(c.role) (\(c.roleDescription)), selected \(c.selected), enabled \(c.enabled), name from \(c.nameSource)",
               "\(e.role), selected \(e.selected), enabled true", c.role == e.role && c.selected == e.selected && c.enabled)
         if c.role == "AXTextField" {
-            note("voiceover", theme, "the text field has no AXDescription or AXTitle; VoiceOver gets its words from the placeholder \"\(c.placeholder)\"")
+            let labelled = c.description == c.placeholder || c.title == c.placeholder
+            check("voiceover", theme, "the text field is named by a label equal to its placeholder, not by the placeholder alone",
+                  "AXDescription \"\(c.description)\", AXTitle \"\(c.title)\", placeholder \"\(c.placeholder)\"", "a label \"\(c.placeholder)\"", labelled)
         }
-        if c.role == "AXMenuButton", !c.title.isEmpty, !c.description.isEmpty, c.title != c.description {
-            note("voiceover", theme, "\"\(e.name)\" carries AXTitle \"\(c.title)\" and AXDescription \"\(c.description)\"")
-        }
+        // One name: a title and a description that differ are two names for one control.
+        let names = Set([c.title, c.description].filter { !$0.isEmpty })
+        check("voiceover", theme, "\"\(e.name)\" has one name", "AXTitle \"\(c.title)\", AXDescription \"\(c.description)\"", "one", names.count <= 1)
     }
     for c in t.controls where c.name.isEmpty {
         check("voiceover", theme, "every control has a name", "an unnamed \(c.role)", "named", false)

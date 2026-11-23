@@ -19,6 +19,7 @@ struct GlassMainActionStyle: ButtonStyle {
         label
             .textStyle(.bodyStrong)
             .frame(height: G.Height.control32)
+            .contentShape(shape)    // the whole button is the hit and accessibility area, not the label's 16 pt
             .glassEffect(.regular.tint(G.accent), in: shape)
             .opacity(enabled ? 1 : G.Opacity.disabled)
             .focusRing(G.Radius.r8)
