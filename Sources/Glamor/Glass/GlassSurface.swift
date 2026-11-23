@@ -2,12 +2,14 @@ import SwiftUI
 
 /// A surface that is system glass on macOS 26 and iOS 26, tinted with the warm material tint at the glass
 /// strength, and the solid `fill` with a hairline `edge` everywhere else (see `GlassPath`).
+/// `edgeOnGlass` keeps the hairline on glass too (a field's edge must hold 3:1 against any backdrop).
 /// A solid surface keeps the contact shadow of the control it replaces; glass casts none of its own colour.
 private struct GlassSurface<S: InsettableShape>: ViewModifier {
     let shape: S
     let tinted: Bool
     let fill: Color
     let edge: Color
+    let edgeOnGlass: Bool
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorSchemeContrast) private var contrast
 
@@ -16,6 +18,7 @@ private struct GlassSurface<S: InsettableShape>: ViewModifier {
                                     systemHasGlass: GlassPath.systemHasGlass)
         if path == .glass, #available(iOS 26, macOS 26, *) {
             content.glassEffect(tinted ? .regular.tint(Color(GlamorTokens.Color.materialTint).opacity(GlamorTokens.Number.glassStrength)) : .regular, in: shape)
+                .overlay { if edgeOnGlass { shape.strokeBorder(edge, lineWidth: 1) } }
         } else {
             content
                 .background(fill, in: shape)
@@ -27,8 +30,8 @@ private struct GlassSurface<S: InsettableShape>: ViewModifier {
 public extension View {
     /// Glass in `shape` where the system has it; the solid `fill` and `edge` below macOS 26 / iOS 26,
     /// with Reduce Transparency and with Increase Contrast.
-    func glassSurface<S: InsettableShape>(in shape: S, tinted: Bool = true, fill: Color, edge: Color) -> some View {
-        modifier(GlassSurface(shape: shape, tinted: tinted, fill: fill, edge: edge))
+    func glassSurface<S: InsettableShape>(in shape: S, tinted: Bool = true, fill: Color, edge: Color, edgeOnGlass: Bool = false) -> some View {
+        modifier(GlassSurface(shape: shape, tinted: tinted, fill: fill, edge: edge, edgeOnGlass: edgeOnGlass))
     }
 }
 

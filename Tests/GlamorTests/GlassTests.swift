@@ -94,19 +94,70 @@ struct ShadowColourTests {
     }
 }
 
-/// The theme switch says the action it will do, not the state it is in.
+/// The theme switch says the action it will do, not the state it is in, in the words the caller gives.
 struct ThemeSwitchTests {
-    @Test func labelNamesTheActionToDark() {
-        #expect(ThemeSwitchWords.label(current: .light) == "Switch to the dark theme")
+    @Test func englishNamesTheActionToDark() {
+        #expect(ThemeSwitchWords.english.label(current: .light) == "Switch to dark theme")
     }
 
-    @Test func labelNamesTheActionToLight() {
-        #expect(ThemeSwitchWords.label(current: .dark) == "Switch to the light theme")
+    @Test func englishNamesTheActionToLight() {
+        #expect(ThemeSwitchWords.english.label(current: .dark) == "Switch to light theme")
+    }
+
+    @Test func indonesianNamesTheAction() {
+        #expect(ThemeSwitchWords.indonesian.label(current: .light) == "Ganti ke tema gelap")
+        #expect(ThemeSwitchWords.indonesian.label(current: .dark) == "Ganti ke tema terang")
+    }
+
+    @Test func aCallerCanGiveItsOwnWords() {
+        let words = ThemeSwitchWords(toDark: "A", toLight: "B")
+        #expect(words.label(current: .light) == "A")
+        #expect(words.label(current: .dark) == "B")
     }
 
     @Test func nextIsTheOtherChoice() {
         #expect(ThemeSwitchWords.next(after: .light) == .dark)
         #expect(ThemeSwitchWords.next(after: .dark) == .light)
+    }
+}
+
+/// Glass is never inside glass, and a sheet does not add a second material over the system's.
+struct GlassNestingTests {
+    @Test func aSheetDrawsItsOwnGroundOnlyOnTheSolidPath() {
+        #expect(GlassPath.solid.drawsOwnSheetGround)
+        #expect(!GlassPath.glass.drawsOwnSheetGround)
+    }
+
+    @Test func aSegmentIsNeverGlassInsideTheGlassTrack() throws {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let text = try String(contentsOf: root.appendingPathComponent("Sources/Glamor/macOS/Controls.swift"), encoding: .utf8)
+        let start = try #require(text.range(of: "private struct SegmentItem"))
+        let item = String(text[start.lowerBound...])
+        #expect(!item.contains("glassSurface"), "the chosen segment is solid; its track is the glass")
+        #expect(text.contains("glassSurface"))
+    }
+}
+
+/// A search field on glass keeps a hairline of the control edge colour. The glass is the tint at the clear
+/// material's opacity over the surfaces a field sits on. Pure black and white backdrops are not held to 3:1
+/// (measured 2.1 in light over black, 1.8 in dark over white); that is a known gap reported with this change.
+@MainActor
+struct GlassEdgeTests {
+    private func lin(_ v: Double) -> Double { v <= 0.04045 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4) }
+    private func lum(_ r: Double, _ g: Double, _ b: Double) -> Double { 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b) }
+
+    @Test(arguments: [false, true]) func theEdgeHoldsThreeToOneOnGlassOverTheSurfacesAFieldSitsOn(dark: Bool) {
+        typealias C = GlamorTokens.Color
+        func pick(_ p: GlamorTokens.ColorPair) -> GlamorTokens.RGBA { dark ? p.dark : p.light }
+        let tint = pick(C.materialTint), edge = pick(C.borderControl)
+        let a = GlamorTokens.Number.materialClear
+        for ground in [C.surfacePage, C.surfaceCard, C.surfacePanel, C.surfaceSubtle, C.surfaceSunken].map(pick) {
+            let glassLum = lum(tint.red * a + ground.red * (1 - a), tint.green * a + ground.green * (1 - a), tint.blue * a + ground.blue * (1 - a))
+            let edgeLum = lum(edge.red, edge.green, edge.blue)
+            let ratio = (max(glassLum, edgeLum) + 0.05) / (min(glassLum, edgeLum) + 0.05)
+            #expect(ratio >= 3, "dark=\(dark) ratio=\(ratio)")
+        }
     }
 }
 #endif

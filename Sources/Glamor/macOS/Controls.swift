@@ -259,7 +259,7 @@ public struct SearchBar<Accessory: View>: View {
         .padding(.leading, G.Space.s12)
         .padding(.trailing, actionTitle == nil && Accessory.self == EmptyView.self ? G.Space.s12 : G.Space.s4)
         .frame(height: G.Height.control40)
-        .glassSurface(in: RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous), fill: G.field, edge: G.controlEdge)
+        .glassSurface(in: RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous), fill: G.field, edge: G.controlEdge, edgeOnGlass: true)
         .overlay {
             if focused {
                 RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous)
@@ -370,9 +370,8 @@ private struct SegmentItem: View {
                 .padding(.horizontal, G.Space.s8)
                 .frame(maxWidth: fill ? .infinity : nil, minHeight: G.Height.control24, alignment: .leading)
                 .background {
-                    // Glass on macOS 26: the chosen segment is the warm tinted glass. Below 26, and with Reduce
-                    // Transparency or Increase Contrast, the raised card with its contact shadow.
-                    if on { Color.clear.glassSurface(in: shape, fill: G.card, edge: G.border).shadow(G.Shadow.control) }
+                    // Always solid: the track is the glass, and glass is never inside glass (design-tokens glass.md).
+                    if on { shape.fill(G.card).overlay(shape.strokeBorder(G.border, lineWidth: G.Line.hair)).shadow(G.Shadow.control) }
                 }
                 .contentShape(Rectangle())
         }

@@ -5,6 +5,10 @@ import Foundation
 public enum GlassPath: Equatable, Sendable {
     case glass, solid
 
+    /// A sheet is already a system material on macOS 26, so only the solid path draws a ground of its own:
+    /// a second tint over the system's would double it.
+    public var drawsOwnSheetGround: Bool { self == .solid }
+
     public static func choose(reduceTransparency: Bool, increasedContrast: Bool, systemHasGlass: Bool) -> GlassPath {
         systemHasGlass && !reduceTransparency && !increasedContrast ? .glass : .solid
     }
