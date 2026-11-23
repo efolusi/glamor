@@ -1,0 +1,45 @@
+name: checks
+
+# Every pull request and every push to main: the Swift tests on macOS and the
+# generic iOS build. The repo is public, so this runs on GitHub-hosted runners.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    # macOS 26 runner: the glass paths behind #available(iOS 26, macOS 26, *) need the 26 SDK to compile.
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          # Nothing in this workflow pushes, so the token is not kept.
+          persist-credentials: false
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Vendored tokens match the pinned design-tokens tag
+        run: scripts/vendor-tokens.sh --check
+
+      - name: Design system rules (colours, motion, sizes)
+        run: |
+          scripts/check-colors.sh
+          scripts/check-motion.sh
+          scripts/check-sizes.sh
+
+      - name: Swift tests
+        run: swift test
+
+      - name: Generic iOS build
+        run: xcodebuild build -scheme Glamor -destination 'generic/platform=iOS' -quiet
