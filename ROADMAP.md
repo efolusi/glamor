@@ -42,7 +42,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 | 8 | Unit tests that build on macOS and the iOS Simulator | glamor | done | |
 | 9 | komando-apps Mac app uses Glamor | komando-apps | open | 5, 6 |
 | 10 | komando-apps iPhone and iPad app uses Glamor | komando-apps | open | 5, 6 |
-| 11 | First Glamor tag `0.0.1` | glamor | open | owner's yes, 8 |
+| 11 | First Glamor tag `v0.1.0` | glamor | done | v0.1.0 |
 | 12 | Turn Komando-specific preview cards into shared primitives | glamor | open | 4 |
 | 13 | Android through Skip | glamor | deferred | after Apple apps adopt Glamor |
 | 14 | Windows and Linux | glamor | deferred | no framework covers SwiftUI there yet |
