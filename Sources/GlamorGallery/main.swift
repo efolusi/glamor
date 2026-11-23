@@ -31,7 +31,7 @@ struct Gallery: View {
             HStack(spacing: G.Space.s16) {
                 Button("Deploy") {}.glassMainAction(fallback: PrimaryButtonStyle())
                 SegmentedControl(items: ["Day", "Week", "Month"], selection: $segment)
-                ThemeSwitch(appearance: $appearance)
+                ThemeSwitch(appearance: $appearance, words: .english)
             }
             SearchBar(placeholder: "Search hosts", text: $search)
             Text("Toolbar").textStyle(.caption).foregroundStyle(G.text2)

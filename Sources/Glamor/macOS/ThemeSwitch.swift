@@ -2,7 +2,7 @@
 import SwiftUI
 
 /// What the theme switch says to VoiceOver and in its tooltip: the action it will do, not the state it is in.
-/// The caller gives the words in the person's language; `english` and `indonesian` are Meridian's.
+/// The caller must give the words in the person's language (no default); `english` and `indonesian` are Meridian's.
 public struct ThemeSwitchWords: Equatable, Sendable {
     public let toDark: String
     public let toLight: String
@@ -38,7 +38,7 @@ public struct ThemeSwitch: View {
         .accessibilityLabel(label)
     }
 
-    public init(appearance: Binding<Appearance>, words: ThemeSwitchWords = .english) {
+    public init(appearance: Binding<Appearance>, words: ThemeSwitchWords) {
         self._appearance = appearance
         self.words = words
     }
