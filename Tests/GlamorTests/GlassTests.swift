@@ -147,6 +147,7 @@ struct GlassEdgeTests {
     private func lin(_ v: Double) -> Double { v <= 0.04045 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4) }
     private func lum(_ r: Double, _ g: Double, _ b: Double) -> Double { 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b) }
 
+    /// The limit by design: pure black and white backdrops are out of scope; the caller adds a scrim there.
     @Test(arguments: [false, true]) func theEdgeHoldsThreeToOneOnGlassOverTheSurfacesAFieldSitsOn(dark: Bool) {
         typealias C = GlamorTokens.Color
         func pick(_ p: GlamorTokens.ColorPair) -> GlamorTokens.RGBA { dark ? p.dark : p.light }

@@ -222,6 +222,8 @@ public struct LinkButton: View {
 
 /// The search line on top of a page, 40 high, with an optional compact action on the right (Connect)
 /// or other compact (28) controls in `accessory`.
+/// On glass its edge is promised 3:1 against the surface tokens only; over photos, video or pure black or white
+/// content the caller puts a scrim behind it.
 public struct SearchBar<Accessory: View>: View {
     public let placeholder: String
     @Binding public var text: String

@@ -2,7 +2,8 @@ import SwiftUI
 
 /// A surface that is system glass on macOS 26 and iOS 26, tinted with the warm material tint at the glass
 /// strength, and the solid `fill` with a hairline `edge` everywhere else (see `GlassPath`).
-/// `edgeOnGlass` keeps the hairline on glass too (a field's edge must hold 3:1 against any backdrop).
+/// `edgeOnGlass` keeps the hairline on glass too. A field's edge is promised 3:1 against the surface tokens only;
+/// over photos, video or pure black or white content the caller puts a scrim behind it (the design-tokens rule for text).
 /// A solid surface keeps the contact shadow of the control it replaces; glass casts none of its own colour.
 private struct GlassSurface<S: InsettableShape>: ViewModifier {
     let shape: S
