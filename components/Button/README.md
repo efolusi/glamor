@@ -13,4 +13,4 @@ Three button styles: **primary** is black (white in dark), **secondary** is a ra
 - Hover and pressed: primary `accentHover` then `accentPressed` (opaque); secondary `cardHover` then `pressed`; ghost `hover-panel` (or `hover-card` inside a card) then `pressed`, with `text`. A destructive secondary (Remove…) hovers the same; only its word is `danger`. Disabled is `opacity-disabled` with no shadow, or `text3` on a secondary button.
 - Shadow: `shadow-control` on primary and secondary (K.Shadow.control), none on ghost.
 
-- Motion: hover and press change at once. A copy button is a **CopyButton**: its `square.on.square` is replaced by `checkmark` in `ok` over motion-fast for hold-confirm (1.5 s), then comes back, and VoiceOver says "Copied". Reduce Motion: the same. iPhone: success haptic on copy.
+- Motion: hover and press change at once. A copy button is a **CopyButton**: its `square.on.square` is replaced by `checkmark` in `ok` over motion-fast for hold-confirm (1.5 s), then comes back, and it posts the accessibility announcement "Copied" (VoiceOver speech is not machine-proven). Reduce Motion: the same. iPhone: success haptic on copy.

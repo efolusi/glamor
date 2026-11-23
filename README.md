@@ -84,6 +84,20 @@ Runs what CI runs (vendored tokens, colour, size and motion checks, `swift test`
 Screen Recording permission, so CI does not run it: run the gate on a Mac before a tag, with the 1-minute load
 (`uptime`) under 10. Logs go to `GLAMOR_GATE_OUT` (default `.build/release-gate`).
 
+## Known limits in v0.1.0 (not machine-proven)
+
+The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, which prints these as UNPROVEN or does not reach them. Each row says what was proven instead.
+
+| Not proven | Proven instead |
+|---|---|
+| Tab order through the 13 gallery controls | Every control is in the accessibility tree with its role, name and enabled state. Keyboard navigation is off on the check Mac, so Tab stops on text fields only |
+| Space and Return on buttons (10 controls) | AXPress fires each button's action. Space opens and Escape closes the two menus |
+| VoiceOver speech | The accessibility label, role, trait and value of every control, read from the tree, with one name per control |
+| The system Reduce Transparency and Increase Contrast settings | A unit test of `GlassPath.choose` for the solid path. A debug palette switch draws the increased-contrast colours in the window, and they are measured |
+| Real mouse clicks, including on the button padding | The accessibility frame covers the whole button (at least 24x24, Deploy 68x32) |
+| The solid path on macOS 15 and iOS 18 | `#available` checks and unit tests; not run on those systems |
+| iOS at run time | iOS is built in CI and in the gate (`generic/platform=iOS`); it is not run in a simulator or measured in a window |
+
 ## Contributing
 
 [CONTRIBUTING.md](CONTRIBUTING.md). Security: [SECURITY.md](SECURITY.md).

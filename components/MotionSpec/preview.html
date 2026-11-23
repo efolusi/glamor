@@ -72,7 +72,7 @@
     var s = useState(false), copied = s[0], set = s[1];
     function play() { set(true); later(CONFIRM, function () { set(false); }); }
     return h(Tile, { title: 'Copy', token: 'motion-fast · hold-confirm', replay: play,
-      note: 'The copy icon is replaced by a check in ok for 1.5 s (120 ms Magic Replace), then the icon comes back. VoiceOver says "Copied". iPhone: success haptic.' },
+      note: 'The copy icon is replaced by a check in ok for 1.5 s (120 ms Magic Replace), then the icon comes back. It posts the accessibility announcement "Copied". iPhone: success haptic.' },
       h('div', { className: 'k-row', style: { gap: 'var(--space-8)' } },
         h('span', { className: 'k-mono' }, 'komando exec web-1 -- uptime'),
         h('span', { className: 'mv-swap' },
