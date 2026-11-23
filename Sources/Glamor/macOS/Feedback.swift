@@ -42,7 +42,7 @@ public struct Banner<Actions: View>: View {
     }
 
     public var body: some View {
-        HStack(alignment: .center, spacing: G.Space.s8) {
+        HStack(alignment: .center, spacing: G.Space.labelIcon) {
             Image(systemName: symbol).icon(G.Icon.md, label: Self.spokenKind(kind)).foregroundStyle(color)
                 .frame(maxHeight: .infinity, alignment: .top)
             VStack(alignment: .leading, spacing: G.Space.s2) {

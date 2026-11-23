@@ -199,14 +199,14 @@ public struct SectionTitle: View {
     }
 }
 
-/// "View all 4 ›": body in text2 with an 8 bold chevron 4 after it, text under the pointer.
+/// "View all 4 ›": body in text2 with an 8 bold chevron `G.Space.labelIcon` after it, text under the pointer.
 public struct LinkButton: View {
     public let title: String
     public let action: () -> Void
     @State private var hover = false
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: G.Space.s4) { Text(title); Image(systemName: "chevron.right").icon(G.Icon.xs, weight: .bold) }
+            HStack(spacing: G.Space.labelIcon) { Text(title); Image(systemName: "chevron.right").icon(G.Icon.xs, weight: .bold) }
                 .textStyle(.body).foregroundStyle(hover ? G.text : G.text2)
                 .contentShape(Rectangle())
         }
@@ -239,10 +239,12 @@ public struct SearchBar<Accessory: View>: View {
     }
 
     public var body: some View {
-        HStack(spacing: G.Space.s8) {
+        HStack(spacing: G.Space.labelIcon) {
             Image(systemName: "magnifyingglass").icon(G.Icon.md).foregroundStyle(G.text3)
                 .accessibilityHidden(true)
-            TextField(placeholder, text: $text)
+            // The placeholder is drawn in G.placeholder: the system's colour is nearly invisible on glass (GL18).
+            // The label keeps the same words for VoiceOver.
+            TextField(text: $text, prompt: Text(placeholder).foregroundStyle(G.placeholder)) { Text(placeholder) }
                 .textFieldStyle(.plain)
                 .textStyle(.body)
                 .focused($focused)
@@ -293,9 +295,15 @@ public struct MenuPicker<Value: Hashable, Options: View>: View {
         Menu {
             Picker(title, selection: $selection) { options() }.pickerStyle(.inline).labelsHidden()
         } label: {
-            Text(title).textStyle(.bodyMedium).foregroundStyle(G.text)
+            // The chevron is drawn here, `G.Space.labelIcon` after the title: the system's own indicator sat
+            // about 3 pt from it, tighter than the button's side padding (GL21).
+            HStack(spacing: G.Space.labelIcon) {
+                Text(title).textStyle(.bodyMedium).foregroundStyle(G.text)
+                Image(systemName: "chevron.down").icon(G.Icon.xs, weight: .bold).foregroundStyle(G.text2)
+            }
         }
         .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
         .tint(G.text)    // a secondary control: text, not the accent (PageAuditLog)
         .fixedSize()
         .padding(.horizontal, G.Space.s12)

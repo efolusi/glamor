@@ -52,6 +52,7 @@ public enum G {
         public static let increased: Double = 0.16
         public static let banner: Double = 0.10         // opacity-banner: a banner's tint over the card
         public static let attentionEdge: Double = 0.25  // a warn card's outline, as a banner's
+        public static let disabled: Double = 0.3        // the main action when disabled, as on the Mac
 
         /// The tile tint for this contrast: read `@Environment(\.colorSchemeContrast)` in the view.
         public static func tint(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? increased : tint }
@@ -70,6 +71,8 @@ public enum G {
         public static let s4 = CGFloat(GlamorTokens.Length.space1)
         public static let s8 = CGFloat(GlamorTokens.Length.space2)
         public static let s12 = CGFloat(GlamorTokens.Length.space3)
+        /// The gap between a label and its icon, as on the Mac: design-tokens space-2.
+        public static let labelIcon = CGFloat(GlamorTokens.Length.space2)
     }
 
     /// Symbol boxes, from the vendored tokens (icon.sm to icon.lg), with the Mac's names.

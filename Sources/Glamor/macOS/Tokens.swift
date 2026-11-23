@@ -51,6 +51,9 @@ public enum G {
     public static let text = Color(T.textPrimary)
     public static let text2 = Color(T.textSecondary)
     public static let text3 = Color(T.textMuted)             // text2 with Increase contrast
+    /// A field's placeholder, including a search field on glass: muted text, 4.5:1 or more on every surface a
+    /// field sits on and on glass over them (ContrastTests). The system's own placeholder colour is not used.
+    public static let placeholder = Color(T.textMuted)
     /// The ink fill of the main button, a progress bar and a switch that is on.
     public static let accent = Color(T.accent)
     public static let accentHover = Color(T.accentHover)
@@ -188,6 +191,10 @@ public enum G {
         public static let s32: CGFloat = 32
         public static let s40: CGFloat = 40
         public static let s48: CGFloat = 48
+        /// The gap between a label and its icon, on either side of it, in every control that pairs them
+        /// (a menu button's chevron, a button's icon, a field's magnifier and clear button): design-tokens
+        /// space-2. Never a literal and never SwiftUI's default (LabelIconGapTests).
+        public static let labelIcon = CGFloat(GlamorTokens.Length.space2)
     }
 
     /// Corner radii, chosen by the height of the thing. Pills, dots and bars are capsules.

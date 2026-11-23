@@ -265,10 +265,11 @@ public struct FilterField: View {
     @FocusState private var focused: Bool
     public var body: some View {
         FieldBox(focused: focused, compact: true) {
-            HStack(spacing: G.Space.s8) {
+            HStack(spacing: G.Space.labelIcon) {
                 Image(systemName: Self.symbol).icon(G.Icon.sm).foregroundStyle(G.text3)
                     .accessibilityHidden(true)
-                TextField(placeholder, text: $text).textStyle(.body).focused($focused)
+                TextField(text: $text, prompt: Text(placeholder).foregroundStyle(G.placeholder)) { Text(placeholder) }
+                    .textStyle(.body).focused($focused)
                 if !text.isEmpty {
                     Button { text = "" } label: { Image(systemName: "xmark.circle.fill").icon(G.Icon.sm) }
                         .buttonStyle(.plainFocus(G.Radius.r4)).foregroundStyle(G.text3)
