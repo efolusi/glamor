@@ -30,7 +30,9 @@ public enum GlamorTokens {
     public enum Color {
         public static let sand25 = ColorPair(light: RGBA(0.9882, 0.9843, 0.9765, 1.0), dark: RGBA(0.9882, 0.9843, 0.9765, 1.0))
         public static let sand50 = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 1.0), dark: RGBA(0.9804, 0.9765, 0.9647, 1.0))
+        public static let sand75 = ColorPair(light: RGBA(0.9647, 0.9569, 0.9373, 1.0), dark: RGBA(0.9647, 0.9569, 0.9373, 1.0))
         public static let sand100 = ColorPair(light: RGBA(0.9529, 0.9451, 0.9216, 1.0), dark: RGBA(0.9529, 0.9451, 0.9216, 1.0))
+        public static let sand150 = ColorPair(light: RGBA(0.9294, 0.902, 0.8549, 1.0), dark: RGBA(0.9294, 0.902, 0.8549, 1.0))
         public static let sand200 = ColorPair(light: RGBA(0.9059, 0.8902, 0.851, 1.0), dark: RGBA(0.9059, 0.8902, 0.851, 1.0))
         public static let sand300 = ColorPair(light: RGBA(0.8353, 0.8118, 0.7529, 1.0), dark: RGBA(0.8353, 0.8118, 0.7529, 1.0))
         public static let sand400 = ColorPair(light: RGBA(0.7059, 0.6706, 0.5922, 1.0), dark: RGBA(0.7059, 0.6706, 0.5922, 1.0))
@@ -52,6 +54,12 @@ public enum GlamorTokens {
         public static let brand800 = ColorPair(light: RGBA(0.3608, 0.2275, 0.1216, 1.0), dark: RGBA(0.3608, 0.2275, 0.1216, 1.0))
         public static let brand900 = ColorPair(light: RGBA(0.2824, 0.1569, 0.0941, 1.0), dark: RGBA(0.2824, 0.1569, 0.0941, 1.0))
         public static let brand950 = ColorPair(light: RGBA(0.1725, 0.0902, 0.0353, 1.0), dark: RGBA(0.1725, 0.0902, 0.0353, 1.0))
+        public static let ember50 = ColorPair(light: RGBA(0.9882, 0.9333, 0.8941, 1.0), dark: RGBA(0.9882, 0.9333, 0.8941, 1.0))
+        public static let ember100 = ColorPair(light: RGBA(0.9686, 0.902, 0.8392, 1.0), dark: RGBA(0.9686, 0.902, 0.8392, 1.0))
+        public static let ember150 = ColorPair(light: RGBA(0.949, 0.8627, 0.7686, 1.0), dark: RGBA(0.949, 0.8627, 0.7686, 1.0))
+        public static let ember300 = ColorPair(light: RGBA(0.949, 0.6392, 0.4196, 1.0), dark: RGBA(0.949, 0.6392, 0.4196, 1.0))
+        public static let ember600 = ColorPair(light: RGBA(0.7216, 0.2863, 0.1137, 1.0), dark: RGBA(0.7216, 0.2863, 0.1137, 1.0))
+        public static let ember700 = ColorPair(light: RGBA(0.6314, 0.251, 0.102, 1.0), dark: RGBA(0.6314, 0.251, 0.102, 1.0))
         public static let cocoa700 = ColorPair(light: RGBA(0.2824, 0.1569, 0.0941, 1.0), dark: RGBA(0.2824, 0.1569, 0.0941, 1.0))
         public static let cocoa900 = ColorPair(light: RGBA(0.2275, 0.1255, 0.0706, 1.0), dark: RGBA(0.2275, 0.1255, 0.0706, 1.0))
         public static let cocoa950 = ColorPair(light: RGBA(0.1725, 0.0902, 0.0353, 1.0), dark: RGBA(0.1725, 0.0902, 0.0353, 1.0))
@@ -65,12 +73,12 @@ public enum GlamorTokens {
         public static let successContrast = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
         public static let warning100 = ColorPair(light: RGBA(0.9922, 0.9529, 0.8784, 1.0), dark: RGBA(0.1804, 0.1412, 0.0745, 1.0))
         public static let warning300 = ColorPair(light: RGBA(0.9529, 0.851, 0.6588, 1.0), dark: RGBA(0.2902, 0.2275, 0.1137, 1.0))
-        public static let warning600 = ColorPair(light: RGBA(0.6902, 0.3176, 0.0353, 1.0), dark: RGBA(0.851, 0.5098, 0.1686, 1.0), increasedLight: RGBA(0.6353, 0.2902, 0.0275, 1.0), increasedDark: RGBA(0.851, 0.5098, 0.1686, 1.0))
+        public static let warning600 = ColorPair(light: RGBA(0.6902, 0.3176, 0.0353, 1.0), dark: RGBA(0.851, 0.5098, 0.1686, 1.0), increasedLight: RGBA(0.6353, 0.2902, 0.0275, 1.0), increasedDark: RGBA(0.8627, 0.5451, 0.2275, 1.0))
         public static let warningOnDark = ColorPair(light: RGBA(0.949, 0.7529, 0.4706, 1.0), dark: RGBA(0.949, 0.7529, 0.4706, 1.0))
         public static let warningContrast = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
         public static let danger100 = ColorPair(light: RGBA(0.9922, 0.9333, 0.9255, 1.0), dark: RGBA(0.1961, 0.1059, 0.0941, 1.0))
         public static let danger300 = ColorPair(light: RGBA(0.9608, 0.7765, 0.7529, 1.0), dark: RGBA(0.3294, 0.1608, 0.1216, 1.0))
-        public static let danger600 = ColorPair(light: RGBA(0.7843, 0.1176, 0.1176, 1.0), dark: RGBA(0.9137, 0.3882, 0.3137, 1.0), increasedLight: RGBA(0.7686, 0.1137, 0.1137, 1.0), increasedDark: RGBA(0.9216, 0.4471, 0.3843, 1.0))
+        public static let danger600 = ColorPair(light: RGBA(0.7843, 0.1176, 0.1176, 1.0), dark: RGBA(0.9216, 0.4314, 0.3608, 1.0), increasedLight: RGBA(0.7686, 0.1137, 0.1137, 1.0), increasedDark: RGBA(0.9255, 0.4863, 0.4275, 1.0))
         public static let danger700 = ColorPair(light: RGBA(0.7255, 0.1098, 0.1098, 1.0), dark: RGBA(0.9569, 0.4667, 0.3961, 1.0))
         public static let dangerOnDark = ColorPair(light: RGBA(0.9569, 0.6078, 0.5765, 1.0), dark: RGBA(0.9569, 0.6078, 0.5765, 1.0))
         public static let dangerContrast = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
@@ -86,13 +94,13 @@ public enum GlamorTokens {
         public static let statusSuccessOnSolid = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
         public static let statusWarningBg = ColorPair(light: RGBA(0.9922, 0.9529, 0.8784, 1.0), dark: RGBA(0.1804, 0.1412, 0.0745, 1.0))
         public static let statusWarningBorder = ColorPair(light: RGBA(0.9529, 0.851, 0.6588, 1.0), dark: RGBA(0.2902, 0.2275, 0.1137, 1.0))
-        public static let statusWarningText = ColorPair(light: RGBA(0.6902, 0.3176, 0.0353, 1.0), dark: RGBA(0.851, 0.5098, 0.1686, 1.0), increasedLight: RGBA(0.6353, 0.2902, 0.0275, 1.0), increasedDark: RGBA(0.851, 0.5098, 0.1686, 1.0))
-        public static let statusWarningSolid = ColorPair(light: RGBA(0.6902, 0.3176, 0.0353, 1.0), dark: RGBA(0.851, 0.5098, 0.1686, 1.0), increasedLight: RGBA(0.6353, 0.2902, 0.0275, 1.0), increasedDark: RGBA(0.851, 0.5098, 0.1686, 1.0))
+        public static let statusWarningText = ColorPair(light: RGBA(0.6902, 0.3176, 0.0353, 1.0), dark: RGBA(0.851, 0.5098, 0.1686, 1.0), increasedLight: RGBA(0.6353, 0.2902, 0.0275, 1.0), increasedDark: RGBA(0.8627, 0.5451, 0.2275, 1.0))
+        public static let statusWarningSolid = ColorPair(light: RGBA(0.6902, 0.3176, 0.0353, 1.0), dark: RGBA(0.851, 0.5098, 0.1686, 1.0), increasedLight: RGBA(0.6353, 0.2902, 0.0275, 1.0), increasedDark: RGBA(0.8627, 0.5451, 0.2275, 1.0))
         public static let statusWarningOnSolid = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
         public static let statusDangerBg = ColorPair(light: RGBA(0.9922, 0.9333, 0.9255, 1.0), dark: RGBA(0.1961, 0.1059, 0.0941, 1.0))
         public static let statusDangerBorder = ColorPair(light: RGBA(0.9608, 0.7765, 0.7529, 1.0), dark: RGBA(0.3294, 0.1608, 0.1216, 1.0))
         public static let statusDangerText = ColorPair(light: RGBA(0.7255, 0.1098, 0.1098, 1.0), dark: RGBA(0.9569, 0.4667, 0.3961, 1.0))
-        public static let statusDangerSolid = ColorPair(light: RGBA(0.7843, 0.1176, 0.1176, 1.0), dark: RGBA(0.9137, 0.3882, 0.3137, 1.0), increasedLight: RGBA(0.7686, 0.1137, 0.1137, 1.0), increasedDark: RGBA(0.9216, 0.4471, 0.3843, 1.0))
+        public static let statusDangerSolid = ColorPair(light: RGBA(0.7843, 0.1176, 0.1176, 1.0), dark: RGBA(0.9216, 0.4314, 0.3608, 1.0), increasedLight: RGBA(0.7686, 0.1137, 0.1137, 1.0), increasedDark: RGBA(0.9255, 0.4863, 0.4275, 1.0))
         public static let statusDangerOnSolid = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
         public static let statusInfoBg = ColorPair(light: RGBA(0.9176, 0.949, 0.9843, 1.0), dark: RGBA(0.0863, 0.1333, 0.1843, 1.0))
         public static let statusInfoBorder = ColorPair(light: RGBA(0.7333, 0.8353, 0.949, 1.0), dark: RGBA(0.1412, 0.251, 0.3686, 1.0))
@@ -104,37 +112,41 @@ public enum GlamorTokens {
         public static let chart3 = ColorPair(light: RGBA(0.1059, 0.6863, 0.4784, 1.0), dark: RGBA(0.098, 0.6196, 0.4392, 1.0))
         public static let chart4 = ColorPair(light: RGBA(0.3843, 0.3137, 0.8392, 1.0), dark: RGBA(0.5647, 0.5216, 0.9137, 1.0))
         public static let chart5 = ColorPair(light: RGBA(0.9098, 0.4824, 0.6431, 1.0), dark: RGBA(0.8353, 0.3176, 0.5059, 1.0))
-        public static let surfacePage = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 1.0), dark: RGBA(0.098, 0.0824, 0.0706, 1.0))
-        public static let surfaceCard = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1294, 0.1098, 0.0902, 1.0))
-        public static let surfacePanel = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1294, 0.1098, 0.0902, 1.0))
-        public static let surfaceCardHover = ColorPair(light: RGBA(0.9529, 0.9451, 0.9216, 1.0), dark: RGBA(0.1647, 0.1451, 0.1176, 1.0))
-        public static let surfaceSunken = ColorPair(light: RGBA(0.9529, 0.9451, 0.9216, 1.0), dark: RGBA(0.1647, 0.1451, 0.1176, 1.0))
-        public static let surfaceSubtle = ColorPair(light: RGBA(0.9882, 0.9843, 0.9765, 1.0), dark: RGBA(0.1137, 0.0941, 0.0784, 1.0))
+        public static let surfacePage = ColorPair(light: RGBA(0.9882, 0.9843, 0.9765, 1.0), dark: RGBA(0.1098, 0.0941, 0.0784, 1.0))
+        public static let surfaceCard = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.149, 0.1255, 0.1059, 1.0))
+        public static let surfacePanel = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.149, 0.1255, 0.1059, 1.0))
+        public static let surfaceCardHover = ColorPair(light: RGBA(0.9647, 0.9569, 0.9373, 1.0), dark: RGBA(0.1843, 0.1569, 0.1333, 1.0))
+        public static let surfaceSunken = ColorPair(light: RGBA(0.9647, 0.9569, 0.9373, 1.0), dark: RGBA(0.1843, 0.1569, 0.1333, 1.0))
+        public static let surfaceSubtle = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 1.0), dark: RGBA(0.1294, 0.1098, 0.0902, 1.0))
         public static let surfaceInverse = ColorPair(light: RGBA(0.1176, 0.102, 0.0784, 1.0), dark: RGBA(0.9804, 0.9765, 0.9647, 1.0))
         public static let surfaceInverseHover = ColorPair(light: RGBA(0.1804, 0.1608, 0.1333, 1.0), dark: RGBA(0.9529, 0.9451, 0.9216, 1.0))
         public static let surfaceInverseActive = ColorPair(light: RGBA(0.2667, 0.2392, 0.1961, 1.0), dark: RGBA(0.9059, 0.8902, 0.851, 1.0))
-        public static let surfaceBrand = ColorPair(light: RGBA(0.2824, 0.1569, 0.0941, 1.0), dark: RGBA(0.1725, 0.0902, 0.0353, 1.0))
+        public static let surfaceBrand = ColorPair(light: RGBA(0.9686, 0.902, 0.8392, 1.0), dark: RGBA(0.2275, 0.1412, 0.0941, 1.0))
         public static let surfaceCode = ColorPair(light: RGBA(0.0784, 0.0667, 0.0431, 1.0), dark: RGBA(0.0784, 0.0667, 0.0431, 1.0))
         public static let surfaceTrack = ColorPair(light: RGBA(0.9059, 0.8902, 0.851, 1.0), dark: RGBA(0.2275, 0.1961, 0.1608, 1.0))
-        public static let surfaceBrandHover = ColorPair(light: RGBA(0.3608, 0.2275, 0.1216, 1.0), dark: RGBA(0.2824, 0.1569, 0.0941, 1.0))
+        public static let surfaceBrandHover = ColorPair(light: RGBA(0.949, 0.8627, 0.7686, 1.0), dark: RGBA(0.2667, 0.1608, 0.1059, 1.0))
+        public static let field0 = ColorPair(light: RGBA(0.9882, 0.9843, 0.9765, 1.0), dark: RGBA(0.1098, 0.0941, 0.0784, 1.0))
+        public static let field1 = ColorPair(light: RGBA(0.9686, 0.902, 0.8392, 1.0), dark: RGBA(0.2275, 0.1412, 0.0941, 1.0))
+        public static let field2 = ColorPair(light: RGBA(0.949, 0.8627, 0.7686, 1.0), dark: RGBA(0.2667, 0.1608, 0.1059, 1.0))
+        public static let field3 = ColorPair(light: RGBA(0.9294, 0.902, 0.8549, 1.0), dark: RGBA(0.1843, 0.1569, 0.1333, 1.0))
         public static let textCode = ColorPair(light: RGBA(0.9098, 0.8902, 0.851, 1.0), dark: RGBA(0.9098, 0.8902, 0.851, 1.0))
-        public static let textOnBrandMuted = ColorPair(light: RGBA(0.9725, 0.9569, 0.902, 0.75), dark: RGBA(0.9725, 0.9569, 0.902, 0.75))
-        public static let textOnBrand = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(1.0, 1.0, 1.0, 1.0))
+        public static let textOnBrandMuted = ColorPair(light: RGBA(0.1176, 0.102, 0.0784, 0.75), dark: RGBA(0.9686, 0.902, 0.8392, 0.75))
+        public static let textOnBrand = ColorPair(light: RGBA(0.1176, 0.102, 0.0784, 1.0), dark: RGBA(0.9686, 0.902, 0.8392, 1.0))
         public static let textOnMedia = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 1.0), dark: RGBA(0.9804, 0.9765, 0.9647, 1.0))
         public static let textOnMediaMuted = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 0.75), dark: RGBA(0.9804, 0.9765, 0.9647, 0.75))
         public static let textPrimary = ColorPair(light: RGBA(0.1176, 0.102, 0.0784, 1.0), dark: RGBA(0.9529, 0.9373, 0.9059, 1.0))
-        public static let textSecondary = ColorPair(light: RGBA(0.349, 0.3137, 0.2549, 1.0), dark: RGBA(0.7882, 0.7529, 0.698, 1.0))
-        public static let textMuted = ColorPair(light: RGBA(0.4196, 0.3843, 0.3059, 1.0), dark: RGBA(0.6196, 0.5804, 0.5137, 1.0), increasedLight: RGBA(0.349, 0.3137, 0.2549, 1.0), increasedDark: RGBA(0.7882, 0.7529, 0.698, 1.0))
+        public static let textSecondary = ColorPair(light: RGBA(0.3529, 0.3137, 0.2588, 1.0), dark: RGBA(0.8118, 0.7765, 0.7176, 1.0))
+        public static let textMuted = ColorPair(light: RGBA(0.4196, 0.3843, 0.3059, 1.0), dark: RGBA(0.6588, 0.6196, 0.5529, 1.0), increasedLight: RGBA(0.3529, 0.3137, 0.2588, 1.0), increasedDark: RGBA(0.8118, 0.7765, 0.7176, 1.0))
         public static let textInverse = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
         public static let textInverseMuted = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 0.6), dark: RGBA(0.1176, 0.102, 0.0784, 0.55))
-        public static let textLink = ColorPair(light: RGBA(0.4784, 0.3059, 0.1686, 1.0), dark: RGBA(0.8078, 0.6118, 0.4, 1.0))
-        public static let textLinkHover = ColorPair(light: RGBA(0.2824, 0.1569, 0.0941, 1.0), dark: RGBA(0.8745, 0.7098, 0.5216, 1.0))
+        public static let textLink = ColorPair(light: RGBA(0.6314, 0.251, 0.102, 1.0), dark: RGBA(0.949, 0.6392, 0.4196, 1.0))
+        public static let textLinkHover = ColorPair(light: RGBA(0.4941, 0.1961, 0.0784, 1.0), dark: RGBA(0.9647, 0.7333, 0.5608, 1.0))
         public static let textDisabled = ColorPair(light: RGBA(0.7059, 0.6706, 0.5922, 1.0), dark: RGBA(0.4706, 0.4314, 0.349, 1.0))
         public static let borderCode = ColorPair(light: RGBA(0.9412, 0.9216, 0.8824, 0.09), dark: RGBA(0.9412, 0.9216, 0.8824, 0.09))
-        public static let borderDefault = ColorPair(light: RGBA(0.9059, 0.8902, 0.851, 1.0), dark: RGBA(0.2, 0.1725, 0.1412, 1.0), increasedLight: RGBA(0.5804, 0.5412, 0.4549, 1.0), increasedDark: RGBA(0.4706, 0.4314, 0.349, 1.0))
+        public static let borderDefault = ColorPair(light: RGBA(0.9294, 0.9137, 0.8824, 1.0), dark: RGBA(0.2275, 0.1961, 0.1647, 1.0), increasedLight: RGBA(0.5804, 0.5412, 0.4549, 1.0), increasedDark: RGBA(0.4863, 0.4471, 0.3686, 1.0))
         public static let borderStrong = ColorPair(light: RGBA(0.8353, 0.8118, 0.7529, 1.0), dark: RGBA(0.2706, 0.2353, 0.1922, 1.0))
         public static let borderInverse = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 0.18), dark: RGBA(0.1176, 0.102, 0.0784, 0.2))
-        public static let borderControl = ColorPair(light: RGBA(0.5804, 0.5412, 0.4549, 1.0), dark: RGBA(0.4706, 0.4314, 0.349, 1.0))
+        public static let borderControl = ColorPair(light: RGBA(0.5804, 0.5412, 0.4549, 1.0), dark: RGBA(0.4863, 0.4471, 0.3686, 1.0))
         public static let borderControlHover = ColorPair(light: RGBA(0.3686, 0.3333, 0.2706, 1.0), dark: RGBA(0.7059, 0.6706, 0.5922, 1.0))
         public static let borderHover = ColorPair(light: RGBA(0.7059, 0.6706, 0.5922, 1.0), dark: RGBA(0.4706, 0.4314, 0.349, 1.0), increasedLight: RGBA(0.3686, 0.3333, 0.2706, 1.0), increasedDark: RGBA(0.7059, 0.6706, 0.5922, 1.0))
         public static let codeInk = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 0.82), dark: RGBA(0.9804, 0.9765, 0.9647, 0.82))
@@ -153,30 +165,31 @@ public enum GlamorTokens {
         public static let mediaScrim = ColorPair(light: RGBA(0.0784, 0.0627, 0.0471, 0.55), dark: RGBA(0.0784, 0.0627, 0.0471, 0.55))
         public static let mediaScrimSoft = ColorPair(light: RGBA(0.0784, 0.0627, 0.0471, 0.45), dark: RGBA(0.0784, 0.0627, 0.0471, 0.45))
         public static let mediaScrimStrong = ColorPair(light: RGBA(0.0784, 0.0627, 0.0471, 0.7), dark: RGBA(0.0784, 0.0627, 0.0471, 0.7))
-        public static let accent = ColorPair(light: RGBA(0.1725, 0.0902, 0.0353, 1.0), dark: RGBA(0.9529, 0.9373, 0.9059, 1.0))
-        public static let accentHover = ColorPair(light: RGBA(0.1137, 0.0549, 0.0157, 1.0), dark: RGBA(1.0, 1.0, 1.0, 1.0))
-        public static let accentActive = ColorPair(light: RGBA(0.0706, 0.0314, 0.0039, 1.0), dark: RGBA(0.8353, 0.8118, 0.7529, 1.0))
-        public static let accentSubtle = ColorPair(light: RGBA(0.9725, 0.9569, 0.902, 1.0), dark: RGBA(0.1647, 0.1294, 0.098, 1.0))
-        public static let accentSubtleBorder = ColorPair(light: RGBA(0.9373, 0.8118, 0.6745, 1.0), dark: RGBA(0.2706, 0.2157, 0.1569, 1.0))
+        public static let accent = ColorPair(light: RGBA(0.7216, 0.2863, 0.1137, 1.0), dark: RGBA(0.949, 0.6392, 0.4196, 1.0))
+        public static let accentHover = ColorPair(light: RGBA(0.6314, 0.251, 0.102, 1.0), dark: RGBA(0.9647, 0.7333, 0.5608, 1.0))
+        public static let accentActive = ColorPair(light: RGBA(0.5412, 0.2118, 0.0824, 1.0), dark: RGBA(0.9098, 0.5765, 0.3529, 1.0))
+        public static let accentSubtle = ColorPair(light: RGBA(0.9882, 0.9333, 0.8941, 1.0), dark: RGBA(0.2275, 0.1412, 0.0941, 1.0))
+        public static let accentSubtleBorder = ColorPair(light: RGBA(0.9686, 0.851, 0.7608, 1.0), dark: RGBA(0.3529, 0.2118, 0.1333, 1.0))
         public static let accentContrast = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
-        public static let accentSubtleFg = ColorPair(light: RGBA(0.4784, 0.3059, 0.1686, 1.0), dark: RGBA(0.8078, 0.6118, 0.4, 1.0))
+        public static let accentSubtleFg = ColorPair(light: RGBA(0.6314, 0.251, 0.102, 1.0), dark: RGBA(0.949, 0.6392, 0.4196, 1.0))
         public static let accentWarm = ColorPair(light: RGBA(0.7529, 0.5412, 0.3529, 1.0), dark: RGBA(0.7529, 0.5412, 0.3529, 1.0))
         public static let accentSoft = ColorPair(light: RGBA(0.8745, 0.7098, 0.5216, 1.0), dark: RGBA(0.8745, 0.7098, 0.5216, 1.0))
-        public static let focusRingColor = ColorPair(light: RGBA(0.4784, 0.3059, 0.1686, 1.0), dark: RGBA(0.8078, 0.6118, 0.4, 1.0))
-        public static let focusRingOffset = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.1294, 0.1098, 0.0902, 1.0))
-        public static let avatarBg = ColorPair(light: RGBA(0.9529, 0.9451, 0.9216, 1.0), dark: RGBA(0.1647, 0.1451, 0.1176, 1.0))
-        public static let avatarFg = ColorPair(light: RGBA(0.349, 0.3137, 0.2549, 1.0), dark: RGBA(0.7882, 0.7529, 0.698, 1.0))
-        public static let stateHoverOnCard = ColorPair(light: RGBA(0.9529, 0.9451, 0.9216, 1.0), dark: RGBA(0.1647, 0.1451, 0.1176, 1.0))
-        public static let stateHoverOnPanel = ColorPair(light: RGBA(0.9529, 0.9451, 0.9216, 1.0), dark: RGBA(0.1647, 0.1451, 0.1176, 1.0))
-        public static let stateHoverOnTab = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 1.0), dark: RGBA(0.1451, 0.1255, 0.102, 1.0), increasedLight: RGBA(0.9255, 0.9137, 0.8824, 1.0), increasedDark: RGBA(0.1843, 0.1647, 0.1333, 1.0))
-        public static let stateHoverOnWindow = ColorPair(light: RGBA(0.9529, 0.9451, 0.9216, 1.0), dark: RGBA(0.1647, 0.1451, 0.1176, 1.0))
-        public static let statePressed = ColorPair(light: RGBA(0.9059, 0.8902, 0.851, 1.0), dark: RGBA(0.2, 0.1725, 0.1412, 1.0), increasedLight: RGBA(0.8275, 0.8078, 0.7686, 1.0), increasedDark: RGBA(0.3216, 0.2902, 0.2353, 1.0))
+        public static let focusRingColor = ColorPair(light: RGBA(0.6314, 0.251, 0.102, 1.0), dark: RGBA(0.949, 0.6392, 0.4196, 1.0))
+        public static let focusRingOffset = ColorPair(light: RGBA(1.0, 1.0, 1.0, 1.0), dark: RGBA(0.149, 0.1255, 0.1059, 1.0))
+        public static let avatarBg = ColorPair(light: RGBA(0.9647, 0.9569, 0.9373, 1.0), dark: RGBA(0.1843, 0.1569, 0.1333, 1.0))
+        public static let avatarFg = ColorPair(light: RGBA(0.3529, 0.3137, 0.2588, 1.0), dark: RGBA(0.8118, 0.7765, 0.7176, 1.0))
+        public static let stateHoverOnCard = ColorPair(light: RGBA(0.9647, 0.9569, 0.9373, 1.0), dark: RGBA(0.1843, 0.1569, 0.1333, 1.0))
+        public static let stateHoverOnPanel = ColorPair(light: RGBA(0.9647, 0.9569, 0.9373, 1.0), dark: RGBA(0.1843, 0.1569, 0.1333, 1.0))
+        public static let stateHoverOnTab = ColorPair(light: RGBA(0.9804, 0.9765, 0.9647, 1.0), dark: RGBA(0.1725, 0.1451, 0.1255, 1.0), increasedLight: RGBA(0.9255, 0.9137, 0.8824, 1.0), increasedDark: RGBA(0.2275, 0.1961, 0.1647, 1.0))
+        public static let stateHoverOnWindow = ColorPair(light: RGBA(0.9647, 0.9569, 0.9373, 1.0), dark: RGBA(0.1843, 0.1569, 0.1333, 1.0))
+        public static let statePressed = ColorPair(light: RGBA(0.9294, 0.9137, 0.8824, 1.0), dark: RGBA(0.2275, 0.1961, 0.1647, 1.0), increasedLight: RGBA(0.8275, 0.8078, 0.7686, 1.0), increasedDark: RGBA(0.3216, 0.2902, 0.2353, 1.0))
         public static let tonePeachFill = ColorPair(light: RGBA(0.9569, 0.9137, 0.8235, 1.0), dark: RGBA(0.9569, 0.9137, 0.8235, 1.0))
         public static let tonePeachOnFill = ColorPair(light: RGBA(0.1176, 0.102, 0.0784, 1.0), dark: RGBA(0.1176, 0.102, 0.0784, 1.0))
-        public static let toneCocoaFill = ColorPair(light: RGBA(0.2824, 0.1569, 0.0941, 1.0), dark: RGBA(0.1725, 0.0902, 0.0353, 1.0))
-        public static let toneCocoaOnFill = ColorPair(light: RGBA(0.9725, 0.9569, 0.902, 1.0), dark: RGBA(0.9725, 0.9569, 0.902, 1.0))
+        public static let toneBandFill = ColorPair(light: RGBA(0.9686, 0.902, 0.8392, 1.0), dark: RGBA(0.2275, 0.1412, 0.0941, 1.0))
+        public static let toneBandOnFill = ColorPair(light: RGBA(0.1176, 0.102, 0.0784, 1.0), dark: RGBA(0.9686, 0.902, 0.8392, 1.0))
         public static let toneAmberFill = ColorPair(light: RGBA(0.9922, 0.9529, 0.8784, 1.0), dark: RGBA(0.1804, 0.1412, 0.0745, 1.0))
         public static let toneAmberOnFill = ColorPair(light: RGBA(0.1176, 0.102, 0.0784, 1.0), dark: RGBA(0.9529, 0.9373, 0.9059, 1.0))
+        public static let materialTint = ColorPair(light: RGBA(1.0, 0.9922, 0.9765, 1.0), dark: RGBA(0.149, 0.1255, 0.1059, 1.0))
     }
 
     /// Lengths in points (CSS px = pt).
@@ -213,10 +226,10 @@ public enum GlamorTokens {
         public static let space05: Double = 2.0
         public static let radiusXs: Double = 4.0
         public static let radiusXsPlus: Double = 6.0
-        public static let radiusSm: Double = 8.0
-        public static let radiusMd: Double = 12.0
-        public static let radiusLg: Double = 16.0
-        public static let radiusXl: Double = 24.0
+        public static let radiusSm: Double = 10.0
+        public static let radiusMd: Double = 16.0
+        public static let radiusLg: Double = 22.0
+        public static let radiusXl: Double = 28.0
         public static let radiusFull: Double = 999.0
         public static let containerMax: Double = 1200.0
         public static let containerText: Double = 720.0
@@ -239,6 +252,8 @@ public enum GlamorTokens {
         public static let shiftSm: Double = 4.0
         public static let shiftMd: Double = 8.0
         public static let shiftLg: Double = 16.0
+        public static let materialBlur: Double = 17.28
+        public static let materialBlurThick: Double = 28.0
     }
 
     /// Lengths in points for compact density. Only the tokens that change.
@@ -252,9 +267,10 @@ public enum GlamorTokens {
         public static let tablePadX: Double = 12.0
     }
 
-    /// Unitless: line-height multipliers, opacities, font weights, z-index.
+    /// Unitless: line-height multipliers, opacities, font weights, z-index, the glass strength and its materials.
     public enum Number {
-        public static let leadingTight: Double = 1.05
+        public static let fieldStrength: Double = 0.33
+        public static let leadingTight: Double = 1.1
         public static let leadingSnug: Double = 1.25
         public static let leadingNormal: Double = 1.5
         public static let leadingRelaxed: Double = 1.65
@@ -262,7 +278,7 @@ public enum GlamorTokens {
         public static let weightMedium: Double = 500.0
         public static let weightSemibold: Double = 600.0
         public static let weightBold: Double = 700.0
-        public static let weightDisplay: Double = 680.0
+        public static let weightDisplay: Double = 560.0
         public static let zDropdown: Double = 1000.0
         public static let zSticky: Double = 1100.0
         public static let zOverlay: Double = 1200.0
@@ -270,6 +286,23 @@ public enum GlamorTokens {
         public static let zPopover: Double = 1400.0
         public static let zToast: Double = 1500.0
         public static let zTooltip: Double = 1600.0
+        public static let glassStrength: Double = 0.33
+        public static let materialClear: Double = 0.8086
+        public static let materialRegular: Double = 0.8218
+        public static let materialChrome: Double = 0.9406
+        public static let materialThick: Double = 0.9406
+        public static let materialThickDark: Double = 0.9472
+        public static let materialSaturate: Double = 1.264
+        public static let materialEdge: Double = 0.396
+        public static let materialEdgeDark: Double = 0.0739
+        public static let materialSpec: Double = 0.5016
+        public static let materialSpecDark: Double = 0.1162
+        public static let materialSpecLow: Double = 0.1155
+        public static let materialSpecLowDark: Double = 0.0165
+        public static let materialSheen: Double = 0.1815
+        public static let materialSheenDark: Double = 0.033
+        public static let motionLift: Double = 1.012
+        public static let motionPress: Double = 0.98
         public static let opacityTint: Double = 0.12
         public static let opacityPill: Double = 0.1
         public static let opacityIncreased: Double = 0.16
@@ -287,7 +320,7 @@ public enum GlamorTokens {
 
     /// Letter spacing as a fraction of the font size.
     public enum Em {
-        public static let trackingDisplay: Double = -0.02
+        public static let trackingDisplay: Double = -0.025
         public static let trackingTight: Double = -0.01
         public static let trackingWide: Double = 0.06
     }

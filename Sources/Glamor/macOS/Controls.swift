@@ -222,6 +222,8 @@ public struct LinkButton: View {
 
 /// The search line on top of a page, 40 high, with an optional compact action on the right (Connect)
 /// or other compact (28) controls in `accessory`.
+/// On glass its edge is promised 3:1 against the surface tokens only; over photos, video or pure black or white
+/// content the caller puts a scrim behind it.
 public struct SearchBar<Accessory: View>: View {
     public let placeholder: String
     @Binding public var text: String
@@ -259,9 +261,13 @@ public struct SearchBar<Accessory: View>: View {
         .padding(.leading, G.Space.s12)
         .padding(.trailing, actionTitle == nil && Accessory.self == EmptyView.self ? G.Space.s12 : G.Space.s4)
         .frame(height: G.Height.control40)
-        .background(G.field, in: RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous)
-            .strokeBorder(focused ? G.focus.opacity(G.Opacity.ring) : G.controlEdge, lineWidth: focused ? G.Line.strong : G.Line.hair))
+        .glassSurface(in: RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous), fill: G.field, edge: G.controlEdge, edgeOnGlass: true)
+        .overlay {
+            if focused {
+                RoundedRectangle(cornerRadius: G.Radius.r12, style: .continuous)
+                    .strokeBorder(G.focus.opacity(G.Opacity.ring), lineWidth: G.Line.strong)
+            }
+        }
     }
 }
 
@@ -329,8 +335,7 @@ public struct SegmentedControl: View {
         .padding(.horizontal, G.Space.s2)
         .frame(maxWidth: fill ? .infinity : nil)
         .frame(height: G.Height.control28)
-        .background(G.subtle, in: RoundedRectangle(cornerRadius: G.Radius.r8, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: G.Radius.r8, style: .continuous).strokeBorder(G.border, lineWidth: G.Line.hair))
+        .glassSurface(in: RoundedRectangle(cornerRadius: G.Radius.r8, style: .continuous), tinted: false, fill: G.subtle, edge: G.border)
         .fixedSize(horizontal: !fill, vertical: false)
         .onKeyPress(.leftArrow) { move(-1) }
         .onKeyPress(.rightArrow) { move(1) }
@@ -367,6 +372,7 @@ private struct SegmentItem: View {
                 .padding(.horizontal, G.Space.s8)
                 .frame(maxWidth: fill ? .infinity : nil, minHeight: G.Height.control24, alignment: .leading)
                 .background {
+                    // Always solid: the track is the glass, and glass is never inside glass (design-tokens glass.md).
                     if on { shape.fill(G.card).overlay(shape.strokeBorder(G.border, lineWidth: G.Line.hair)).shadow(G.Shadow.control) }
                 }
                 .contentShape(Rectangle())
