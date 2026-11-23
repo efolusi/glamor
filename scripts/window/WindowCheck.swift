@@ -231,8 +231,10 @@ func pixelsMode(_ t: Target) {
     check("placeholder", theme, "search placeholder ink \(hex(ph.ink)) on field \(hex(ph.ground))", f2(ph.typical) + ":1", ">= 4.5:1", ph.typical >= 4.5)
     if ph.worst < 4.5 { note("placeholder", theme, "against the weakest ground pixel the ratio is \(f2(ph.worst)):1") }
 
-    // 1b. Deploy label against its glass fill (4.5:1). The AX frame is the label; the button is 12 wider each side, 32 high.
-    let buttonRect = CGRect(x: deploy.frame.minX - 12, y: deploy.frame.midY - 16, width: deploy.frame.width + 24, height: 32).insetBy(dx: 5, dy: 5)
+    // 1b. Deploy label against its glass fill (4.5:1). The accessibility frame is the whole 32 pt button; a frame
+    // that is only the label (16 pt high) is widened by the button's 12 pt side padding.
+    let whole = deploy.frame.height >= 30
+    let buttonRect = (whole ? deploy.frame : CGRect(x: deploy.frame.minX - 12, y: deploy.frame.midY - 16, width: deploy.frame.width + 24, height: 32)).insetBy(dx: 5, dy: 5)
     let dp = readInk(shot, rect: buttonRect)
     check("deploy-label", theme, "Deploy label ink \(hex(dp.ink)) on fill \(hex(dp.ground))", f2(dp.typical) + ":1", ">= 4.5:1", dp.typical >= 4.5)
     if dp.worst < 4.5 { note("deploy-label", theme, "against the weakest fill pixel the ratio is \(f2(dp.worst)):1") }
