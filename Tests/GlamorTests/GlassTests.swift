@@ -73,6 +73,27 @@ struct VendoredGlassTokensTests {
     }
 }
 
+/// GL19: the system's `.glassProminent` paints its own label colour (light on ember in dark, 2.05:1) and ignores a
+/// `foregroundStyle` set outside it. The main action draws its own glass and sets `G.onAccent` inside its style.
+struct GlassMainActionLabelTests {
+    private func source(_ path: String) throws -> String {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        return try String(contentsOf: root.appendingPathComponent("Sources/Glamor/Glass").appendingPathComponent(path), encoding: .utf8)
+    }
+
+    @Test func theMainActionDoesNotUseTheSystemProminentStyle() throws {
+        #expect(!(try source("GlassSurface.swift")).contains(".glassProminent"))
+    }
+
+    @Test func theMainActionStyleSetsTheLabelColourInsideItself() throws {
+        let style = try source("GlassMainActionStyle.swift")
+        #expect(style.contains(".foregroundStyle(G.onAccent)"))
+        #expect(style.contains(".tint(G.accent)"))
+        #expect(try source("GlassSurface.swift").contains("GlassMainActionStyle()"))
+    }
+}
+
 #if os(macOS)
 import AppKit
 
@@ -168,6 +189,37 @@ struct GlassEdgeTests {
             let ratio = (max(glassLum, edgeLum) + 0.05) / (min(glassLum, edgeLum) + 0.05)
             #expect(ratio >= 3, "dark=\(dark) ratio=\(ratio)")
         }
+    }
+}
+
+/// GL18: the search fields draw their placeholder in `G.placeholder`, not the system's colour, which is nearly
+/// invisible on glass. The label stays the placeholder's words, so VoiceOver still names the field.
+struct SearchPlaceholderSourceTests {
+    private func source(_ path: String) throws -> String {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        return try String(contentsOf: root.appendingPathComponent("Sources/Glamor/macOS").appendingPathComponent(path), encoding: .utf8)
+    }
+
+    @Test func theSearchBarPromptsInThePlaceholderToken() throws {
+        let text = try source("Controls.swift")
+        let start = try #require(text.range(of: "public struct SearchBar"))
+        let end = try #require(text.range(of: "public struct MenuPicker"))
+        let bar = String(text[start.lowerBound..<end.lowerBound])
+        #expect(bar.contains("prompt: Text(placeholder).foregroundStyle(G.placeholder)"))
+    }
+
+    @Test func theFilterFieldPromptsInThePlaceholderToken() throws {
+        let text = try source("Lists.swift")
+        let start = try #require(text.range(of: "public struct FilterField"))
+        let end = try #require(text.range(of: "public enum MoreMenuWords"))
+        let field = String(text[start.lowerBound..<end.lowerBound])
+        #expect(field.contains("prompt: Text(placeholder).foregroundStyle(G.placeholder)"))
+    }
+
+    @Test func thePlaceholderIsTheMutedTextToken() throws {
+        let tokens = try source("Tokens.swift")
+        #expect(tokens.contains("public static let placeholder = Color(T.textMuted)"))
     }
 }
 #endif

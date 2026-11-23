@@ -49,7 +49,7 @@ private struct GlassButton<Fallback: ButtonStyle>: ViewModifier {
                                     systemHasGlass: GlassPath.systemHasGlass)
         if path == .glass, #available(iOS 26, macOS 26, *) {
             if prominent {
-                content.buttonStyle(.glassProminent).tint(G.accent).foregroundStyle(G.onAccent)    // ember, with the dark label the solid primary uses
+                content.buttonStyle(GlassMainActionStyle())    // ember glass, label in onAccent (see the style)
             } else {
                 content.buttonStyle(.glass)
             }
@@ -65,8 +65,8 @@ public extension View {
         modifier(GlassButton(prominent: false, fallback: fallback))
     }
 
-    /// The main action: `.glassProminent` tinted ember on macOS 26 / iOS 26, otherwise `fallback`
-    /// (the solid primary button, which has a contact shadow and no glow).
+    /// The main action: glass tinted ember on macOS 26 / iOS 26, with its label in `G.onAccent` (see
+    /// `GlassMainActionStyle`), otherwise `fallback` (the solid primary button, which has a contact shadow and no glow).
     func glassMainAction<Fallback: ButtonStyle>(fallback: Fallback) -> some View {
         modifier(GlassButton(prominent: true, fallback: fallback))
     }

@@ -122,7 +122,8 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 - **Menus:** rows 2 apart; a separator is a hairline with 4 above and below, inset 8; a long item ends in an ellipsis inside the menu.
 - **Forms:** 8 from a label to its field and from the field to its help, 16 between fields.
 - These were measured across every card (2026-11-09); check new screens the same way rather than by eye.
-- **Gaps:** 4 between a label and its chevron, 8 between an icon and its label and between buttons, 12 between a tile and its text, 16 between fields in a form.
+- **Gaps:** 8 between a label and its icon, whatever the icon is and whichever side it sits on (a menu button's chevron, a link's chevron, a button's icon, a field's magnifier and clear button), and 8 between buttons, 12 between a tile and its text, 16 between fields in a form.
+- **One token for label and icon.** Every control that pairs text with an icon takes the gap from `G.Space.labelIcon` (design-tokens `space-2`, 8): never a literal, never SwiftUI's default spacing, never the system's own menu indicator (`.menuIndicator(.hidden)`, then draw the chevron). `LabelIconGapTests` fails on any `HStack` or `Label` in `Sources/Glamor` that does otherwise.
 
 ### Shape, borders and depth
 

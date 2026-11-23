@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Checks the GlamorGallery window on this Mac, as a user sees it, with no person at the keyboard:
+#   pixel contrast (search placeholder, Deploy label, unfocused search edge) in light and dark, and with the
+#   Increase contrast colours (the gallery's debug flag; SwiftUI's own environment values cannot be set); the label-to-icon gap on the Daily menu button; the VoiceOver strings and
+#   AXPress; Tab order, Space and Return.
+# Only that window is captured. Light and dark are the gallery's own appearance (a launch argument); the
+# system's appearance, Reduce Transparency, Increase Contrast and Keyboard navigation are never changed.
+#
+# Needs macOS 26, and Accessibility and Screen Recording permission for the app that runs it.
+# Exit 0: no check failed. Exit 1: a check failed. Exit 2: it could not run. With --strict, an UNPROVEN line
+# (something the system would not let it test without a settings change) also exits 1.
+# Screenshots and tables: GLAMOR_WINDOW_OUT (default .build/window-check).
+#
+# Usage: scripts/check-window.sh [--strict]
+set -uo pipefail
+cd "$(dirname "$0")/.."
+OUT="$(mkdir -p "${GLAMOR_WINDOW_OUT:-.build/window-check}" && cd "${GLAMOR_WINDOW_OUT:-.build/window-check}" && pwd)"
+STRICT=0
+[ "${1:-}" = "--strict" ] && STRICT=1
+
+[ "$(sw_vers -productVersion | cut -d. -f1)" -ge 26 ] || { echo "needs macOS 26 or later" >&2; exit 2; }
+
+# One run at a time, and not under load: wait for the self-hosted runner, and for a 1-minute load under 10.
+RUN=()
+[ -x "$HOME/.claude/bin/when-runner-idle" ] && RUN=("$HOME/.claude/bin/when-runner-idle")
+for _ in $(seq 1 60); do
+    load=$(uptime | sed -E 's/.*load averages?: ([0-9]+)[.,].*/\1/')
+    [ "$load" -lt 10 ] && break
+    sleep 5
+done
+[ "$load" -lt 10 ] || { echo "load average $load is 10 or more; not running" >&2; exit 2; }
+
+"${RUN[@]}" swift build --product GlamorGallery >"$OUT/build.log" 2>&1 || { tail -20 "$OUT/build.log" >&2; exit 2; }
+GALLERY="$(swift build --show-bin-path)/GlamorGallery"
+mkdir -p "$OUT/bin"
+"${RUN[@]}" swiftc -O -o "$OUT/bin/windowcheck" scripts/window/WindowCheck.swift >"$OUT/helper-build.log" 2>&1 \
+    || { tail -20 "$OUT/helper-build.log" >&2; exit 2; }
+CHECK="$OUT/bin/windowcheck"
+
+PID=""
+stop() { [ -n "$PID" ] && kill "$PID" 2>/dev/null && wait "$PID" 2>/dev/null; PID=""; }
+trap stop EXIT
+
+failed=0
+unproven=0
+# run <scenario> <mode> <gallery args...>: launch the gallery, run one mode against its PID, stop that PID.
+run() {
+    local scenario=$1 mode=$2
+    shift 2
+    "$GALLERY" --log-activations "$@" >"$OUT/gallery-$scenario-$mode.log" 2>&1 &
+    PID=$!
+    echo "== $scenario / $mode (gallery pid $PID)"
+    for _ in $(seq 1 40); do "$CHECK" ready "$PID" && break; sleep 0.5; done
+    "$CHECK" ready "$PID" || { echo "the gallery window did not appear" >&2; stop; failed=2; return; }
+    sleep 1
+    echo "ENV	$scenario	$(grep '^environment:' "$OUT/gallery-$scenario-$mode.log" | head -1)"
+    local out status
+    out=$("$CHECK" "$mode" "$PID" "$scenario" "$OUT"); status=$?
+    echo "$out"
+    [ $status -eq 1 ] && failed=1
+    [ $status -ge 2 ] && { echo "windowcheck stopped with status $status" >&2; stop; exit 2; }
+    echo "$out" | grep -q '^UNPROVEN' && unproven=1
+    stop
+}
+
+run light pixels --appearance light
+run dark pixels --appearance dark
+run light-increased pixels --appearance light --increase-contrast
+run dark-increased pixels --appearance dark --increase-contrast
+run light strings --appearance light
+run light keys --appearance light
+
+echo "== screenshots and tables: $OUT"
+[ "$failed" -eq 0 ] || { echo "FAILED: see the FAIL lines above"; exit 1; }
+[ "$STRICT" -eq 1 ] && [ "$unproven" -eq 1 ] && { echo "FAILED: --strict and something is UNPROVEN"; exit 1; }
+echo "no check failed$([ "$unproven" -eq 1 ] && echo '; UNPROVEN lines above were not tested')"

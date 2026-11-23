@@ -8,9 +8,12 @@ import UIKit
 public struct FailureLine: View {
     public let text: String
     public var body: some View {
-        Label { Text(DisplayText.clean(text)) } icon: { Image(systemName: "xmark.circle.fill").accessibilityHidden(true) }
-            .font(G.small).foregroundStyle(G.danger)
-            .fixedSize(horizontal: false, vertical: true)
+        HStack(alignment: .firstTextBaseline, spacing: G.Space.labelIcon) {
+            Image(systemName: "xmark.circle.fill").accessibilityHidden(true)
+            Text(DisplayText.clean(text))
+        }
+        .font(G.small).foregroundStyle(G.danger)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     public init(text: String) {

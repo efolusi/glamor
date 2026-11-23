@@ -199,14 +199,14 @@ public struct SectionTitle: View {
     }
 }
 
-/// "View all 4 ›": body in text2 with an 8 bold chevron 4 after it, text under the pointer.
+/// "View all 4 ›": body in text2 with an 8 bold chevron `G.Space.labelIcon` after it, text under the pointer.
 public struct LinkButton: View {
     public let title: String
     public let action: () -> Void
     @State private var hover = false
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: G.Space.s4) { Text(title); Image(systemName: "chevron.right").icon(G.Icon.xs, weight: .bold) }
+            HStack(spacing: G.Space.labelIcon) { Text(title); Image(systemName: "chevron.right").icon(G.Icon.xs, weight: .bold) }
                 .textStyle(.body).foregroundStyle(hover ? G.text : G.text2)
                 .contentShape(Rectangle())
         }
@@ -239,12 +239,15 @@ public struct SearchBar<Accessory: View>: View {
     }
 
     public var body: some View {
-        HStack(spacing: G.Space.s8) {
+        HStack(spacing: G.Space.labelIcon) {
             Image(systemName: "magnifyingglass").icon(G.Icon.md).foregroundStyle(G.text3)
                 .accessibilityHidden(true)
-            TextField(placeholder, text: $text)
+            // The placeholder is drawn in G.placeholder: the system's colour is nearly invisible on glass (GL18).
+            // The label keeps the same words for VoiceOver.
+            TextField(text: $text, prompt: Text(placeholder).foregroundStyle(G.placeholder)) { Text(placeholder) }
                 .textFieldStyle(.plain)
                 .textStyle(.body)
+                .accessibilityLabel(placeholder)
                 .focused($focused)
                 .onSubmit { action?() }
             if !text.isEmpty {
@@ -286,25 +289,40 @@ public struct MenuPicker<Value: Hashable, Options: View>: View {
     @ViewBuilder public var options: () -> Options
     @Environment(\.controlSize) private var controlSize
     @State private var hover = false
+    @State private var face = CGSize.zero
     @FocusState private var focused: Bool
     public var body: some View {
         let small = compact || controlSize == .small || controlSize == .mini
         let radius = small ? G.Radius.r6 : G.Radius.r8
-        Menu {
-            Picker(title, selection: $selection) { options() }.pickerStyle(.inline).labelsHidden()
-        } label: {
+        let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+        // The face is drawn here, outside the Menu: the system re-lays out a Menu's label (it put the chevron
+        // first, 7 pt from the word), so the label is an empty rectangle of the face's size and the Menu covers
+        // the whole face: that is its hit and accessibility area (GL21).
+        HStack(spacing: G.Space.labelIcon) {
             Text(title).textStyle(.bodyMedium).foregroundStyle(G.text)
+            Image(systemName: "chevron.down").icon(G.Icon.xs, weight: .bold).foregroundStyle(G.text2)
         }
-        .menuStyle(.borderlessButton)
-        .tint(G.text)    // a secondary control: text, not the accent (PageAuditLog)
-        .fixedSize()
+        .accessibilityHidden(true)
         .padding(.horizontal, G.Space.s12)
         .frame(height: small ? G.Height.control28 : G.Height.control32)
         // The secondary button's hover, as it is drawn like one.
-        .background(hover ? G.cardHover : G.card, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(G.border))
+        .background(hover ? G.cardHover : G.card, in: shape)
+        .overlay(shape.strokeBorder(G.border))
         .shadow(G.Shadow.control)
-        .focused($focused)
+        .onGeometryChange(for: CGSize.self, of: \.size) { face = $0 }
+        .overlay {
+            Menu {
+                Picker(title, selection: $selection) { options() }.pickerStyle(.inline).labelsHidden()
+            } label: { Color.clear }
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .tint(G.text)    // a secondary control: text, not the accent (PageAuditLog)
+                .fixedSize()
+                .frame(width: face.width, height: face.height)
+                .contentShape(shape)
+                .accessibilityLabel(title)
+                .focused($focused)
+        }
         .focusRing(radius, isFocused: focused)
         .onHover { hover = $0 }
     }

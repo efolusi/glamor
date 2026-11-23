@@ -39,6 +39,39 @@ struct ContrastTests {
         }
     }
 
+    /// GL18: a search field's placeholder is text, so it holds 4.5:1 on every surface a field sits on (the
+    /// darkest of them included), light and dark. The system's own placeholder colour measured far below.
+    @Test(arguments: [false, true]) func thePlaceholderReadsOnEverySurfaceAFieldSitsOn(dark: Bool) {
+        for surface in [G.window, G.panel, G.card, G.subtle, G.cardHover, G.field] {
+            #expect(ratio(G.placeholder, surface, dark: dark) >= 4.5, "dark=\(dark)")
+        }
+    }
+
+    /// GL18: on glass the field's ground is the material tint at the clear material's opacity over the surface.
+    @Test(arguments: [false, true]) func thePlaceholderReadsOnGlassOverEverySurface(dark: Bool) {
+        typealias C = GlamorTokens.Color
+        func pick(_ p: GlamorTokens.ColorPair) -> GlamorTokens.RGBA { dark ? p.dark : p.light }
+        let tint = pick(C.materialTint)
+        let a = GlamorTokens.Number.materialClear
+        let ink = luminance(rgb(G.placeholder, dark: dark))
+        for ground in [C.surfacePage, C.surfaceCard, C.surfacePanel, C.surfaceSubtle, C.surfaceSunken].map(pick) {
+            let glass = luminance((tint.red * a + ground.red * (1 - a), tint.green * a + ground.green * (1 - a),
+                                   tint.blue * a + ground.blue * (1 - a)))
+            let value = (max(glass, ink) + 0.05) / (min(glass, ink) + 0.05)
+            #expect(value >= 4.5, "dark=\(dark) ratio=\(value)")
+        }
+    }
+
+    /// GL19: the label on the main action's fill is whichever of white and the dark ink reads better on it
+    /// (light: white 5.24, dark ink 3.30; dark: white 2.05, dark ink 8.43), and that one holds 4.5:1.
+    @Test(arguments: [false, true]) func theMainActionLabelIsTheBetterOfWhiteAndInkAndHolds4Point5(dark: Bool) {
+        let white = Color(.sRGB, red: 1, green: 1, blue: 1)
+        let ink = Color(.sRGB, red: 0.1176, green: 0.102, blue: 0.0784)
+        let best = max(ratio(white, G.accent, dark: dark), ratio(ink, G.accent, dark: dark))
+        #expect(ratio(G.onAccent, G.accent, dark: dark) >= 4.5)
+        #expect(abs(ratio(G.onAccent, G.accent, dark: dark) - best) < 0.01, "dark=\(dark)")
+    }
+
     @Test(arguments: [false, true]) func statusColorsReadAsTextOnACard(dark: Bool) {
         for status in [G.accent, G.ok, G.warn, G.danger] {
             #expect(ratio(status, G.card, dark: dark) >= 4.5)
