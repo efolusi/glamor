@@ -24,6 +24,12 @@ struct SnapshotTests {
                     .focusRing(G.Radius.r8, isFocused: true)
                 Button("Cancel") {}.buttonStyle(SecondaryButtonStyle())
             }
+            HStack(spacing: G.Space.s16) {
+                Button("Deploy") {}.glassMainAction(fallback: PrimaryButtonStyle())
+                SegmentedControl(items: ["Day", "Week", "Month"], selection: .constant(1))
+                ThemeSwitch(appearance: .constant(.light), words: .english)
+            }
+            SearchBar(placeholder: "Search hosts", text: .constant(""))
             VStack(alignment: .leading, spacing: G.Space.s8) {
                 ProgressBar(value: 0.6)
                 ProgressBar(value: 0.9, tone: G.warn)

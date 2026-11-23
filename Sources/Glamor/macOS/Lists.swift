@@ -265,10 +265,11 @@ public struct FilterField: View {
     @FocusState private var focused: Bool
     public var body: some View {
         FieldBox(focused: focused, compact: true) {
-            HStack(spacing: G.Space.s8) {
+            HStack(spacing: G.Space.labelIcon) {
                 Image(systemName: Self.symbol).icon(G.Icon.sm).foregroundStyle(G.text3)
                     .accessibilityHidden(true)
-                TextField(placeholder, text: $text).textStyle(.body).focused($focused)
+                TextField(text: $text, prompt: Text(placeholder).foregroundStyle(G.placeholder)) { Text(placeholder) }
+                    .textStyle(.body).accessibilityLabel(placeholder).focused($focused)
                 if !text.isEmpty {
                     Button { text = "" } label: { Image(systemName: "xmark.circle.fill").icon(G.Icon.sm) }
                         .buttonStyle(.plainFocus(G.Radius.r4)).foregroundStyle(G.text3)
@@ -306,21 +307,26 @@ public struct MoreMenu<Items: View>: View {
     @FocusState private var focused: Bool
     @Environment(\.hoverGround) private var ground
     public var body: some View {
-        Menu { items() } label: { Image(systemName: "ellipsis").icon(G.Icon.md) }
-            .menuStyle(.borderlessButton)
-            .menuIndicator(.hidden)
-            .fixedSize()
-            .tint(hover ? G.text : G.text2)
+        // The symbol is drawn here and the Menu over it has an empty label: given the symbol, the system added a
+        // second name ("More", the symbol's own) beside `accessibilityLabel`. One name, "More for web-1".
+        Image(systemName: "ellipsis").icon(G.Icon.md)
             .foregroundStyle(hover ? G.text : G.text2)
             .frame(width: size, height: size)
             .background(hover ? G.Hover.fill(on: ground) : .clear,
                         in: RoundedRectangle(cornerRadius: G.Radius.r6, style: .continuous))
-            .contentShape(Rectangle())
-            .focused($focused)
+            .overlay {
+                Menu { items() } label: { Color.clear }
+                    .menuStyle(.borderlessButton)
+                    .menuIndicator(.hidden)
+                    .fixedSize()
+                    .frame(width: size, height: size)
+                    .contentShape(Rectangle())
+                    .focused($focused)
+                    .help(help)
+                    .accessibilityLabel(MoreMenuWords.label(label))
+            }
             .focusRing(G.Radius.r6, isFocused: focused)
             .onHover { hover = $0 }
-            .help(help)
-            .accessibilityLabel(MoreMenuWords.label(label))
     }
 
     public init(size: CGFloat = G.Height.control28, label: String?, help: String = "More", @ViewBuilder items: @escaping () -> Items) {

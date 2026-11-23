@@ -65,15 +65,21 @@ public extension Image {
     }
 }
 
+/// The theme switch: two choices, light and dark. There is no "system" choice.
 public enum Appearance: String, CaseIterable, Identifiable {
-    case system = "System", light = "Light", dark = "Dark"
+    case light = "Light", dark = "Dark"
     public var id: String { rawValue }
-    public var scheme: ColorScheme? {
+    public var scheme: ColorScheme {
         switch self {
-        case .system: nil
         case .light: .light
         case .dark: .dark
         }
+    }
+
+    /// What to start in: the person's stored choice when there is one, otherwise the device's theme (a first launch).
+    /// A stored value that is not a choice any more (an old "System") also follows the device.
+    public static func start(stored: String?, deviceIsDark: Bool) -> Appearance {
+        stored.flatMap(Appearance.init(rawValue:)) ?? (deviceIsDark ? .dark : .light)
     }
 }
 #endif

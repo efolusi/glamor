@@ -180,7 +180,7 @@ public struct SheetLayout<Content: View, Status: View, Buttons: View>: View {
         }
         .padding(G.Space.s24)
         .modifier(SheetFrame(width: width, resize: resize))
-        .background(G.panel)
+        .background { SheetGround() }
     }
 
     private static var endID: String { "sheet-end" }
@@ -199,6 +199,18 @@ public struct SheetLayout<Content: View, Status: View, Buttons: View>: View {
         self.content = content
         self.status = status
         self.buttons = buttons
+    }
+}
+
+/// The sheet's ground: the solid panel color below macOS 26 and with Reduce Transparency or Increase Contrast.
+/// On macOS 26 a sheet is already a system material, so nothing is drawn over it.
+private struct SheetGround: View {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorSchemeContrast) private var contrast
+    var body: some View {
+        let path = GlassPath.choose(reduceTransparency: reduceTransparency, increasedContrast: contrast == .increased,
+                                    systemHasGlass: GlassPath.systemHasGlass)
+        if path.drawsOwnSheetGround { G.panel }
     }
 }
 

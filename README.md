@@ -9,12 +9,12 @@ Native design system for Mac, iPhone, and iPad, by [Efolusi](https://efolusi.com
 | Path | What it is |
 |---|---|
 | `tokens.json` | Authored tokens (color, type, space, motion, …) |
-| `assets/` | Brand files (no Glamor logo yet) |
+| `assets/` | Brand files: `glamor.svg`, the logo (one colour, shape only; paint it through a CSS mask). The same file is `public/glamor.svg` on efolusi.com. The marks of all Efolusi products come from `efolusi/efolusi` (`public/<product>.svg`) |
 | `components/` | Flat HTML preview cards (`components/<Name>/`) |
 | `guidelines/` | Overview, iconography, ecosystem, quality review. komando's journeys and UX review live in efolusi/komando-apps `design/`. |
 | `Package.swift` | The `Glamor` library for macOS 15 and iOS 18 |
 | `Sources/Glamor/` | SwiftUI tokens (`G`) and components: `macOS/`, `iOS/`, `Text/`, `Decor/` (backdrops), `Haptics/` |
-| `scripts/` | Preview build and color / size / motion checks |
+| `scripts/` | Preview build, color / size / motion checks, the window checks (`check-window.sh`) and the release gate (`release-gate.sh`) |
 
 ## Principles
 
@@ -48,6 +48,41 @@ Opens `build/design-preview/index.html` (gitignored). Cards live under `componen
 Seeded from `efolusi/komando-apps` on 2026-11-18: design files lifted to this shallow root; Swift design-system trees merged into one `Glamor` library under `Sources/Glamor/`. `komando-apps` was not modified.
 
 Next work: see [ROADMAP.md](ROADMAP.md).
+
+## Window checks
+
+```bash
+scripts/check-window.sh            # --strict also fails on UNPROVEN lines
+```
+
+Runs `GlamorGallery` on a Mac with macOS 26 and checks the real window, with no person at the keyboard. It
+captures only that window (`screencapture -l <window id>`) and reads the accessibility tree and key events of its PID.
+
+| Check | How | Needs |
+|---|---|---|
+| Search placeholder 4.5:1, Deploy label on its glass fill 4.5:1, unfocused search edge 3:1 (GL17) | pixels of the capture, in light, dark and with the Increase contrast colours | Screen Recording |
+| Label-to-icon gap on the "Daily" menu button | ink gap in pixels against 8 pt times the backing scale | Screen Recording |
+| VoiceOver strings, role, selected state, target size, `AXPress` | accessibility tree | Accessibility |
+| Tab order, Space and Return | key events to the gallery's PID | Accessibility |
+
+Light and dark are the gallery's own `--appearance` argument. The script never changes a system setting. It
+cannot set SwiftUI's `accessibilityReduceTransparency` or `colorSchemeContrast` (read-only environment values), so
+the solid (non-glass) path is not drawn in a window; the Increase contrast colours are. Tab reaches buttons only
+with System Settings › Keyboard › Keyboard navigation on; with it off the Tab order and Space/Return on buttons
+print `UNPROVEN`. Exit 0: nothing failed. Exit 1: a check failed. Exit 2: it could not run. Screenshots and tables
+go to `GLAMOR_WINDOW_OUT` (default `.build/window-check`). Run it with the Mac idle: one gallery window opens per scenario.
+
+## Release gate
+
+```bash
+scripts/release-gate.sh            # --strict also fails on UNPROVEN window lines
+```
+
+Runs what CI runs (vendored tokens, colour, size and motion checks, `swift test`, the generic iOS build), then
+`scripts/check-window.sh`. Every step runs; each prints `PASS` or `FAIL`, and the window check adds its own
+`PASS`, `FAIL` and `UNPROVEN` counts. The window check needs a logged-in macOS 26 session with Accessibility and
+Screen Recording permission, so CI does not run it: run the gate on a Mac before a tag, with the 1-minute load
+(`uptime`) under 10. Logs go to `GLAMOR_GATE_OUT` (default `.build/release-gate`).
 
 ## Contributing
 

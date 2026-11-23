@@ -1,30 +1,86 @@
 #if os(macOS)
 import AppKit
+#if DEBUG
+@testable import Glamor   // IncreasedContrast.forced is internal; only the debug build used by scripts/check-window.sh needs it
+#else
 import Glamor
+#endif
 import SwiftUI
 
 // A small Mac app that shows Glamor's components in a real window, for a person to look at.
 // It is not part of the library. Run: `swift run GlamorGallery`, or with GLAMOR_GALLERY_SHOTS=<dir>
 // to save the window in light and dark, then quit.
+//
+// Launch arguments, for scripts/check-window.sh (they change only this app, never the system settings):
+//   --appearance light|dark   the app's own appearance
+//   --increase-contrast       draws the Increase contrast colours (IncreasedContrast.forced, debug builds only)
+//   --log-activations         puts the last activated control's name and a count in the window title, and prints
+//                             the accessibility environment the views received
+//
+// SwiftUI's accessibilityReduceTransparency and colorSchemeContrast are read-only environment values, so they
+// cannot be set from here, and the high-contrast NSAppearance names are not honoured for an app whose system
+// setting is off: what the views received is printed, and the check script reports it.
+
+struct Options {
+    static let args = CommandLine.arguments
+    static let increaseContrast = args.contains("--increase-contrast")
+    static let logActivations = args.contains("--log-activations")
+    static var appearance: NSAppearance.Name? {
+        guard let i = args.firstIndex(of: "--appearance"), i + 1 < args.count else { return nil }
+        return args[i + 1] == "dark" ? .darkAqua : .aqua
+    }
+}
+
+extension Notification.Name { static let galleryActivated = Notification.Name("glamor.gallery.activated") }
+
+/// Records a control's name, so a script can see that Space or Return reached it.
+func activated(_ name: String) {
+    NotificationCenter.default.post(name: .galleryActivated, object: name)
+}
+
+/// Prints what SwiftUI hands the views, so a script can see which glass path Glamor will take.
+struct EnvironmentProbe: View {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorSchemeContrast) private var contrast
+    var body: some View {
+        Color.clear.onAppear {
+            if Options.logActivations {
+                print("environment: contrast=\(contrast == .increased ? "increased" : "standard") reduceTransparency=\(reduceTransparency)")
+                fflush(stdout)
+            }
+        }
+    }
+}
 
 struct Gallery: View {
     @State private var choice = "Daily"
+    @State private var segment = 0
+    @State private var search = ""
+    @State private var appearance = Appearance.light
     @FocusState private var saveFocused: Bool
     var body: some View {
         VStack(alignment: .leading, spacing: G.Space.s16) {
             CardList {
-                ListRow(action: {}) { Text("web-1") }
-                ListRow(selected: true, action: {}) { Text("db-primary (selected)") }
-                ListRow(action: {}) { Text("queue-3") }
+                ListRow(action: { activated("web-1") }) { Text("web-1") }
+                ListRow(selected: true, action: { activated("db-primary") }) { Text("db-primary (selected)") }
+                ListRow(action: { activated("queue-3") }) { Text("queue-3") }
             }
             HStack(spacing: G.Space.s16) {
-                Button("Save") {}.buttonStyle(PrimaryButtonStyle()).focused($saveFocused)
-                Button("Cancel") {}.buttonStyle(SecondaryButtonStyle())
+                Button("Save") { activated("Save") }.buttonStyle(PrimaryButtonStyle()).focused($saveFocused)
+                Button("Cancel") { activated("Cancel") }.buttonStyle(SecondaryButtonStyle())
                 MenuPicker(title: choice, selection: $choice) {
                     Text("Daily").tag("Daily"); Text("Weekly").tag("Weekly")
                 }
-                MoreMenu(label: "web-1") { Button("Rename") {}; Button("Remove") {} }
+                MoreMenu(label: "web-1") { Button("Rename") { activated("Rename") }; Button("Remove") { activated("Remove") } }
             }
+            HStack(spacing: G.Space.s16) {
+                Button("Deploy") { activated("Deploy") }.glassMainAction(fallback: PrimaryButtonStyle())
+                SegmentedControl(items: ["Day", "Week", "Month"], selection: $segment)
+                ThemeSwitch(appearance: $appearance, words: .english)
+            }
+            SearchBar(placeholder: "Search hosts", text: $search)
+            Text("Toolbar").textStyle(.caption).foregroundStyle(G.text2)
+                .frame(maxWidth: .infinity, minHeight: G.Height.control32).glassBar()
             ProgressBar(value: 0.6)
         }
         .textStyle(.body)
@@ -33,6 +89,9 @@ struct Gallery: View {
         .frame(width: 460)
         .background(G.panel)
         .onAppear { saveFocused = true }
+        .onChange(of: segment) { activated("segment \(segment)") }
+        .onChange(of: appearance) { activated("theme \(appearance)") }
+        .background(EnvironmentProbe())
     }
 }
 
@@ -40,9 +99,20 @@ struct Gallery: View {
 final class Delegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
     func applicationDidFinishLaunching(_ note: Notification) {
-        window = NSWindow(contentRect: NSRect(x: 200, y: 200, width: 460, height: 320), styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        window = NSWindow(contentRect: NSRect(x: 200, y: 200, width: 460, height: 460), styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = "Glamor gallery"
         window.contentView = NSHostingView(rootView: Gallery())
+        if let name = Options.appearance { NSApp.appearance = NSAppearance(named: name) }
+        #if DEBUG
+        if Options.increaseContrast { IncreasedContrast.forced = true }
+        #endif
+        if Options.logActivations {
+            var count = 0
+            NotificationCenter.default.addObserver(forName: .galleryActivated, object: nil, queue: .main) { [weak self] note in
+                count += 1
+                MainActor.assumeIsolated { self?.window.title = "Glamor gallery | \(note.object as? String ?? "") | \(count)" }
+            }
+        }
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         guard let dir = ProcessInfo.processInfo.environment["GLAMOR_GALLERY_SHOTS"] else { return }

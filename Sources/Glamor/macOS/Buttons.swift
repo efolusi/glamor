@@ -15,12 +15,12 @@ private struct ButtonMetrics {
     var icon: CGFloat { G.Icon.sm }
 }
 
-/// A Label inside a button: the icon on the icon scale, 8 before its title.
+/// A Label inside a button: the icon on the icon scale, `G.Space.labelIcon` before its title.
 public struct ButtonLabelStyle: LabelStyle {
     public var icon: CGFloat
     public var weight: Font.Weight
     public func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: G.Space.s8) {
+        HStack(spacing: G.Space.labelIcon) {
             configuration.icon.font(.system(size: G.Icon.point(icon), weight: weight))
             configuration.title
         }
