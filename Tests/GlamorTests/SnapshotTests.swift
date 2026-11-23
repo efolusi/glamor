@@ -27,7 +27,7 @@ struct SnapshotTests {
             HStack(spacing: G.Space.s16) {
                 Button("Deploy") {}.glassMainAction(fallback: PrimaryButtonStyle())
                 SegmentedControl(items: ["Day", "Week", "Month"], selection: .constant(1))
-                ThemeSwitch(appearance: .constant(.light))
+                ThemeSwitch(appearance: .constant(.light), words: .english)
             }
             SearchBar(placeholder: "Search hosts", text: .constant(""))
             VStack(alignment: .leading, spacing: G.Space.s8) {

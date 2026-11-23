@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Breaking: `ThemeSwitch` needs its words.** `ThemeSwitch(appearance:words:)` has no default language any more, so an Indonesian app cannot fall back to English by leaving the words out. Pass `.english`, `.indonesian` or your own `ThemeSwitchWords(toDark:toLight:)` (GL16).
 - **The Glamor logo is the logo-system file.** `assets/glamor.svg` is replaced byte for byte by the approved file (sha256 starts 942628b8a9a6): the same lipstick, now on the 64 artboard in the tall box, one path. The README names `efolusi/efolusi` as the source of the marks.
 - **Breaking: the theme switch offers light and dark only.** `Appearance.system` is removed, with no alias, and `Appearance.scheme` is no longer optional. New: `Appearance.start(stored:deviceIsDark:)` returns the stored choice, or the device's theme on a first launch (an old stored "System" also follows the device). Store the person's choice after they switch.
 - **New: the Glamor logo, `assets/glamor.svg`.** A leaning lipstick (one slanted tip, a collar, a base) at the angle of Meridian's bars, one colour, tight viewBox (ratio 0.863). It is the mark `efolusi.com` shows for Glamor.

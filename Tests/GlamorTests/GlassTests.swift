@@ -115,6 +115,15 @@ struct ThemeSwitchTests {
         #expect(words.label(current: .dark) == "B")
     }
 
+    /// GL16: no default language, so an Indonesian app cannot fall back to English by leaving the words out.
+    @Test func wordsAreARequiredArgument() throws {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let source = try String(contentsOf: root.appendingPathComponent("Sources/Glamor/macOS/ThemeSwitch.swift"), encoding: .utf8)
+        #expect(source.contains("public init(appearance: Binding<Appearance>, words: ThemeSwitchWords)"))
+        #expect(!source.contains("words: ThemeSwitchWords ="))
+    }
+
     @Test func nextIsTheOtherChoice() {
         #expect(ThemeSwitchWords.next(after: .light) == .dark)
         #expect(ThemeSwitchWords.next(after: .dark) == .light)
