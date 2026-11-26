@@ -103,6 +103,20 @@ struct LocalisationTests {
         #expect(GlamorText.string(.copy, language: "id-ID") == "Salin")
     }
 
+    /// The `.strings` files the targets ship are what scripts/generate-strings.py writes from the catalog. A toolchain that
+    /// does not compile a .xcstrings (macos-26 CI, Swift 6.3.3, the native build system) still gets every word.
+    @Test func theShippedStringsFilesMatchTheCatalogs() throws {
+        for folder in ["Sources/Glamor/Resources", "Sources/GlamorGallery/Resources"] {
+            let entries = try catalog("\(folder)/Localizable.xcstrings")
+            for lang in ["en", "id"] {
+                let file = Self.root.appendingPathComponent("\(folder)/\(lang).lproj/Localizable.strings")
+                let shipped = try #require(NSDictionary(contentsOf: file) as? [String: String], "\(folder)/\(lang).lproj/Localizable.strings is missing or unreadable; run scripts/generate-strings.py")
+                let wanted = Dictionary(uniqueKeysWithValues: entries.map { ($0.key, $0.values[lang] ?? "") })
+                #expect(shipped == wanted, "\(folder)/\(lang).lproj is out of date; run scripts/generate-strings.py")
+            }
+        }
+    }
+
     // MARK: Words
 
     @Test func theLibraryWordsReadRightInBothLanguages() {
