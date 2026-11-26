@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.2.0 - 2026-11-26
+
 - **New: localisation, en and id (GL14).** Every word the library says itself (VoiceOver names, tooltips, the Copied announcement, spoken sizes, banner kinds, the defaults of `help`, `label` and `allTitle`) is in `Sources/Glamor/Resources/Localizable.xcstrings` with English and Indonesian, and follows the language list of the person's system, first match wins (English when the catalog has none of them). `LocalisationTests` fails when a catalog string lacks `en` or `id`, when the two differ in placeholders, or when a source file says a user-facing word outside the catalog. The gallery has its own catalog. `Package.swift` declares `defaultLocalization: "en"` and the resources. The targets ship `en.lproj` and `id.lproj` `Localizable.strings` that `scripts/generate-strings.py` writes from the catalog (a test fails when they differ), because Swift 6.3.3's native build system copies a `.xcstrings` without compiling it.
 - **New: `ThemeSwitchWords.current`**, the words in the person's language. `ThemeSwitch` still needs its words (GL16); `english` and `indonesian` now read the catalog too.
 - **Fix: a spinner built without a label has a name (GL22).** `SpinnerSlot`, `BusyLine` and `DelayedProgress` took `label: String = ""` and gave VoiceOver an unnamed spinner. `label` is now `String? = nil` and falls back to the catalog's "Working" ("Memproses"); pass your own label when the words beside the spinner already name it. `CopyButton` and `MoreMenu` `help` and `ChipRow` `allTitle` work the same way.

@@ -36,6 +36,28 @@ Native design system for Mac, iPhone, and iPad, by [Efolusi](https://efolusi.com
 
 See [guidelines/ecosystem.md](guidelines/ecosystem.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
 
+## Use it
+
+Add Glamor to `Package.swift`, pinned to a tag:
+
+```swift
+.package(url: "https://github.com/efolusi/glamor", from: "0.2.0"),
+```
+
+Then add `"Glamor"` to your target's dependencies and `import Glamor`. The newest tag and what changed are in [CHANGELOG.md](CHANGELOG.md).
+
+## Language
+
+The words Glamor says itself (VoiceOver names, tooltips, the Copied announcement, the defaults of `label`, `help` and `allTitle`) live in the String Catalog `Sources/Glamor/Resources/Localizable.xcstrings`, in English (`en`) and Indonesian (`id`). Words your app owns (titles, placeholders, `ThemeSwitchWords`) are passed in by your app.
+
+Glamor takes the first language in `Locale.preferredLanguages` that the catalog has, and English when it has none of them. Your app does not pass a language:
+
+- The person's language list decides: the system's, or the language they pick for your app in Settings when your app offers more than one.
+- For a test or a screenshot, start the app with `-AppleLanguages "(id)"`.
+- `ThemeSwitchWords.current` gives the theme switch's words in that same language; `.english` and `.indonesian` fix one.
+
+Glamor does not read which languages your app ships. An app in English only, on a Mac or iPhone set to Indonesian, shows Glamor's words in Indonesian beside its own English.
+
 ## Preview
 
 ```bash
@@ -91,7 +113,7 @@ On macOS 26, system glass loses its tint when its window is not the key window. 
 
 Glamor does not work around it. A solid fill swapped in while the window is inactive would flicker on every focus change and would no longer be the system's glass. The label colour (`G.onAccent`) does not change, so the text stays readable in both states. Reduce Transparency and Increase Contrast use the solid path, which keeps its colours in every window state.
 
-## Known limits in v0.1.0 (not machine-proven)
+## Known limits in v0.2.0 (not machine-proven)
 
 The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, which prints these as UNPROVEN or does not reach them. Each row says what was proven instead.
 
@@ -104,6 +126,7 @@ The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, whi
 | Real mouse clicks, including on the button padding | The accessibility frame covers the whole button (at least 24x24, Deploy 68x32) |
 | The solid path on macOS 15 and iOS 18 | `#available` checks and unit tests; not run on those systems |
 | iOS at run time | iOS is built in CI and in the gate (`generic/platform=iOS`); it is not run in a simulator or measured in a window |
+| Indonesian in a window | `LocalisationTests`: every catalog string has `en` and `id` with the same placeholders, the shipped `.lproj` files equal the catalog, and the language falls back to English. The window check reads the English names |
 
 ## Contributing
 
