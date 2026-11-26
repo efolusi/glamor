@@ -50,13 +50,15 @@ Then add `"Glamor"` to your target's dependencies and `import Glamor`. The newes
 
 The words Glamor says itself (VoiceOver names, tooltips, the Copied announcement, the defaults of `label`, `help` and `allTitle`) live in the String Catalog `Sources/Glamor/Resources/Localizable.xcstrings`, in English (`en`) and Indonesian (`id`). Words your app owns (titles, placeholders, `ThemeSwitchWords`) are passed in by your app.
 
-Glamor takes the first language in `Locale.preferredLanguages` that the catalog has, and English when it has none of them. Your app does not pass a language:
+Your app does not pass a language. Glamor takes the first match, in this order:
 
-- The person's language list decides: the system's, or the language they pick for your app in Settings when your app offers more than one.
+1. Your app's languages, ordered for the person (`Bundle.main.preferredLocalizations`). An app in English only stays English on a Mac or iPhone set to Indonesian, so Glamor's words match the app's own.
+2. The person's language list (`Locale.preferredLanguages`), when your app has neither English nor Indonesian (an app in French only) or no languages of its own (the gallery under `swift run`).
+3. English.
+
+- The person picks among your app's languages with the system list, or with the language they set for your app in Settings.
 - For a test or a screenshot, start the app with `-AppleLanguages "(id)"`.
 - `ThemeSwitchWords.current` gives the theme switch's words in that same language; `.english` and `.indonesian` fix one.
-
-Glamor does not read which languages your app ships. An app in English only, on a Mac or iPhone set to Indonesian, shows Glamor's words in Indonesian beside its own English.
 
 ## Preview
 
@@ -88,7 +90,7 @@ captures only that window (`screencapture -l <window id>`) and reads the accessi
 | VoiceOver strings, role, selected state, target size, `AXPress` | accessibility tree | Accessibility |
 | Tab order, Space and Return | key events to the gallery's PID | Accessibility |
 
-Light and dark are the gallery's own `--appearance` argument. The script never changes a system setting. It
+Light and dark are the gallery's own `--appearance` argument, and the gallery runs in English (`-AppleLanguages '(en)'`) on a Mac set to any language. The script never changes a system setting. It
 cannot set SwiftUI's `accessibilityReduceTransparency` or `colorSchemeContrast` (read-only environment values), so
 the solid (non-glass) path is not drawn in a window; the Increase contrast colours are. Tab reaches buttons only
 with System Settings › Keyboard › Keyboard navigation on; with it off the Tab order and Space/Return on buttons

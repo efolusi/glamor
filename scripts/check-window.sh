@@ -44,10 +44,12 @@ trap stop EXIT
 failed=0
 unproven=0
 # run <scenario> <mode> <gallery args...>: launch the gallery, run one mode against its PID, stop that PID.
+# The gallery runs in English (-AppleLanguages): WindowCheck.swift looks controls up by their English names
+# ("Daily", "Deploy"), so a Mac set to Indonesian would otherwise fail every lookup.
 run() {
     local scenario=$1 mode=$2
     shift 2
-    "$GALLERY" --log-activations "$@" >"$OUT/gallery-$scenario-$mode.log" 2>&1 &
+    "$GALLERY" --log-activations "$@" -AppleLanguages '(en)' >"$OUT/gallery-$scenario-$mode.log" 2>&1 &
     PID=$!
     echo "== $scenario / $mode (gallery pid $PID)"
     for _ in $(seq 1 40); do "$CHECK" ready "$PID" && break; sleep 0.5; done

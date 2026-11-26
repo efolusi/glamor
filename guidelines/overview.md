@@ -59,7 +59,7 @@ Every screen follows these rules; a design that breaks one needs a reason writte
 
 **Person.** Address the person as *you* only when it matters ("You confirm every change before it runs."). Refer to the app or tool by name ("Backup will run again tonight."), never as "we". Use no emoji, ever.
 
-**Two languages.** Glamor's own words (VoiceOver names, tooltips, the defaults of `label`, `help` and `allTitle`) are in the String Catalog `Sources/Glamor/Resources/Localizable.xcstrings`, in English and Indonesian, and follow the person's language list. Words the app owns are passed in by the app, in its own catalog. A new word in Glamor goes into the catalog with both languages; `LocalisationTests` fails on a word written anywhere else. How the language is picked: [README, Language](../README.md#language).
+**Two languages.** Glamor's own words (VoiceOver names, tooltips, the defaults of `label`, `help` and `allTitle`) are in the String Catalog `Sources/Glamor/Resources/Localizable.xcstrings`, in English and Indonesian, and follow the app's language, then the person's list. Words the app owns are passed in by the app, in its own catalog. A new word in Glamor goes into the catalog with both languages; `LocalisationTests` fails on a word written anywhere else. How the language is picked: [README, Language](../README.md#language).
 
 **Safety copy is concrete.** A destructive confirmation names the risk in its title ("This item is locked", "This command looks destructive", "This changes data"), puts the exact command or flag in the message, and labels the button with what happens: **Run Anyway**, **Allow Once**, **Delete Project**, never "OK".
 

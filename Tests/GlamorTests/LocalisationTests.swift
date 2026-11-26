@@ -148,6 +148,23 @@ struct LocalisationTests {
         #expect(GlamorText.string(.copy, preferences: ["zh-Hans"]) == "Copy")
     }
 
+    /// The host app's languages come first, so Glamor's words match the app's own: an English-only app on a Mac set to
+    /// Indonesian says "Copy", not "Salin", beside its English.
+    @Test func theHostAppsLanguageWinsOverThePersonsList() {
+        #expect(GlamorText.code(host: ["en"], preferences: ["id-ID", "en"]) == "en", "an English-only host stays English")
+        #expect(GlamorText.string(.copy, host: ["en"], preferences: ["id-ID"]) == "Copy")
+        #expect(GlamorText.code(host: ["en-GB"], preferences: ["id"]) == "en")
+        #expect(GlamorText.code(host: ["id", "en"], preferences: ["id-ID", "en"]) == "id", "a host that ships Indonesian")
+        #expect(GlamorText.string(.copy, host: ["id"], preferences: ["en"]) == "Salin")
+    }
+
+    @Test func aHostWithNoLanguageTheCatalogHasLeavesItToThePersonsList() {
+        #expect(GlamorText.code(host: [], preferences: ["id-ID"]) == "id", "a bare tool with no languages of its own")
+        #expect(GlamorText.code(host: ["Base"], preferences: ["id-ID"]) == "id")
+        #expect(GlamorText.code(host: ["fr"], preferences: ["id", "en"]) == "id", "a French-only host: the person's list")
+        #expect(GlamorText.code(host: ["fr"], preferences: ["de"]) == "en", "then English")
+    }
+
     @Test func numbersAreWrittenForTheResolvedLanguage() {
         // A bare .lproj bundle has no Info.plist; the locale comes from the resolved code, not from the bundle.
         #expect(GlamorText.string(.percent, language: "id", 1_000) == "1.000 persen")
