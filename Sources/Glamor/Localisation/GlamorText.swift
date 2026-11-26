@@ -24,25 +24,37 @@ enum GlamorText {
     /// The languages the catalog ships.
     static let languages = ["en", "id"]
 
-    /// The bundle holding `language`'s text; nil asks for the person's own language (as the system picks it).
-    private static func bundle(for language: String?) -> Bundle {
-        let wanted = language.map { [$0] } ?? Locale.preferredLanguages
-        guard let best = Bundle.preferredLocalizations(from: Bundle.module.localizations, forPreferences: wanted).first,
-              let path = Bundle.module.path(forResource: best, ofType: "lproj"),
-              let found = Bundle(path: path) else { return Bundle.module }
-        return found
+    /// The catalog's language for a preference list (BCP 47 codes, best first, as `Locale.preferredLanguages` gives
+    /// them): the first one the catalog has, else English. English is added at the end, so the fallback is explicit.
+    static func code(preferences: [String]) -> String {
+        Bundle.preferredLocalizations(from: Bundle.module.localizations, forPreferences: preferences + ["en"]).first ?? "en"
     }
 
-    /// The text of `key` in `language` (nil: the person's language). A key with no text returns the key itself,
-    /// which `LocalisationTests` makes impossible to ship.
+    /// The language code and the bundle holding its text. `language` names one (any BCP 47 code); nil follows the
+    /// person's system language list, `preferences`.
+    private static func resolve(_ language: String?, _ preferences: [String]) -> (code: String, bundle: Bundle) {
+        let code = code(preferences: language.map { [$0] } ?? preferences)
+        guard let path = Bundle.module.path(forResource: code, ofType: "lproj"), let found = Bundle(path: path) else {
+            return (code, Bundle.module)
+        }
+        return (code, found)
+    }
+
+    /// The text of `key` in `language` (nil: the language of the person's system list). A key with no text returns the
+    /// key itself, which `LocalisationTests` makes impossible to ship.
     static func string(_ key: Key, language: String? = nil) -> String {
-        bundle(for: language).localizedString(forKey: key.rawValue, value: nil, table: nil)
+        resolve(language, Locale.preferredLanguages).bundle.localizedString(forKey: key.rawValue, value: nil, table: nil)
+    }
+
+    /// The text of `key` for an explicit preference list (what `string(_:language:)` does with nil, made testable).
+    static func string(_ key: Key, preferences: [String]) -> String {
+        resolve(nil, preferences).bundle.localizedString(forKey: key.rawValue, value: nil, table: nil)
     }
 
     /// The text of `key` with its `%` placeholders filled by `arguments`, numbers written for the language.
     static func string(_ key: Key, language: String? = nil, _ arguments: CVarArg...) -> String {
-        let b = bundle(for: language)
-        let locale = Locale(identifier: b.preferredLocalizations.first ?? "en")
-        return String(format: b.localizedString(forKey: key.rawValue, value: nil, table: nil), locale: locale, arguments: arguments)
+        let found = resolve(language, Locale.preferredLanguages)
+        return String(format: found.bundle.localizedString(forKey: key.rawValue, value: nil, table: nil),
+                      locale: Locale(identifier: found.code), arguments: arguments)
     }
 }

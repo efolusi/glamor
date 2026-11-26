@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Testing
 @testable import Glamor
 
@@ -7,6 +8,10 @@ import Testing
 struct LocalisationTests {
     private static let root = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+
+    /// Keys whose English and Indonesian text may be the same word (a loan word, a name). Empty today: an entry here is a
+    /// decision, written with its reason, never a way to silence the check.
+    private static let sameInBothLanguages: Set<String> = []
 
     private struct Entry {
         let key: String
@@ -47,7 +52,7 @@ struct LocalisationTests {
             }
             if let en = entry.values["en"], let id = entry.values["id"] {
                 #expect(placeholders(en) == placeholders(id), "\(name): \(entry.key) en and id have different placeholders")
-                #expect(en != id, "\(name): \(entry.key) id is the English text; translate it")
+                #expect(en != id || Self.sameInBothLanguages.contains(entry.key), "\(name): \(entry.key) id is the English text; translate it, or list the key in sameInBothLanguages with the reason")
             }
             #expect(Set(entry.values.keys) == ["en", "id"], "\(name): \(entry.key) has languages \(entry.values.keys.sorted())")
         }
@@ -69,8 +74,10 @@ struct LocalisationTests {
         var used = Set<String>()
         for file in try sourceFiles("Sources/Glamor") where file.lastPathComponent != "GlamorText.swift" {
             let text = try String(contentsOf: file, encoding: .utf8)
-            for key in GlamorText.Key.allCases where text.contains("GlamorText.string(.\(key)") {
-                used.insert(key.rawValue)
+            for key in GlamorText.Key.allCases {
+                // `[,)]` after the key: `.more` must not be counted for `.moreFor`.
+                let call = try NSRegularExpression(pattern: "GlamorText\\.string\\(\\.\(key)\\s*[,)]")
+                if call.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil { used.insert(key.rawValue) }
             }
         }
         let unused = Set(GlamorText.Key.allCases.map(\.rawValue)).subtracting(used)
@@ -117,6 +124,36 @@ struct LocalisationTests {
         }
     }
 
+    #if os(macOS)
+    /// GL22: a spinner built without a label is still named for VoiceOver, in the person's language.
+    @Test func aSpinnerWithNoLabelIsNamedWorking() {
+        let want = GlamorText.string(.working)
+        #expect(!want.isEmpty && want != GlamorText.Key.working.rawValue)
+        #expect(SpinnerSlot(shown: true).label == want)
+        #expect(BusyLine(isBusy: true, text: "x") { EmptyView() }.label == want)
+        #expect(DelayedProgress(isBusy: true).label == want)
+        #expect(SpinnerSlot(shown: true, label: "Reading").label == "Reading")
+    }
+    #endif
+
+    // MARK: Language
+
+    @Test func theLanguageFollowsThePreferenceListAndFallsBackToEnglish() {
+        #expect(GlamorText.code(preferences: ["id-ID"]) == "id")
+        #expect(GlamorText.code(preferences: ["fr-FR", "id"]) == "id", "the first language the catalog has wins")
+        #expect(GlamorText.code(preferences: ["en-US", "id"]) == "en")
+        #expect(GlamorText.code(preferences: ["fr", "de"]) == "en")
+        #expect(GlamorText.code(preferences: []) == "en")
+        #expect(GlamorText.string(.copy, preferences: ["id-ID"]) == "Salin")
+        #expect(GlamorText.string(.copy, preferences: ["zh-Hans"]) == "Copy")
+    }
+
+    @Test func numbersAreWrittenForTheResolvedLanguage() {
+        // A bare .lproj bundle has no Info.plist; the locale comes from the resolved code, not from the bundle.
+        #expect(GlamorText.string(.percent, language: "id", 1_000) == "1.000 persen")
+        #expect(GlamorText.string(.percent, language: "en", 1_000) == "1,000 percent")
+    }
+
     // MARK: Words
 
     @Test func theLibraryWordsReadRightInBothLanguages() {
@@ -125,6 +162,7 @@ struct LocalisationTests {
         #expect(GlamorText.string(.percent, language: "en", 60) == "60 percent")
         #expect(GlamorText.string(.percent, language: "id", 60) == "60 persen")
         #expect(GlamorText.string(.moreFor, language: "id", "web-1") == "Lainnya untuk web-1")
+        #expect(GlamorText.string(.splitHint, language: "id", 272) == "Tekan Kembalikan untuk mengatur ulang ke 272.")
     }
 
     @Test func theThemeSwitchPresetsAreTheCatalogsWords() {
@@ -175,6 +213,8 @@ struct LocalisationTests {
         #"\bString\s*=\s*"[^"]*[A-Za-z]"#,
         #"\b(?:title|label|placeholder|help|hint|prompt)\s*:\s*"[^"]*[A-Za-z]"#,
         #"\?\s*"[^"]*[A-Za-z]{2}[^"]*"\s*:"#,
+        // A label that defaults to an empty string leaves a spinner or a control with no name for VoiceOver (GL22).
+        #"\blabel\s*:\s*String\??\s*=\s*"""#,
     ].map { try! NSRegularExpression(pattern: $0) }
 
     private func strays(in folder: String) throws -> [String] {
@@ -207,7 +247,8 @@ struct LocalisationTests {
     @Test func theScanSeesAHardcodedWord() {
         // The scan itself: a literal in each kind of place is caught, data is not.
         let bad = [#"Text("Save")"#, #".help("Copy it")"#, #".accessibilityLabel(copied ? "Copied" : help)"#,
-                   #"public var help: String = "Copy""#, #".accessibilityAction(named: "Put Back")"#, #"AccessibilityNotification.Announcement("Copied")"#]
+                   #"public var help: String = "Copy""#, #".accessibilityAction(named: "Put Back")"#, #"AccessibilityNotification.Announcement("Copied")"#,
+                   #"public init(shown: Bool, label: String = "") {"#, #"public init(isBusy: Bool, label: String? = "") {"#]
         let good = [#"Text(verbatim: "web-1")"#, #"Text(GlamorText.string(.copy))"#, #"let key = "size.""#, #"Text(title) // "Save""#]
         func hit(_ s: String) -> Bool {
             let line = code(s)

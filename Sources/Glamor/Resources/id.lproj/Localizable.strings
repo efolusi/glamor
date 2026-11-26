@@ -40,7 +40,7 @@
 "split.help" = "Seret untuk mengubah ukuran. Klik dua kali untuk mengembalikan.";
 
 /* A split divider's VoiceOver hint. %lld is the default size. */
-"split.hint" = "Kembalikan memulihkan ukuran ke %lld.";
+"split.hint" = "Tekan Kembalikan untuk mengatur ulang ke %lld.";
 
 /* The tip beside a dragged divider at its largest size. */
 "split.tipLargest" = "%lld · terbesar";

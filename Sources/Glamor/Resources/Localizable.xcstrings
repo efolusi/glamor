@@ -248,7 +248,7 @@
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kembalikan memulihkan ukuran ke %lld."
+            "value": "Tekan Kembalikan untuk mengatur ulang ke %lld."
           }
         }
       }

@@ -69,9 +69,9 @@ public struct SpinnerSlot: View {
         .frame(width: G.Icon.md, height: G.Icon.md)
     }
 
-    public init(shown: Bool, label: String = "") {
+    public init(shown: Bool, label: String? = nil) {
         self.shown = shown
-        self.label = label
+        self.label = label ?? GlamorText.string(.working)
     }
 }
 
@@ -92,10 +92,10 @@ public struct BusyLine<Done: View>: View {
         } done: { done() }
     }
 
-    public init(isBusy: Bool, text: String, label: String = "", @ViewBuilder done: @escaping () -> Done) {
+    public init(isBusy: Bool, text: String, label: String? = nil, @ViewBuilder done: @escaping () -> Done) {
         self.isBusy = isBusy
         self.text = text
-        self.label = label
+        self.label = label ?? GlamorText.string(.working)
         self.done = done
     }
 }

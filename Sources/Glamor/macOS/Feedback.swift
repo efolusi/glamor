@@ -255,9 +255,9 @@ public struct DelayedProgress: View {
         .frame(width: G.Icon.md, height: G.Icon.md)
     }
 
-    public init(isBusy: Bool, label: String = "") {
+    public init(isBusy: Bool, label: String? = nil) {
         self.isBusy = isBusy
-        self.label = label
+        self.label = label ?? GlamorText.string(.working)
     }
 }
 
