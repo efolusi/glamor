@@ -13,7 +13,7 @@ Native design system for Mac, iPhone, and iPad, by [Efolusi](https://efolusi.com
 | `components/` | Flat HTML preview cards (`components/<Name>/`) |
 | `guidelines/` | Overview, iconography, ecosystem, quality review. komando's journeys and UX review live in efolusi/komando-apps `design/`. |
 | `Package.swift` | The `Glamor` library for macOS 15 and iOS 18 |
-| `Sources/Glamor/` | SwiftUI tokens (`G`) and components: `macOS/`, `iOS/`, `Text/`, `Decor/` (backdrops), `Haptics/` |
+| `Sources/Glamor/` | SwiftUI tokens (`G`) and components: `macOS/`, `iOS/`, `Text/`, `Decor/` (backdrops), `Haptics/`; `Resources/Localizable.xcstrings` holds the words the library says itself, in English and Indonesian (`scripts/generate-strings.py` writes the `.lproj` files the target ships) |
 | `scripts/` | Preview build, color / size / motion checks, the window checks (`check-window.sh`) and the release gate (`release-gate.sh`) |
 
 ## Principles
@@ -24,6 +24,7 @@ Native design system for Mac, iPhone, and iPad, by [Efolusi](https://efolusi.com
 - SF Symbols by name; no custom icon set.
 - Motion only when it explains a change.
 - Same words and status meanings on every platform.
+- Every word the library says itself (a VoiceOver name, a tooltip, the default of a text argument) comes from the String Catalog in `en` and `id`. A word a caller owns (a title, a placeholder, `ThemeSwitchWords`) is passed in by the caller; `ThemeSwitchWords.current` reads the catalog.
 
 ## Ecosystem
 

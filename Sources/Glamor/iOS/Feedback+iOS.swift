@@ -90,8 +90,8 @@ public struct ListSkeleton: View {
                         HStack(spacing: G.Space.s12) {
                             RoundedRectangle(cornerRadius: G.Radius.r8).fill(G.subtle).frame(width: G.Tile.t32, height: G.Tile.t32)
                             VStack(alignment: .leading, spacing: G.Space.s4) {
-                                Text("Loading item name").font(G.bodyStrong)
-                                Text("Loading detail line").font(G.monoSmall)
+                                Text(GlamorText.string(.skeletonItemName)).font(G.bodyStrong)
+                                Text(GlamorText.string(.skeletonDetailLine)).font(G.monoSmall)
                             }
                             .redacted(reason: .placeholder)
                         }
@@ -131,7 +131,7 @@ public struct ListSkeleton: View {
 }
 
 @MainActor private func saidCopied() {
-    AccessibilityNotification.Announcement("Copied").post()
+    AccessibilityNotification.Announcement(GlamorText.string(.copied)).post()
     UINotificationFeedbackGenerator().notificationOccurred(.success)
 }
 

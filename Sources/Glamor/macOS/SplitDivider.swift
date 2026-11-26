@@ -23,11 +23,12 @@ public enum SplitSize {
     }
 
     /// The tip beside a dragged divider: "288", "224 · smallest" or "400 · largest".
-    public static func tip(_ value: CGFloat, in range: ClosedRange<CGFloat>) -> String {
-        let n = "\(Int(value))"
-        if value <= resolve(range.lowerBound, in: range) { return n + " · smallest" }
-        if range.upperBound.isFinite, value >= resolve(range.upperBound, in: range) { return n + " · largest" }
-        return n
+    public static func tip(_ value: CGFloat, in range: ClosedRange<CGFloat>) -> String { tip(value, in: range, language: nil) }
+
+    static func tip(_ value: CGFloat, in range: ClosedRange<CGFloat>, language: String?) -> String {
+        if value <= resolve(range.lowerBound, in: range) { return GlamorText.string(.splitTipSmallest, language: language, Int(value)) }
+        if range.upperBound.isFinite, value >= resolve(range.upperBound, in: range) { return GlamorText.string(.splitTipLargest, language: language, Int(value)) }
+        return "\(Int(value))"
     }
 
     /// Which way an arrow key moves the width: +1 grows it, -1 shrinks it. → and ↓ grow the pane before
@@ -54,10 +55,12 @@ public enum SplitSize {
     }
 
     /// What VoiceOver reads as the value: "272, from 224 to 400", or "900, at least 320" with no largest.
-    public static func spoken(_ value: CGFloat, in range: ClosedRange<CGFloat>) -> String {
+    public static func spoken(_ value: CGFloat, in range: ClosedRange<CGFloat>) -> String { spoken(value, in: range, language: nil) }
+
+    static func spoken(_ value: CGFloat, in range: ClosedRange<CGFloat>, language: String?) -> String {
         let low = Int(resolve(range.lowerBound, in: range))
-        guard range.upperBound.isFinite else { return "\(Int(value)), at least \(low)" }
-        return "\(Int(value)), from \(low) to \(Int(resolve(range.upperBound, in: range)))"
+        guard range.upperBound.isFinite else { return GlamorText.string(.splitValueAtLeast, language: language, Int(value), low) }
+        return GlamorText.string(.splitValueRange, language: language, Int(value), low, Int(resolve(range.upperBound, in: range)))
     }
 }
 
@@ -193,7 +196,7 @@ public struct SplitDivider: View {
                     .onHover { hover = $0 }
                     .onTapGesture(count: 2) { putBack() }
                     .gesture(drag)
-                    .help("Drag to resize. Double-click to put it back.")
+                    .help(GlamorText.string(.splitHelp))
             }
             .zIndex(1)
             .focusable(interactions: .activate)
@@ -211,8 +214,8 @@ public struct SplitDivider: View {
             .accessibilityElement()
             .accessibilityLabel(label)
             .accessibilityValue(SplitSize.spoken(value, in: range))
-            .accessibilityHint("Put Back returns it to \(Int(SplitSize.resolve(reset, in: range))).")
-            .accessibilityAction(named: "Put Back") { putBack() }
+            .accessibilityHint(GlamorText.string(.splitHint, Int(SplitSize.resolve(reset, in: range))))
+            .accessibilityAction(named: GlamorText.string(.splitAction)) { putBack() }
             .accessibilityAdjustableAction { direction in
                 switch direction {
                 case .increment: move(by: 1)

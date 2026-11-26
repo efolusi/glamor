@@ -1,25 +1,30 @@
 import Foundation
 import SwiftUI
 import Testing
-import Glamor
+@testable import Glamor
 
 /// What VoiceOver hears, through the public API only.
 struct AccessTests {
     #if os(macOS)
     @Test func theMoreButtonSaysWhatItIsFor() {
-        #expect(MoreMenuWords.label(nil) == "More")
-        #expect(MoreMenuWords.label("") == "More")
-        #expect(MoreMenuWords.label("web-1") == "More for web-1")
-        #expect(MoreMenuWords.label("the pane on web-1") == "More for the pane on web-1")
+        #expect(MoreMenuWords.label(nil, language: "en") == "More")
+        #expect(MoreMenuWords.label("", language: "en") == "More")
+        #expect(MoreMenuWords.label("web-1", language: "en") == "More for web-1")
+        #expect(MoreMenuWords.label("the pane on web-1", language: "en") == "More for the pane on web-1")
+        #expect(MoreMenuWords.label(nil, language: "id") == "Lainnya")
+        #expect(MoreMenuWords.label("web-1", language: "id") == "Lainnya untuk web-1")
     }
     #endif
 
     #if os(macOS)
     @Test func aBannerSaysItsKind() {
-        #expect(Banner<EmptyView>.spokenKind(.success) == "Done")
-        #expect(Banner<EmptyView>.spokenKind(.warning) == "Warning")
-        #expect(Banner<EmptyView>.spokenKind(.danger) == "Error")
-        #expect(Banner<EmptyView>.spokenKind(.info) == "Note")
+        let kinds: [(Banner<EmptyView>.Kind, en: String, id: String)] = [
+            (.success, "Done", "Selesai"), (.warning, "Warning", "Peringatan"), (.danger, "Error", "Kesalahan"), (.info, "Note", "Catatan"),
+        ]
+        for kind in kinds {
+            #expect(Banner<EmptyView>.spokenKind(kind.0, language: "en") == kind.en)
+            #expect(Banner<EmptyView>.spokenKind(kind.0, language: "id") == kind.id)
+        }
     }
     #endif
 

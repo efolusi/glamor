@@ -71,7 +71,7 @@ public struct SeverityMark: View {
             .font(G.icon)
             .frame(width: side)
             .foregroundStyle(problem ? G.danger : G.warn)
-            .accessibilityLabel(problem ? "Problem" : "Warning")
+            .accessibilityLabel(problem ? GlamorText.string(.problem) : GlamorText.string(.warning))
     }
 
     public init(problem: Bool) {

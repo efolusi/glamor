@@ -105,7 +105,7 @@ public extension View {
     /// A sheet with a Cancel button gives that button `.keyboardShortcut(.cancelAction)` instead.
     func closesOnEscape(_ action: @escaping () -> Void) -> some View {
         background {
-            Button("Close", action: action).keyboardShortcut(.cancelAction).hidden()
+            Button(GlamorText.string(.sheetClose), action: action).keyboardShortcut(.cancelAction).hidden()
         }
     }
 }

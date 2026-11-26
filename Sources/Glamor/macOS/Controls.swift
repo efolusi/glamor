@@ -253,8 +253,8 @@ public struct SearchBar<Accessory: View>: View {
             if !text.isEmpty {
                 Button { text = "" } label: { Image(systemName: "xmark.circle.fill").icon(G.Icon.md) }
                     .buttonStyle(.plainFocus(G.Radius.r4)).foregroundStyle(G.text3)
-                    .help("Clear the search")
-                    .accessibilityLabel("Clear the search")
+                    .help(GlamorText.string(.clearSearch))
+                    .accessibilityLabel(GlamorText.string(.clearSearch))
             }
             if let actionTitle, let action {
                 Button(actionTitle, action: action).buttonStyle(SecondaryButtonStyle(compact: true)).disabled(text.isEmpty)

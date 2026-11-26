@@ -61,7 +61,7 @@ public struct HeldLoading<Busy: View, Done: View>: View {
 /// never move.
 public struct SpinnerSlot: View {
     public let shown: Bool
-    public var label: String = "Working"
+    public var label: String = GlamorText.string(.working)
     public var body: some View {
         ZStack {
             if shown { ProgressView().controlSize(.small).accessibilityLabel(label) }
@@ -69,9 +69,9 @@ public struct SpinnerSlot: View {
         .frame(width: G.Icon.md, height: G.Icon.md)
     }
 
-    public init(shown: Bool, label: String = "") {
+    public init(shown: Bool, label: String? = nil) {
         self.shown = shown
-        self.label = label
+        self.label = label ?? GlamorText.string(.working)
     }
 }
 
@@ -80,7 +80,7 @@ public struct SpinnerSlot: View {
 public struct BusyLine<Done: View>: View {
     public let isBusy: Bool
     public let text: String
-    public var label: String = "Working"
+    public var label: String = GlamorText.string(.working)
     @ViewBuilder public var done: () -> Done
 
     public var body: some View {
@@ -92,10 +92,10 @@ public struct BusyLine<Done: View>: View {
         } done: { done() }
     }
 
-    public init(isBusy: Bool, text: String, label: String = "", @ViewBuilder done: @escaping () -> Done) {
+    public init(isBusy: Bool, text: String, label: String? = nil, @ViewBuilder done: @escaping () -> Done) {
         self.isBusy = isBusy
         self.text = text
-        self.label = label
+        self.label = label ?? GlamorText.string(.working)
         self.done = done
     }
 }
@@ -153,11 +153,11 @@ public struct RunSymbol: View {
                 .contentTransition(.symbolEffect(.replace))
                 .gAnimation(.fast, value: lastFailed)
                 .opacity(shown == .symbol(failed: lastFailed) ? 1 : 0)
-            SpinnerSlot(shown: shown == .spinner, label: "Running")
+            SpinnerSlot(shown: shown == .spinner, label: GlamorText.string(.running))
         }
         .frame(width: G.Icon.md, height: G.Icon.md)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(running ? "Running" : lastFailed ? "Failed" : "Done")
+        .accessibilityLabel(running ? GlamorText.string(.running) : lastFailed ? GlamorText.string(.failed) : GlamorText.string(.done))
         .spinnerGate($gate, busy: running)
         .onChange(of: running, initial: true) { _, now in if !now, let failed { last = failed } }
         .onChange(of: failed) { _, new in if !running, let new { last = new } }
