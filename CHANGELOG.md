@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Docs: glass turns grey when the window is not key (GL20).** The README now says this is the system's inactive glass state and expected: Deploy, the segments and the theme switch lose their tint until the window is key. No behaviour changed.
+
 ## v0.1.0 - 2026-11-23
 
 - **New: warm glass (GL13).** System glass behind `#available(iOS 26, macOS 26, *)` on bars and sheets, `.glass` on the theme switch, the segmented control and the search field, and a tinted ember glass for the main action. Reduce Transparency and Increase Contrast swap to the solid path, which is also what macOS 15 and iOS 18 draw. Materials come from design-tokens v0.7.0 (`scripts/vendor-tokens.sh`).

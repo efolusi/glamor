@@ -84,6 +84,12 @@ Runs what CI runs (vendored tokens, colour, size and motion checks, `swift test`
 Screen Recording permission, so CI does not run it: run the gate on a Mac before a tag, with the 1-minute load
 (`uptime`) under 10. Logs go to `GLAMOR_GATE_OUT` (default `.build/release-gate`).
 
+## Glass when the window is not key
+
+On macOS 26, system glass loses its tint when its window is not the key window. The ember Deploy button, the segmented control and the theme switch turn grey until the window is key again. The system does this to every glass surface (`glassEffect`, `.glass`); `GlassSurface` and `GlassMainActionStyle` pass the tint in, and SwiftUI offers no setting to keep it. This is expected, not a bug.
+
+Glamor does not work around it. A solid fill swapped in while the window is inactive would flicker on every focus change and would no longer be the system's glass. The label colour (`G.onAccent`) does not change, so the text stays readable in both states. Reduce Transparency and Increase Contrast use the solid path, which keeps its colours in every window state.
+
 ## Known limits in v0.1.0 (not machine-proven)
 
 The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, which prints these as UNPROVEN or does not reach them. Each row says what was proven instead.
