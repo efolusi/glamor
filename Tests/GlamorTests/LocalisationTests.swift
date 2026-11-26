@@ -165,6 +165,17 @@ struct LocalisationTests {
         #expect(GlamorText.code(host: ["fr"], preferences: ["de"]) == "en", "then English")
     }
 
+    /// A bare executable (the gallery under `swift run`) reports no localizations, yet `preferredLocalizations` still
+    /// answers ["en"]. The guard drops that answer, so the person's list decides; an empty or "Base"-only answer does too.
+    @Test func aHostWithNoLocalizationsIsTreatedAsHavingNone() {
+        #expect(GlamorText.hostLanguages(localizations: [], preferred: ["en"]) == [])
+        #expect(GlamorText.code(host: GlamorText.hostLanguages(localizations: [], preferred: ["en"]), preferences: ["id-ID"]) == "id")
+        #expect(GlamorText.code(host: GlamorText.hostLanguages(localizations: ["en"], preferred: []), preferences: ["id-ID"]) == "id")
+        #expect(GlamorText.code(host: GlamorText.hostLanguages(localizations: ["Base"], preferred: ["Base"]), preferences: ["id-ID"]) == "id")
+        #expect(GlamorText.code(host: GlamorText.hostLanguages(localizations: ["Base"], preferred: ["Base"]), preferences: ["fr"]) == "en")
+        #expect(GlamorText.hostLanguages(localizations: ["en", "id"], preferred: ["id"]) == ["id"], "a real host keeps its answer")
+    }
+
     @Test func numbersAreWrittenForTheResolvedLanguage() {
         // A bare .lproj bundle has no Info.plist; the locale comes from the resolved code, not from the bundle.
         #expect(GlamorText.string(.percent, language: "id", 1_000) == "1.000 persen")

@@ -46,7 +46,13 @@ enum GlamorText {
     /// The host app's languages, ordered for this person. Empty for an executable with no Info.plist and no `.lproj`
     /// of its own (the gallery under `swift run`), which then follows the person's list.
     static var hostLanguages: [String] {
-        Bundle.main.localizations.isEmpty ? [] : Bundle.main.preferredLocalizations
+        hostLanguages(localizations: Bundle.main.localizations, preferred: Bundle.main.preferredLocalizations)
+    }
+
+    /// `hostLanguages` for a given bundle answer, made testable. A bundle with no localizations still answers
+    /// `preferredLocalizations` with ["en"]; that answer is dropped, so the person's list decides.
+    static func hostLanguages(localizations: [String], preferred: [String]) -> [String] {
+        localizations.isEmpty ? [] : preferred
     }
 
     /// The language code and the bundle holding its text. `language` names one (any BCP 47 code); nil follows the host

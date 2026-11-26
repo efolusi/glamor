@@ -41,7 +41,7 @@ See [guidelines/ecosystem.md](guidelines/ecosystem.md) and [ARCHITECTURE.md](ARC
 Add Glamor to `Package.swift`, pinned to a tag:
 
 ```swift
-.package(url: "https://github.com/efolusi/glamor", from: "0.2.0"),
+.package(url: "https://github.com/efolusi/glamor", exact: "0.2.0"),
 ```
 
 Then add `"Glamor"` to your target's dependencies and `import Glamor`. The newest tag and what changed are in [CHANGELOG.md](CHANGELOG.md).
@@ -56,9 +56,11 @@ Your app does not pass a language. Glamor takes the first match, in this order:
 2. The person's language list (`Locale.preferredLanguages`), when your app has neither English nor Indonesian (an app in French only) or no languages of its own (the gallery under `swift run`).
 3. English.
 
+- An app that wants Glamor in Indonesian must offer Indonesian itself: ship an `id.lproj` (a String Catalog with Indonesian makes one) or list `id` in `CFBundleLocalizations`. An app that offers English and not Indonesian always gets English.
 - The person picks among your app's languages with the system list, or with the language they set for your app in Settings.
 - For a test or a screenshot, start the app with `-AppleLanguages "(id)"`.
 - `ThemeSwitchWords.current` gives the theme switch's words in that same language; `.english` and `.indonesian` fix one.
+- Glamor reads the language from the process (`Bundle.main`, `Locale.preferredLanguages`) when it builds a word, never from SwiftUI's environment, so `.environment(\.locale, Locale(identifier: "id"))` in a preview does not change Glamor's words. A preview follows the process that hosts it, by the same three steps; to see Glamor's Indonesian in an app that offers it, run the app with `-AppleLanguages "(id)"` or set the Mac's language to Indonesian.
 
 ## Preview
 
