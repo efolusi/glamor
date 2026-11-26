@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **New: localisation, en and id (GL14).** Every word the library says itself (VoiceOver names, tooltips, the Copied announcement, spoken sizes, banner kinds, the defaults of `help`, `label` and `allTitle`) is in `Sources/Glamor/Resources/Localizable.xcstrings` with English and Indonesian, and follows the person's language (English when the catalog has none for it). `LocalisationTests` fails when a catalog string lacks `en` or `id`, when the two differ in placeholders, or when a source file says a user-facing word outside the catalog. The gallery has its own catalog. `Package.swift` declares `defaultLocalization: "en"` and the resources.
+- **New: `ThemeSwitchWords.current`**, the words in the person's language. `ThemeSwitch` still needs its words (GL16); `english` and `indonesian` now read the catalog too.
+- **Fix: `ChipRow` drew an empty chip for "All".** Its initialiser's `allTitle` defaulted to an empty string; it now defaults to the catalog's "All" ("Semua").
+
 ## v0.1.0 - 2026-11-23
 
 - **New: warm glass (GL13).** System glass behind `#available(iOS 26, macOS 26, *)` on bars and sheets, `.glass` on the theme switch, the segmented control and the search field, and a tinted ember glass for the main action. Reduce Transparency and Increase Contrast swap to the solid path, which is also what macOS 15 and iOS 18 draw. Materials come from design-tokens v0.7.0 (`scripts/vendor-tokens.sh`).

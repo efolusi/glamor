@@ -32,12 +32,14 @@ public struct Banner<Actions: View>: View {
     }
 
     /// What VoiceOver reads before the title, so the kind is not told by color and shape alone.
-    public static func spokenKind(_ kind: Kind) -> String {
+    public static func spokenKind(_ kind: Kind) -> String { spokenKind(kind, language: nil) }
+
+    static func spokenKind(_ kind: Kind, language: String?) -> String {
         switch kind {
-        case .success: "Done"
-        case .warning: "Warning"
-        case .danger: "Error"
-        case .info: "Note"
+        case .success: GlamorText.string(.done, language: language)
+        case .warning: GlamorText.string(.warning, language: language)
+        case .danger: GlamorText.string(.error, language: language)
+        case .info: GlamorText.string(.note, language: language)
         }
     }
 
@@ -181,7 +183,7 @@ public struct ProgressBar: View {
         }
         .frame(height: G.Line.bar)
         .accessibilityElement()
-        .accessibilityValue("\(Int((min(max(value, 0), 1) * 100).rounded())) percent")
+        .accessibilityValue(GlamorText.string(.percent, Int((min(max(value, 0), 1) * 100).rounded())))
     }
 
     public init(value: Double, tone: Color = G.accent) {
@@ -245,7 +247,7 @@ public struct DelayedLoading<Content: View>: View {
 /// square stays, so the words beside it never move.
 public struct DelayedProgress: View {
     public let isBusy: Bool
-    public var label: String = "Working"
+    public var label: String = GlamorText.string(.working)
     public var body: some View {
         DelayedLoading(isBusy: isBusy, reservesSpace: true) {
             ProgressView().controlSize(.small).accessibilityLabel(label)
@@ -281,7 +283,7 @@ public struct Skeleton: View {
 /// "Copied". Copying never happens silently (MotionSpec).
 public struct CopyButton: View {
     public let text: String
-    public var help: String = "Copy"
+    public var help: String = GlamorText.string(.copy)
     public var size: CGFloat = G.Height.control24
     @State private var copied = false
     @State private var copies = 0
@@ -306,7 +308,7 @@ public struct CopyButton: View {
             Self.copyToPasteboard(text)
             copied = true
             copies += 1
-            AccessibilityNotification.Announcement("Copied").post()
+            AccessibilityNotification.Announcement(GlamorText.string(.copied)).post()
         } label: {
             Image(systemName: copied ? "checkmark" : "square.on.square")
                 .contentTransition(.symbolEffect(.replace))
@@ -316,8 +318,8 @@ public struct CopyButton: View {
         .buttonStyle(GhostButtonStyle(square: true, size: size))
         .onHover { hover = $0 }
         .gAnimation(.fast, value: copied)
-        .help(copied ? "Copied" : help)
-        .accessibilityLabel(copied ? "Copied" : help)
+        .help(copied ? GlamorText.string(.copied) : help)
+        .accessibilityLabel(copied ? GlamorText.string(.copied) : help)
         .task(id: copies) {
             guard copied else { return }
             try? await Task.sleep(for: G.Motion.confirmHold)
@@ -325,9 +327,9 @@ public struct CopyButton: View {
         }
     }
 
-    public init(text: String, help: String = "Copy", size: CGFloat = G.Height.control24) {
+    public init(text: String, help: String? = nil, size: CGFloat = G.Height.control24) {
         self.text = text
-        self.help = help
+        self.help = help ?? GlamorText.string(.copy)
         self.size = size
     }
 }

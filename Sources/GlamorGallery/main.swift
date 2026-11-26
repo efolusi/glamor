@@ -52,8 +52,25 @@ struct EnvironmentProbe: View {
     }
 }
 
+/// The gallery's words, from its own catalog (`Resources/Localizable.xcstrings`, en and id). Start it with
+/// `-AppleLanguages "(id)"` for Indonesian, or `-NSDoubleLocalizedStrings YES` to see every word twice as long.
+enum Words {
+    static func text(_ key: String) -> String { Bundle.module.localizedString(forKey: key, value: nil, table: nil) }
+    static func text(_ key: String, _ argument: String) -> String { String(format: text(key), argument) }
+}
+
+/// A demo choice, named by its catalog key.
+struct Period: Hashable {
+    let titleKey: String
+    var title: String { Words.text(titleKey) }
+    static let daily = Period(titleKey: "period.daily")
+    static let weekly = Period(titleKey: "period.weekly")
+}
+
 struct Gallery: View {
-    @State private var choice = "Daily"
+    /// A host name is data, not a word to translate.
+    static let host = "web-1"
+    @State private var choice = Period.daily
     @State private var segment = 0
     @State private var search = ""
     @State private var appearance = Appearance.light
@@ -61,25 +78,28 @@ struct Gallery: View {
     var body: some View {
         VStack(alignment: .leading, spacing: G.Space.s16) {
             CardList {
-                ListRow(action: { activated("web-1") }) { Text("web-1") }
-                ListRow(selected: true, action: { activated("db-primary") }) { Text("db-primary (selected)") }
-                ListRow(action: { activated("queue-3") }) { Text("queue-3") }
+                ListRow(action: { activated(Gallery.host) }) { Text(verbatim: Gallery.host) }
+                ListRow(selected: true, action: { activated("db-primary") }) { Text(Words.text("row.selected", "db-primary")) }
+                ListRow(action: { activated("queue-3") }) { Text(verbatim: "queue-3") }
             }
             HStack(spacing: G.Space.s16) {
-                Button("Save") { activated("Save") }.buttonStyle(PrimaryButtonStyle()).focused($saveFocused)
-                Button("Cancel") { activated("Cancel") }.buttonStyle(SecondaryButtonStyle())
-                MenuPicker(title: choice, selection: $choice) {
-                    Text("Daily").tag("Daily"); Text("Weekly").tag("Weekly")
+                Button(Words.text("action.save")) { activated("Save") }.buttonStyle(PrimaryButtonStyle()).focused($saveFocused)
+                Button(Words.text("action.cancel")) { activated("Cancel") }.buttonStyle(SecondaryButtonStyle())
+                MenuPicker(title: choice.title, selection: $choice) {
+                    Text(Period.daily.title).tag(Period.daily); Text(Period.weekly.title).tag(Period.weekly)
                 }
-                MoreMenu(label: "web-1") { Button("Rename") { activated("Rename") }; Button("Remove") { activated("Remove") } }
+                MoreMenu(label: Gallery.host) {
+                    Button(Words.text("action.rename")) { activated("Rename") }
+                    Button(Words.text("action.remove")) { activated("Remove") }
+                }
             }
             HStack(spacing: G.Space.s16) {
-                Button("Deploy") { activated("Deploy") }.glassMainAction(fallback: PrimaryButtonStyle())
-                SegmentedControl(items: ["Day", "Week", "Month"], selection: $segment)
-                ThemeSwitch(appearance: $appearance, words: .english)
+                Button(Words.text("action.deploy")) { activated("Deploy") }.glassMainAction(fallback: PrimaryButtonStyle())
+                SegmentedControl(items: ["period.day", "period.week", "period.month"].map(Words.text), selection: $segment)
+                ThemeSwitch(appearance: $appearance, words: .current)
             }
-            SearchBar(placeholder: "Search hosts", text: $search)
-            Text("Toolbar").textStyle(.caption).foregroundStyle(G.text2)
+            SearchBar(placeholder: Words.text("search.hosts"), text: $search)
+            Text(Words.text("toolbar.title")).textStyle(.caption).foregroundStyle(G.text2)
                 .frame(maxWidth: .infinity, minHeight: G.Height.control32).glassBar()
             ProgressBar(value: 0.6)
         }
@@ -100,7 +120,7 @@ final class Delegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
     func applicationDidFinishLaunching(_ note: Notification) {
         window = NSWindow(contentRect: NSRect(x: 200, y: 200, width: 460, height: 460), styleMask: [.titled, .closable], backing: .buffered, defer: false)
-        window.title = "Glamor gallery"
+        window.title = Words.text("window.title")
         window.contentView = NSHostingView(rootView: Gallery())
         if let name = Options.appearance { NSApp.appearance = NSAppearance(named: name) }
         #if DEBUG
@@ -110,7 +130,7 @@ final class Delegate: NSObject, NSApplicationDelegate {
             var count = 0
             NotificationCenter.default.addObserver(forName: .galleryActivated, object: nil, queue: .main) { [weak self] note in
                 count += 1
-                MainActor.assumeIsolated { self?.window.title = "Glamor gallery | \(note.object as? String ?? "") | \(count)" }
+                MainActor.assumeIsolated { self?.window.title = "\(Words.text("window.title")) | \(note.object as? String ?? "") | \(count)" }
             }
         }
         window.makeKeyAndOrderFront(nil)

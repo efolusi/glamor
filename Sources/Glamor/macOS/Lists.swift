@@ -232,7 +232,7 @@ public struct ChipStyle: ButtonStyle {
 public struct ChipRow: View {
     public let chips: [String]
     @Binding public var selection: String?
-    public var allTitle: String = "All"
+    public var allTitle: String = GlamorText.string(.chipAll)
     public var prefix: String = ""
 
     public var body: some View {
@@ -248,10 +248,10 @@ public struct ChipRow: View {
         .frame(height: G.Height.control28)
     }
 
-    public init(chips: [String], selection: Binding<String?>, allTitle: String = "", prefix: String = "") {
+    public init(chips: [String], selection: Binding<String?>, allTitle: String? = nil, prefix: String = "") {
         self.chips = chips
         self._selection = selection
-        self.allTitle = allTitle
+        self.allTitle = allTitle ?? GlamorText.string(.chipAll)
         self.prefix = prefix
     }
 }
@@ -273,8 +273,8 @@ public struct FilterField: View {
                 if !text.isEmpty {
                     Button { text = "" } label: { Image(systemName: "xmark.circle.fill").icon(G.Icon.sm) }
                         .buttonStyle(.plainFocus(G.Radius.r4)).foregroundStyle(G.text3)
-                        .help("Clear the filter")
-                        .accessibilityLabel("Clear the filter")
+                        .help(GlamorText.string(.clearFilter))
+                        .accessibilityLabel(GlamorText.string(.clearFilter))
                 }
             }
         }
@@ -288,9 +288,11 @@ public struct FilterField: View {
 
 /// What VoiceOver reads for a ⋯ button: "More for web-1", so twenty buttons in a list are not all "More".
 public enum MoreMenuWords {
-    public static func label(_ subject: String?) -> String {
-        guard let subject, !subject.isEmpty else { return "More" }
-        return "More for \(subject)"
+    public static func label(_ subject: String?) -> String { label(subject, language: nil) }
+
+    static func label(_ subject: String?, language: String?) -> String {
+        guard let subject, !subject.isEmpty else { return GlamorText.string(.more, language: language) }
+        return GlamorText.string(.moreFor, language: language, subject)
     }
 }
 
@@ -301,7 +303,7 @@ public struct MoreMenu<Items: View>: View {
     public var size: CGFloat = G.Height.control28
     /// The thing the menu is for: a target's, key's or forward's name.
     public var label: String?
-    public var help: String = "More"
+    public var help: String = GlamorText.string(.more)
     @ViewBuilder public var items: () -> Items
     @State private var hover = false
     @FocusState private var focused: Bool
@@ -329,10 +331,10 @@ public struct MoreMenu<Items: View>: View {
             .onHover { hover = $0 }
     }
 
-    public init(size: CGFloat = G.Height.control28, label: String?, help: String = "More", @ViewBuilder items: @escaping () -> Items) {
+    public init(size: CGFloat = G.Height.control28, label: String?, help: String? = nil, @ViewBuilder items: @escaping () -> Items) {
         self.size = size
         self.label = label
-        self.help = help
+        self.help = help ?? GlamorText.string(.more)
         self.items = items
     }
 }
