@@ -6,7 +6,7 @@ import SwiftUI
 /// it has the same hover and focus ring. VoiceOver reads the title as the caller wrote it, a header trait, and
 /// "expanded" or "collapsed" as its value. A folded section draws no rows, so the marker and the panel fill of the
 /// chosen place go with them: when it holds that place, the header shows a marker-coloured dot and its value names
-/// the place ("collapsed, Host selected").
+/// the place ("collapsed, Host selected"). The hint says what pressing it does.
 struct SidebarSectionBody<Content: View>: View {
     let title: String
     @Binding var isExpanded: Bool
@@ -51,6 +51,7 @@ struct SidebarSectionBody<Content: View>: View {
             .buttonStyle(SidebarItemStyle(isSelected: false))
             .accessibilityLabel(title)
             .accessibilityValue(Self.headerValue(isExpanded: isExpanded, selectedTitle: selectedTitle))
+            .accessibilityHint(GlamorText.string(.sidebarSectionHint))
             .accessibilityAddTraits(.isHeader)
             if isExpanded {
                 VStack(alignment: .leading, spacing: G.Row.gap) { content }.gTransition(.fade)

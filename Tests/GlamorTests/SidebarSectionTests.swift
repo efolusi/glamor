@@ -26,6 +26,12 @@ struct SidebarSectionTests {
         #expect(GlamorText.string(.sidebarCollapsed, language: "id") == "tertutup")
     }
 
+    @Test func aHeaderHintSaysItFoldsOrOpensTheSectionInBothLanguages() throws {
+        #expect(GlamorText.string(.sidebarSectionHint, language: "en") == "Folds or opens the section")
+        #expect(GlamorText.string(.sidebarSectionHint, language: "id") == "Menutup atau membuka bagian")
+        #expect(try source("macOS/SidebarSectionBody.swift").contains(".accessibilityHint(GlamorText.string(.sidebarSectionHint))"))
+    }
+
     @Test func theSectionKeepsItsTitleAndTakesTheCallersBinding() {
         var open = true
         let section = SidebarSection("Targets", isExpanded: Binding(get: { open }, set: { open = $0 })) { EmptyView() }

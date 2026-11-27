@@ -57,6 +57,9 @@
 /* The name VoiceOver reads for the sidebar container. */
 "sidebar.label" = "Bilah samping";
 
+/* What VoiceOver reads as the hint of a sidebar section header: what pressing it does. */
+"sidebar.sectionHint" = "Menutup atau membuka bagian";
+
 /* What the sidebar's edge divider sizes, for VoiceOver. */
 "sidebar.width" = "Lebar bilah samping";
 

@@ -343,6 +343,24 @@
         }
       }
     },
+    "sidebar.sectionHint": {
+      "comment": "What VoiceOver reads as the hint of a sidebar section header: what pressing it does.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folds or opens the section"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menutup atau membuka bagian"
+          }
+        }
+      }
+    },
     "sidebar.width": {
       "comment": "What the sidebar's edge divider sizes, for VoiceOver.",
       "extractionState": "manual",

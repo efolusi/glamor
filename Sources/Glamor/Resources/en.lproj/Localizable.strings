@@ -57,6 +57,9 @@
 /* The name VoiceOver reads for the sidebar container. */
 "sidebar.label" = "Sidebar";
 
+/* What VoiceOver reads as the hint of a sidebar section header: what pressing it does. */
+"sidebar.sectionHint" = "Folds or opens the section";
+
 /* What the sidebar's edge divider sizes, for VoiceOver. */
 "sidebar.width" = "Sidebar width";
 
