@@ -124,6 +124,8 @@ public enum G {
         public static func tint(_ contrast: ColorSchemeContrast) -> Double { isIncreased(contrast) ? increased : tint }
         /// The pill tint for this contrast.
         public static func pill(_ contrast: ColorSchemeContrast) -> Double { isIncreased(contrast) ? increased : pill }
+        /// The banner tint for this contrast.
+        public static func banner(_ contrast: ColorSchemeContrast) -> Double { isIncreased(contrast) ? increased : banner }
 
         /// The environment, or a debug snapshot that forces Increase contrast (as Color.adaptive reads it).
         private static func isIncreased(_ contrast: ColorSchemeContrast) -> Bool {

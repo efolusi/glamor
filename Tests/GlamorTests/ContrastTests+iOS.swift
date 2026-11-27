@@ -69,5 +69,30 @@ struct ContrastTestsIOS {
             #expect(ratio(G.accentEdge, ground, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
         }
     }
+
+    private func holds(_ ink: Color, on ground: Color, _ need: Double, dark: Bool, high: Bool) {
+        let r = ratio(ink, ground, dark: dark, high: high)
+        #expect(r >= need, "ratio \(r) is under \(need) (dark \(dark), increased \(high))")
+    }
+
+    /// GL39: every pair the iOS sidebar row draws, as `SidebarContrastTests` holds them on the Mac. The row sits on the
+    /// window ground; the chosen row on the panel fill; a press takes `G.Hover.pressed`.
+    @Test(arguments: [(false, false), (true, false), (false, true), (true, true)])
+    func theSidebarRowReadsOnEveryFillItSitsOn(dark: Bool, high: Bool) {
+        holds(G.text2, on: G.window, 4.5, dark: dark, high: high)
+        holds(G.text2, on: G.Hover.pressed, 4.5, dark: dark, high: high)
+        holds(G.text, on: G.Hover.pressed, 4.5, dark: dark, high: high)
+        holds(G.text, on: G.panel, 4.5, dark: dark, high: high)
+        holds(G.selectedMarker, on: G.panel, 3, dark: dark, high: high)
+        holds(G.accentFg, on: G.accentSubtle, 4.5, dark: dark, high: high)
+        holds(G.text3, on: G.window, 4.5, dark: dark, high: high)
+    }
+
+    @Test(arguments: [(false, false), (true, false), (false, true), (true, true)])
+    func theSidebarSearchReadsOnTheFieldFill(dark: Bool, high: Bool) {
+        holds(G.placeholder, on: G.field, 4.5, dark: dark, high: high)
+        holds(G.text3, on: G.field, 4.5, dark: dark, high: high)
+        holds(G.controlEdge, on: G.window, 3, dark: dark, high: high)
+    }
 }
 #endif
