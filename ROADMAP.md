@@ -4,7 +4,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 
 ## Where things stand
 
-Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27, `v0.3.0` on 2026-11-27):
+Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27, `v0.3.0` on 2026-11-27, `v0.3.1` on 2026-11-28 once the owner's window check has run):
 
 - One Swift package, one library `Glamor` (macOS 15, iOS 18). Tokens live in `enum G`; Mac files in `Sources/Glamor/macOS/`, iPhone and iPad files in `Sources/Glamor/iOS/` (named `<Name>+iOS.swift`), shared text cleaning in `Sources/Glamor/Text/`.
 - No Komando imports. The Komando logo, terminal palette and ANSI colors stay in komando-apps.
@@ -17,7 +17,7 @@ Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-
 
 What is next:
 
-- GL25: add a default button to the gallery (the Save button of a sheet) and make the window check fail when Return does not press it. Planned for v0.3.1, with GL27 (the switch takes the system tint, not copper) and GL28 (the disabled main action in dark, ProgressBar tones in Increase contrast).
+- GL25: add a default button to the gallery (the Save button of a sheet) and make the window check fail when Return does not press it. Open; it was planned for v0.3.1 and did not ship in it. GL27 (the switch tint), GL28 (the disabled main action, the ProgressBar track) and GL30 (four more VoiceOver lines in the window check) are done in v0.3.1. A stronger ProgressBar track waits on design-tokens `okEdge`, `warnEdge`, `dangerEdge` (DT19, GL44).
 - Items 9 and 10: komando-apps adopts Glamor. Items 7, 15, 16, 18, 20 and 23 wait on it.
 - Items 12, 17 and 21: shared preview cards and design moved out of komando-apps, after the plan with the komando coordinator.
 
