@@ -9,9 +9,9 @@ import SwiftUI
 /// VoiceOver reads one button, "name, detail": the label (initial, lines, chevron) is hidden. Glamor knows no person: the name,
 /// the detail line and the menu are the app's.
 public struct ProfileCard<Menu: View>: View {
-    public let name: String
-    public let detail: String
-    public let style: ProfileCardStyle
+    let name: String
+    let detail: String
+    let style: ProfileCardStyle
     private let menu: Menu
     @State private var isOpen = false
 

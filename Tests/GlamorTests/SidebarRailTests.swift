@@ -152,7 +152,7 @@ struct SidebarRailTests {
         #expect(rail.contains(".accessibilityElement(children: .contain)"))
         let column = try source("macOS/SidebarColumn.swift")
         #expect(column.contains(".accessibilityElement(children: .contain)"))
-        #expect(column.contains(".accessibilityLabel(title)"), "the column is named by its title, so VoiceOver does not say Sidebar twice")
+        #expect(!column.contains(".accessibilityLabel(title)"), "the title is the heading: as the container's label too, VoiceOver reads it twice")
     }
 
     @Test func aRailItemIsOneButtonWithTheGlyphOverTheShortTitle() throws {
@@ -167,6 +167,12 @@ struct SidebarRailTests {
         #expect(item.contains(".foregroundStyle(isSelected ? G.text : G.text2)"))
     }
 
+    /// The title starts where the rows' glyphs start: the list inset (8) and the row's padding (12), 20 from the column's edge.
+    @Test func theColumnTitleStartsWhereTheRowGlyphsStart() throws {
+        #expect(SidebarColumn<EmptyView>.titleInset == 20)
+        #expect(SidebarColumn<EmptyView>.titleInset == G.Row.listInset + G.Row.padding)
+    }
+
     @Test func theColumnTitleIsTitleSAndAHeaderAndTheRowsScrollInAPlainStack() throws {
         let column = try source("macOS/SidebarColumn.swift")
         #expect(column.contains(".textStyle(.titleS)"))
@@ -179,7 +185,10 @@ struct SidebarRailTests {
 
     @Test func theAreaBindingIsTheOnlyStateTheRailKeeps() throws {
         let rail = try source("macOS/SidebarRail.swift")
-        #expect(rail.contains("@Binding public var area: String"))
+        #expect(rail.contains("@Binding var area: String"))
+        #expect(!rail.contains("public let") && !rail.contains("public var area"), "the siblings keep their stored fields internal: only the init and the body are public")
+        let column = try source("macOS/SidebarColumn.swift"), card = try source("macOS/ProfileCard.swift")
+        #expect(!column.contains("public let") && !card.contains("public let"))
         #expect(!rail.contains("@State"))
         #expect(!rail.contains("@SceneStorage"))
     }

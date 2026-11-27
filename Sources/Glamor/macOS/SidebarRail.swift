@@ -9,8 +9,8 @@ import SwiftUI
 /// The rail keeps no state of its own. Like `Sidebar` it sits on the window's ground, leaves the traffic lights their
 /// room and drags the window from there, and holds its items in a plain stack so every area stays in the Tab order.
 public struct SidebarRail<Footer: View>: View {
-    public let registry: PlaceRegistry
-    @Binding public var area: String
+    let registry: PlaceRegistry
+    @Binding var area: String
     private let footer: Footer
 
     public init(registry: PlaceRegistry, area: Binding<String>, @ViewBuilder footer: () -> Footer) {

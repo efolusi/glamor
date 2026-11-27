@@ -3,10 +3,13 @@ import SwiftUI
 
 /// The narrow-window sidebar (variant B), second half: the places of the chosen area, in the 184 that the 72 wide
 /// `SidebarRail` leaves of the 256 sidebar. Its title (`titleS`, 16 semibold) sits in the row of the traffic lights; the
-/// rows are the caller's `SidebarItem`s and a `SidebarSearch`, in a plain scrolling stack. It is named by its title.
+/// rows are the caller's `SidebarItem`s and a `SidebarSearch`, in a plain scrolling stack. The title is its heading for VoiceOver; the column itself has no second label.
 public struct SidebarColumn<Content: View>: View {
-    public let title: String
+    let title: String
     private let content: Content
+
+    /// The title starts where the rows' glyphs start: the list's inset and the row's padding.
+    static var titleInset: CGFloat { G.Row.listInset + G.Row.padding }
 
     /// What is left of the sidebar's width after the rail.
     static var width: CGFloat { G.Width.sidebar - G.Width.rail }
@@ -19,7 +22,7 @@ public struct SidebarColumn<Content: View>: View {
     public var body: some View {
         VStack(spacing: 0) {
             Text(title).textStyle(.titleS).foregroundStyle(G.text).lineLimit(1)
-                .padding(.horizontal, G.Row.padding)
+                .padding(.horizontal, Self.titleInset)
                 .frame(maxWidth: .infinity, minHeight: G.Height.trafficLights, maxHeight: G.Height.trafficLights, alignment: .leading)
                 .background(WindowDragArea())
                 .accessibilityAddTraits(.isHeader)
@@ -34,7 +37,6 @@ public struct SidebarColumn<Content: View>: View {
         .background(G.window)
         .hoverGround(.window)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(title)
     }
 }
 #endif
