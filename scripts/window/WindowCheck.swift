@@ -112,7 +112,8 @@ struct Target {
 
     var controls: [Control] {
         descendants(window).map(Control.init).filter {
-            ["AXButton", "AXMenuButton", "AXTextField"].contains($0.role) && $0.subrole.isEmpty
+            (["AXButton", "AXMenuButton", "AXTextField"].contains($0.role) && $0.subrole.isEmpty)
+                || ($0.role == "AXCheckBox" && ["", "AXSwitch"].contains($0.subrole))
         }
     }
 
@@ -325,6 +326,32 @@ func pixelsMode(_ t: Target) {
     } else {
         check("label-icon-gap", theme, "Daily menu button chevron found", "\(runs.count) runs, none wider than tall", "one chevron", false)
     }
+
+    switchTint(t, shot)
+}
+
+/// GL43 (GL27): the ToggleCard's switch is on at launch and drawn in `accentEdge`; its track must stand 3:1 off the card
+/// it sits on. The track is the flat colour that fills most of the switch's frame, so it is the most common colour there
+/// that is not the card (the knob and the edge are smaller, a glass sheen is not flat). The card ground is read 6 pt to
+/// the left of the frame, inside the card's padding.
+func switchTint(_ t: Target, _ shot: Shot) {
+    let theme = t.theme
+    guard let sw = t.control(switchName) else { check("switch-tint", theme, "switch found", "missing", "present", false); return }
+    let f = sw.frame
+    let ground = shot.px(shot.pixel(CGPoint(x: f.minX - 6, y: f.midY)).x, shot.pixel(CGPoint(x: f.minX - 6, y: f.midY)).y)
+    let a = shot.pixel(f.origin), b = shot.pixel(CGPoint(x: f.maxX, y: f.maxY))
+    var counts: [String: (n: Int, color: RGB)] = [:]
+    for y in a.y..<b.y { for x in a.x..<b.x {
+        let c = shot.px(x, y)
+        guard ratio(c, ground) > 1.15 else { continue }
+        let key = hex(c)
+        counts[key] = ((counts[key]?.n ?? 0) + 1, c)
+    } }
+    guard let track = counts.values.max(by: { $0.n < $1.n }) else {
+        unproven("switch-tint", theme, "no pixel in the switch's frame \(Int(f.width))x\(Int(f.height)) pt differs from the card, so the track could not be read"); return
+    }
+    let r = ratio(track.color, ground)
+    check("switch-tint", theme, "switch-on track \(hex(track.color)) on card \(hex(ground))", f2(r) + ":1", ">= 3:1", r >= 3)
 }
 
 /// One control a scene must show. `value` is what AXValue reads before anything is pressed (a switch: "1" for on).
@@ -350,6 +377,9 @@ struct SceneSpec {
     let sheet: ((Target) -> Void)?
 }
 
+/// The switch of the components scene (GL43). Not translated: the script runs the gallery in English.
+let switchName = "Send reports"
+
 let componentsControls: [Expected] = [
     Expected(name: "web-1", role: "AXButton", selected: false, pressEvent: "web-1"),
     Expected(name: "db-primary (selected)", role: "AXButton", selected: true, pressEvent: "db-primary"),
@@ -364,6 +394,7 @@ let componentsControls: [Expected] = [
     Expected(name: "Month", role: "AXButton", selected: false, pressEvent: "segment 2"),
     Expected(name: "Switch to dark theme", role: "AXButton", selected: false, pressEvent: "theme dark"),
     Expected(name: "Search hosts", role: "AXTextField", selected: false, pressEvent: nil),
+    Expected(name: switchName, role: "AXCheckBox", selected: false, pressEvent: "switch off", value: "1"),
 ]
 
 let scenes: [String: SceneSpec] = [
@@ -389,6 +420,9 @@ func stringsMode(_ t: Target) {
             check("voiceover", theme, "the text field is named by a label equal to its placeholder, not by the placeholder alone",
                   "AXDescription \"\(c.description)\", AXTitle \"\(c.title)\", placeholder \"\(c.placeholder)\"", "a label \"\(c.placeholder)\"", labelled)
         }
+        if let value = e.value {
+            check("voiceover", theme, "\"\(e.name)\" reads its value before any press", "AXValue \"\(c.value)\"", "\"\(value)\"", c.value == value)
+        }
         // One name: a title and a description that differ are two names for one control.
         let names = Set([c.title, c.description].filter { !$0.isEmpty })
         check("voiceover", theme, "\"\(e.name)\" has one name", "AXTitle \"\(c.title)\", AXDescription \"\(c.description)\"", "one", names.count <= 1)
@@ -399,6 +433,12 @@ func stringsMode(_ t: Target) {
     // Target size in the tree (WCAG 2.5.8 AA: 24 x 24 pt). Frames are the tree's; a click was not simulated.
     for e in t.scene.expected where e.role != "AXTextField" {
         if let c = t.control(e.name) {
+            // A switch is drawn small (controlSize .small); WCAG 2.5.8 lets a target under 24 x 24 pt stand when no other
+            // target sits within 24 pt of it. Its size is reported, not failed; the spacing is the person's look.
+            if e.role == "AXCheckBox" {
+                note("target-size", theme, "\"\(e.name)\" accessibility frame \(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt (a small switch; the 2.5.8 spacing exception applies)")
+                continue
+            }
             check("target-size", theme, "\"\(e.name)\" accessibility frame", "\(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt", ">= 24x24 pt",
                   c.frame.width >= 24 && c.frame.height >= 24)
         }

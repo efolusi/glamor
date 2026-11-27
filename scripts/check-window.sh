@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Checks the GlamorGallery window on this Mac, as a user sees it, with no person at the keyboard:
-#   pixel contrast (search placeholder, Deploy label, unfocused search edge) in light and dark, and with the
+#   pixel contrast (search placeholder, Deploy label, unfocused search edge, the switch-on track) in light and dark, and with the
 #   Increase contrast colours (the gallery's debug flag; SwiftUI's own environment values cannot be set); the label-to-icon gap on the Daily menu button; the VoiceOver strings and
 #   AXPress, and the names that appear only after an action (the theme switch after the toggle, "Clear the search"
 #   after typing, the sheet title as a heading, the unlabelled spinner "Working"); Tab order, Space and Return.

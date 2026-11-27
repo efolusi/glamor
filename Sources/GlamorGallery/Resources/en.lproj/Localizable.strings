@@ -42,6 +42,12 @@
 /* Demo sheet title, read by VoiceOver as a heading. */
 "sheet.title" = "Edit host";
 
+/* The help line under the ToggleCard's title in the demo. */
+"toggle.help" = "Reports arrive each morning.";
+
+/* The ToggleCard title in the demo. The window check reads it by this English name. */
+"toggle.title" = "Send reports";
+
 /* Demo glass bar text. */
 "toolbar.title" = "Toolbar";
 
