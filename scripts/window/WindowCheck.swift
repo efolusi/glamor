@@ -261,6 +261,36 @@ func readInk(_ s: Shot, rect: CGRect) -> InkReading {
 
 func f2(_ v: Double) -> String { String(format: "%.2f", v) }
 
+/// The whole 32 pt box of a button. Its accessibility frame is usually that; a frame that is only the label (under 30 pt
+/// high) is widened by the button's 12 pt side padding and made 32 high.
+func wholeButton(_ c: Control) -> CGRect {
+    c.frame.height >= 30 ? c.frame : CGRect(x: c.frame.minX - 12, y: c.frame.midY - 16, width: c.frame.width + 24, height: 32)
+}
+
+/// The distance between two colours, each channel 0 to 1.
+func colorGap(_ a: RGB, _ b: RGB) -> Double {
+    (pow(a.r - b.r, 2) + pow(a.g - b.g, 2) + pow(a.b - b.b, 2)).squareRoot()
+}
+
+/// A Button is a capsule (GL41): its corner radius is half its height, 16 pt at 32 pt. A point 3.5 pt in from a corner
+/// of its box lies 1.7 pt outside the curve of a capsule and 1.6 pt inside a rectangle of radius 8, so the pixel there is
+/// the ground around the button for a capsule and the button's fill for the old shape. The ground is read 8 pt outside
+/// the corner, the fill 7 pt in from the left edge at mid height (before the label's 12 pt padding). When the fill and the
+/// ground read within 0.03 of each other the line says UNPROVEN: it could not tell the two shapes apart.
+func buttonShape(_ name: String, _ theme: String, _ shot: Shot, _ box: CGRect) {
+    func at(_ p: CGPoint) -> RGB { let q = shot.pixel(p); return shot.px(q.x, q.y) }
+    let corner = at(CGPoint(x: box.minX + 3.5, y: box.minY + 3.5))
+    let ground = at(CGPoint(x: box.minX - 8, y: box.minY - 8))
+    let fill = at(CGPoint(x: box.minX + 7, y: box.midY))
+    let what = "\"\(name)\" corner pixel 3.5 pt in \(hex(corner)), ground \(hex(ground)), fill \(hex(fill))"
+    guard colorGap(fill, ground) >= 0.03 else {
+        unproven("button-shape", theme, what + ": the fill reads like the ground in this capture, so a capsule and a rectangle cannot be told apart here"); return
+    }
+    let nearGround = colorGap(corner, ground) < colorGap(corner, fill)
+    check("button-shape", theme, what, nearGround ? "reads the ground (a capsule)" : "reads the fill (a rectangle)", "the ground: radius is half the height",
+          nearGround)
+}
+
 /// The shortest distance between two frames in points: 0 when they touch or overlap.
 func frameGap(_ a: CGRect, _ b: CGRect) -> Double {
     let dx = max(0, a.minX - b.maxX, b.minX - a.maxX)
@@ -294,12 +324,19 @@ func pixelsMode(_ t: Target) {
     if ph.worst < 4.5 { note("placeholder", theme, "against the weakest ground pixel the ratio is \(f2(ph.worst)):1") }
 
     // 1b. Deploy label against its glass fill (4.5:1). The accessibility frame is the whole 32 pt button; a frame
-    // that is only the label (16 pt high) is widened by the button's 12 pt side padding.
-    let whole = deploy.frame.height >= 30
-    let buttonRect = (whole ? deploy.frame : CGRect(x: deploy.frame.minX - 12, y: deploy.frame.midY - 16, width: deploy.frame.width + 24, height: 32)).insetBy(dx: 5, dy: 5)
-    let dp = readInk(shot, rect: buttonRect)
+    // that is only the label (16 pt high) is widened by the button's 12 pt side padding. The read sits 8 pt in from
+    // the box: the button is a capsule (GL41), and its curve passes 0.44 pt inside a 5 pt inset at the corners, so the
+    // ground and the rim were read as part of the fill; at 8 pt the nearest corner is 4.7 pt inside the curve.
+    let deployBox = wholeButton(deploy)
+    let dp = readInk(shot, rect: deployBox.insetBy(dx: 8, dy: 8))
     check("deploy-label", theme, "Deploy label ink \(hex(dp.ink)) on fill \(hex(dp.ground))", f2(dp.typical) + ":1", ">= 4.5:1", dp.typical >= 4.5)
     if dp.worst < 4.5 { note("deploy-label", theme, "against the weakest fill pixel the ratio is \(f2(dp.worst)):1") }
+
+    // 1b2. A Button is a capsule (GL41): its corner radius is half its height. See `buttonShape`.
+    for name in ["Save", "Cancel", "Deploy"] {
+        if let button = t.control(name) { buttonShape(name, theme, shot, wholeButton(button)) }
+        else { check("button-shape", theme, "button \"\(name)\" found", "missing", "present", false) }
+    }
 
     // 1c. Unfocused search field edge against the surface around it (3:1, GL17): top, left and right edges
     // (the bottom edge sits in the glass's own shadow, so it is reported but does not decide).
@@ -482,6 +519,9 @@ let profileControls: [Expected] = [Expected(name: profileSpoken, role: "AXButton
 let scenes: [String: SceneSpec] = [
     "components": SceneSpec(name: "components", readyButtons: 10, expected: componentsControls,
                             pixels: pixelsMode, afterActions: afterActionStrings, sheet: sheetMode),
+    // The marks have no control: nothing to wait for but the window, and the strings and pixels read static texts.
+    "marks": SceneSpec(name: "marks", readyButtons: 0, expected: [],
+                       pixels: marksPixels, afterActions: marksStrings, sheet: nil),
     "sidebar-a": SceneSpec(name: "sidebar-a", readyButtons: 27, expected: sidebarAControls,
                            pixels: sidebarAPixels, afterActions: sidebarAAfterActions, sheet: nil, keys: sidebarAKeys),
     "sidebar-b": SceneSpec(name: "sidebar-b", readyButtons: 17, expected: sidebarBControls,
@@ -613,6 +653,66 @@ func afterActionStrings(_ t: Target) {
     check("voiceover", theme, "the unlabelled spinner is named \"Working\"",
           working ? "named" : "no AXBusyIndicator or AXProgressIndicator named \"Working\"; progress, busy or indicator elements in the window: \(seen.isEmpty ? "none" : seen)",
           "\"Working\"", working)
+}
+
+// MARK: Scene marks (GL36)
+
+/// What VoiceOver reads for the two marks, which the marks scene shows twice each: on the window and on a card.
+let proSpoken = "Pro, paid feature", soonSpoken = "Soon, not available yet"
+
+/// The frames of the tree's static texts that read `spoken`, top first (the window's mark, then the card's).
+func markFrames(_ t: Target, _ spoken: String) -> [CGRect] {
+    descendants(t.window).filter { text($0, "AXRole") == "AXStaticText" && spokenName($0) == spoken }
+        .compactMap(axFrame).sorted { $0.minY < $1.minY }
+}
+
+/// Each mark is one element read as its spoken words; the bare word is not read apart from it.
+func marksStrings(_ t: Target) {
+    let theme = t.theme
+    for (mark, spoken) in [("Pro", proSpoken), ("Soon", soonSpoken)] {
+        let both = waitUntil(3) { t.staticTexts.filter { $0 == spoken }.count == 2 }
+        let count = t.staticTexts.filter { $0 == spoken }.count
+        check("voiceover", theme, "the \(mark) mark is one static text read \"\(spoken)\", once on the window and once on a card",
+              both ? "2 found" : "\(count) found; static texts in the window: \(t.staticTexts.joined(separator: ", "))", "2 found", both)
+    }
+    let bare = t.staticTexts.filter { $0 == "Pro" || $0 == "Soon" }
+    check("voiceover", theme, "no bare word \"Pro\" or \"Soon\" is read apart from its mark", bare.isEmpty ? "none" : bare.joined(separator: ", "), "none", bare.isEmpty)
+}
+
+/// Pixels of the marks, from a capture of that window only: each word is text (4.5:1 on its ground), the Pro outline is a
+/// shape (3:1 on its ground: the top and the bottom edge, the straight parts of the capsule), and the Soon outline is only
+/// reported: it is the border colour, close to invisible, and the word carries the meaning.
+func marksPixels(_ t: Target) {
+    let theme = t.theme
+    let found = waitUntil(5) { markFrames(t, proSpoken).count == 2 && markFrames(t, soonSpoken).count == 2 }
+    guard found else {
+        check("setup", theme, "both marks found on the window and on a card", "Pro: \(markFrames(t, proSpoken).count), Soon: \(markFrames(t, soonSpoken).count); static texts: \(t.staticTexts.joined(separator: ", "))",
+              "2 and 2", false)
+        return
+    }
+    let shot = capture(t, name: theme)
+    note("shot", theme, "\(t.out.path)/\(theme).png, \(shot.width)x\(shot.height) px, scale \(f2(shot.scale))")
+    func at(_ p: CGPoint) -> RGB { let q = shot.pixel(p); return shot.px(q.x, q.y) }
+    for (mark, spoken) in [("Pro", proSpoken), ("Soon", soonSpoken)] {
+        for (frame, ground) in zip(markFrames(t, spoken), ["the window", "a card"]) {
+            // The word: 8 pt in from each side (the mark's padding) and 4 pt from top and bottom, clear of the outline's curve.
+            let word = readInk(shot, rect: frame.insetBy(dx: 8, dy: 4))
+            check("mark-word", theme, "\(mark) word on \(ground): ink \(hex(word.ink)) on \(hex(word.ground))", f2(word.typical) + ":1", ">= 4.5:1", word.typical >= 4.5)
+            if word.worst < 4.5 { note("mark-word", theme, "\(mark) on \(ground): against the weakest ground pixel the ratio is \(f2(word.worst)):1") }
+            // The outline: the strongest pixel within 2 pt of each straight edge, against the ground 5 pt outside it.
+            for (edge, y, outward) in [("top", frame.minY, -1.0), ("bottom", frame.maxY, 1.0)] {
+                let surround = at(CGPoint(x: frame.midX, y: y + outward * 5))
+                var best: (ratio: Double, color: RGB) = (0, surround)
+                for step in stride(from: -2.0, through: 2.0, by: 0.5) {
+                    let color = at(CGPoint(x: frame.midX, y: y + step))
+                    if ratio(color, surround) > best.ratio { best = (ratio(color, surround), color) }
+                }
+                let what = "\(mark) outline (\(edge)) on \(ground): \(hex(best.color)) vs ground \(hex(surround))"
+                if mark == "Pro" { check("mark-edge", theme, what, f2(best.ratio) + ":1", ">= 3:1", best.ratio >= 3) }
+                else { note("mark-edge", theme, what + ": \(f2(best.ratio)):1, no claim; the word says Soon") }
+            }
+        }
+    }
 }
 
 /// The gallery's sheet (opened by --open-sheet) must say its title as a heading.

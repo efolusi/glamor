@@ -76,9 +76,9 @@ public struct PrimaryButtonStyle: ButtonStyle {
         .padding(.horizontal, G.Space.s12)
         .frame(height: m.height)
         .frame(maxWidth: wide ? .infinity : nil)
-        .background(fill, in: Capsule())
+        .background(fill, in: G.controlShape)
         // The rim is the shape's 3:1 edge on a light ground; in dark it is the fill's own colour. It fades with the fill.
-        .overlay(Capsule()
+        .overlay(G.controlShape
             .strokeBorder(G.accentEdge.opacity(enabled ? 1 : G.Opacity.disabled), lineWidth: G.Line.hair))
         // The secondary's shadow: a bigger one made the primary look taller beside it (EmptyState review).
         .shadow(enabled ? G.Shadow.control : G.Shadow.none)
@@ -111,8 +111,8 @@ public struct SecondaryButtonStyle: ButtonStyle {
             .frame(height: m.height)
             // card, cardHover under the pointer, G.Hover.pressed while pressed. A destructive one hovers the same.
             .background(configuration.isPressed ? G.Hover.pressed : (hover ? G.cardHover : G.card),
-                        in: Capsule())
-            .overlay(Capsule().strokeBorder(G.border))
+                        in: G.controlShape)
+            .overlay(G.controlShape.strokeBorder(G.border))
             .shadow(G.Shadow.control)
             .focusRingCapsule()
             .onHover { hover = $0 }
@@ -141,8 +141,8 @@ public struct GhostButtonStyle: ButtonStyle {
         let active = enabled && (hover || configuration.isPressed)
         let fill: Color = !enabled ? .clear : G.Hover.item(hover: hover, pressed: configuration.isPressed, on: ground)
         let height = size ?? m.height
-        let rowRadius = height > G.Height.control28 ? G.Radius.r8 : G.Radius.r6
-        let shape = wide ? AnyShape(RoundedRectangle(cornerRadius: rowRadius, style: .continuous)) : AnyShape(Capsule())
+        let rowRadius = Self.rowRadius(height: height)
+        let shape = Self.shape(wide: wide, height: height)
         // Only an icon-only square of 28 or more draws its symbol at 16.
         let icon = square && height >= G.Height.control28 ? G.Icon.md : m.icon
         configuration.label
@@ -157,6 +157,14 @@ public struct GhostButtonStyle: ButtonStyle {
             .contentShape(shape)
             .modifier(FocusRing(radius: rowRadius, capsule: !wide))
             .onHover { hover = $0 }
+    }
+
+    /// A menu row's corner: r8, r6 when the row is 28 or lower.
+    static func rowRadius(height: CGFloat) -> CGFloat { height > G.Height.control28 ? G.Radius.r8 : G.Radius.r6 }
+
+    /// The shape its fill, hit area and ring share: the control shape, or the row's rounded corner when `wide`.
+    static func shape(wide: Bool, height: CGFloat) -> AnyShape {
+        wide ? AnyShape(RoundedRectangle(cornerRadius: rowRadius(height: height), style: .continuous)) : AnyShape(G.controlShape)
     }
 
     public init(compact: Bool = false, square: Bool = false, size: CGFloat? = nil, wide: Bool = false) {

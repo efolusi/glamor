@@ -21,6 +21,12 @@
 /* What VoiceOver reads for the count on the Copy row of the sidebar demo. %@ is the number. */
 "count.transfers" = "%@ transfers running";
 
+/* Demo row of the marks scene, next to the Soon mark. */
+"marks.approvals" = "Approvals";
+
+/* Demo row of the marks scene, next to the Pro mark. */
+"marks.sync" = "Sync across devices";
+
 /* Demo menu choice. */
 "period.daily" = "Daily";
 

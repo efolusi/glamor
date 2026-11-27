@@ -17,7 +17,7 @@ One or two words of status in a capsule: the text in its tone, the fill the same
 | Pro | Pro, Pro | 1px `accentEdge`, solid | `accentFg` | "Pro, paid feature", "Pro, fitur berbayar" |
 | Soon | Soon, Segera | 1px `border`, dashed (4 on, 4 off, as `DashedDivider`) | `text2` | "Soon, not available yet", "Segera, belum tersedia" |
 
-- Colour is never the only sign: the word and the outline (solid or dashed) both differ.
+- The word carries the meaning, never the colour or the outline. The Soon outline is dashed in `border`, which is 1.10 to 1.40:1 on its grounds, so it is close to invisible and is decoration only.
 - Place a mark inside a page, next to the thing it names (Settings Sync, Team, AI, Approvals). Never put one on a row of the list of places.
-- Both words hold 4.5:1 on the page, a panel, a card, a subtle well and a hovered card in light, dark and both Increase contrast modes; the Pro outline holds 3:1 (`ContrastTests`). The Soon outline is a hairline and takes the control edge with Increase contrast.
+- Both words hold 4.5:1 on the page, a panel, a card, a subtle well and a hovered card in light, dark and both Increase contrast modes; the Pro outline holds 3:1 (`ContrastTests`). The Soon outline has no contrast claim, also with Increase contrast: the word says Soon.
 - VoiceOver reads one element with the spoken words, not the word on the mark.

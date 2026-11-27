@@ -3,9 +3,9 @@ import SwiftUI
 import Testing
 @testable import Glamor
 
-/// GL36: the Pro and Soon marks. Colour is never the only sign: the word differs and so does the outline (solid or
-/// dashed). VoiceOver says what the mark means ("Pro, paid feature"), in the person's language. Contrast is in
-/// ContrastTests (four modes).
+/// GL36: the Pro and Soon marks. The word carries the meaning, not the colour and not the outline (the Soon outline
+/// is the border colour, 1.10 to 1.40:1, nearly invisible). VoiceOver says what the mark means ("Pro, paid
+/// feature"), in the person's language. Contrast is in ContrastTests (four modes).
 struct PlanMarkTests {
     private var root: URL {
         URL(fileURLWithPath: #filePath)
@@ -38,10 +38,10 @@ struct PlanMarkTests {
         }
     }
 
-    @Test func colourIsNeverTheOnlyDifference() {
+    @Test func theWordCarriesTheMeaningNotTheOutline() {
         #expect(PlanMark.pro.word(language: "en") != PlanMark.soon.word(language: "en"))
         #expect(PlanMark.pro.dash.isEmpty, "Pro is a solid outline")
-        #expect(PlanMark.soon.dash == [G.Space.s4, G.Space.s4], "Soon is dashed, as the page's DashedDivider")
+        #expect(PlanMark.soon.dash == [G.Space.s4, G.Space.s4], "Soon is dashed, as the page's DashedDivider: decoration only")
     }
 
     @Test func aMarkPillShowsTheMarksWordAndNamesItsMeaning() {
