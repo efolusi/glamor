@@ -2,8 +2,9 @@ import SwiftUI
 
 /// The mark of a paid feature (`pro`) or of one that is not built yet (`soon`), drawn by `Pill(mark:)` (GL36).
 /// A mark sits inside a page next to the thing it names (Settings Sync, Team, AI, Approvals), never on a row of a
-/// list of places. Colour is never the only sign: the word differs, and so does the outline (solid or dashed).
-/// VoiceOver says what the mark means ("Pro, paid feature"), not only its word.
+/// list of places. The WORD carries the meaning (Pro, Soon), never the colour and never the outline: the Soon
+/// outline is the border colour at 1.10 to 1.40:1 on its grounds, so the dashed edge is close to invisible and is
+/// decoration only. VoiceOver says what the mark means ("Pro, paid feature"), not only its word.
 public enum PlanMark: Sendable, CaseIterable {
     case pro, soon
 
@@ -32,8 +33,8 @@ public enum PlanMark: Sendable, CaseIterable {
         }
     }
 
-    /// The outline's colour: `accentEdge` (3:1 as a shape) for Pro; the border colour for Soon, which the dash
-    /// and the word carry.
+    /// The outline's colour: `accentEdge` (3:1 as a shape) for Pro. The border colour for Soon: 1.10 to 1.40:1,
+    /// a quiet frame that nobody has to see, because the word says Soon.
     var edge: Color {
         switch self {
         case .pro: G.accentEdge
@@ -41,7 +42,7 @@ public enum PlanMark: Sendable, CaseIterable {
         }
     }
 
-    /// The outline's dash: none for Pro; as the page's `DashedDivider` for Soon.
+    /// The outline's dash: none for Pro; as the page's `DashedDivider` for Soon (decoration, see `edge`).
     var dash: [CGFloat] {
         switch self {
         case .pro: []

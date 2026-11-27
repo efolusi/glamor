@@ -45,8 +45,9 @@ struct ContrastTestsIOS {
     }
 
     /// GL36: the Pro and Soon words are text: 4.5:1 on every ground a mark sits on, in every mode; the Pro outline is a
-    /// shape, `accentEdge`, 3:1 on the page, a card and a subtle well. The Soon outline is a dashed hairline carried by
-    /// its word and its dash, so it has no 3:1 claim.
+    /// shape, `accentEdge`, 3:1 on the page, a card and a subtle well. The Soon outline is a dashed hairline in the
+    /// border colour, 1.10 to 1.40:1: nearly invisible, and that is fine, because the word carries the meaning, not
+    /// the outline. It has no 3:1 claim; the Soon word has 4.5:1 above.
     @Test(arguments: [(false, false), (true, false), (false, true), (true, true)])
     func theProAndSoonMarksReadOnEveryGroundAMarkSitsOn(dark: Bool, high: Bool) {
         for mark in PlanMark.allCases {

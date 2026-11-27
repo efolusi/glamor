@@ -21,6 +21,12 @@
 /* What VoiceOver reads for the count on the Copy row of the sidebar demo. %@ is the number. */
 "count.transfers" = "%@ transfer berjalan";
 
+/* Demo row of the marks scene, next to the Soon mark. */
+"marks.approvals" = "Persetujuan";
+
+/* Demo row of the marks scene, next to the Pro mark. */
+"marks.sync" = "Sinkronisasi antarperangkat";
+
 /* Demo menu choice. */
 "period.daily" = "Harian";
 
