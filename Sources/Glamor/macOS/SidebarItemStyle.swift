@@ -12,6 +12,9 @@ struct SidebarItemStyle: ButtonStyle {
     var alignment: Alignment = .leading
     /// From the highlight's edge to the content on each side. The rail takes 0: its 64 wide button is all the room a title has.
     var horizontalPadding: CGFloat = G.Row.padding
+    /// A marker of its own height and top (the rail's: beside the glyph); nil is the row's, 0.6 of its height, centred.
+    var markerHeight: CGFloat? = nil
+    var markerTop: CGFloat = 0
     @State private var hover = false
 
     func makeBody(configuration: Configuration) -> some View {
@@ -24,7 +27,7 @@ struct SidebarItemStyle: ButtonStyle {
             .contentShape(shape)
             .background(fill, in: shape)
             .overlay { if isSelected { shape.strokeBorder(G.border, lineWidth: G.Line.hair) } }
-            .selectedMarker(isSelected)
+            .selectedMarker(isSelected, height: markerHeight, top: markerTop)
             .focusRingInside()
             .onHover { hover = $0 }
     }

@@ -10,6 +10,13 @@ struct SidebarRailItem: View {
     let isSelected: Bool
     let action: () -> Void
 
+    /// The glyph over the title is 20 + 4 + 16 = 40 tall, centred in the 52: it starts 6 from the top.
+    static let contentHeight = G.Icon.lg + G.Space.s4 + G.Height.line16
+    static let contentTop = (G.Height.row52 - contentHeight) / 2
+    /// The chosen marker is as tall as the glyph and starts where it starts, so it ends 4 above the title: a long title (the
+    /// Indonesian "Pengaturan" starts at x 4.5 at its floor) never runs under the marker at x 4 to 8.
+    static let markerHeight = G.Icon.lg
+
     /// What the short title has to sit in: the rail less the inset of the list on each side. The item pads its
     /// content by nothing, so the title gets the button's whole width.
     static let labelRoom = G.Width.rail - 2 * G.Row.cardInset
@@ -24,7 +31,8 @@ struct SidebarRailItem: View {
             .help(ifPresent: area.tooltip)
             .accessibilityHidden(true)
         }
-        .buttonStyle(SidebarItemStyle(isSelected: isSelected, height: G.Height.row52, alignment: .center, horizontalPadding: 0))
+        .buttonStyle(SidebarItemStyle(isSelected: isSelected, height: G.Height.row52, alignment: .center, horizontalPadding: 0,
+                                     markerHeight: Self.markerHeight, markerTop: Self.contentTop))
         .accessibilityLabel(area.name)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }

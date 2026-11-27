@@ -43,7 +43,7 @@ struct SidebarRailTests {
         #expect(item.contains("SidebarItemStyle(isSelected: isSelected, height: G.Height.row52"))
         #expect(item.contains("horizontalPadding: 0"), "the title gets the whole 64 (see theTitleRoomIs...)")
         let style = try source("macOS/SidebarItemStyle.swift")
-        #expect(style.contains(".selectedMarker(isSelected)"), "the rail draws the marker the item draws")
+        #expect(style.contains(".selectedMarker(isSelected, height: markerHeight, top: markerTop)"), "the rail draws the marker the item draws")
     }
 
     // MARK: Title room
@@ -69,6 +69,26 @@ struct SidebarRailTests {
             let shown = setWidth(title) * G.Row.railTitleScale
             #expect(shown <= SidebarRailItem.labelRoom, "\(title) is \(shown) pt at the smallest scale, in \(SidebarRailItem.labelRoom) pt")
         }
+    }
+
+    /// The chosen marker is 4 wide, 4 in from the item's edge (x 4 to 8). A centred title wider than 48 pt would start under it
+    /// ("Pengaturan" is 55.1 pt at the floor, so it starts at x 4.5), and 44 is all a title has with 10 reserved on each side: no
+    /// readable scale fits "Pengaturan" there (44 / 64.8 = 0.68, under 8.2 pt). So the rail's marker sits beside the glyph: it is
+    /// as tall as the glyph and starts where it starts, and ends 4 above the title, so no title can reach it at any width.
+    @Test func theChosenMarkerSitsBesideTheGlyphAndEndsAboveTheTitle() {
+        let markerLeft = G.Row.markerInset, markerRight = G.Row.markerInset + G.Row.markerWidth
+        let glyphLeft = (SidebarRailItem.labelRoom - G.Icon.lg) / 2
+        #expect(markerRight <= glyphLeft, "the marker (x \(markerLeft) to \(markerRight)) is left of the glyph (x \(glyphLeft))")
+        let markerBottom = SidebarRailItem.contentTop + SidebarRailItem.markerHeight
+        let titleTop = SidebarRailItem.contentTop + G.Icon.lg + G.Space.s4
+        #expect(SidebarRailItem.markerHeight == G.Icon.lg, "the marker is the glyph's 20 tall, a sidebar row's 19.2 almost")
+        #expect(markerBottom <= titleTop - G.Space.s4, "the marker ends at y \(markerBottom), the title starts at y \(titleTop)")
+        #expect(SidebarRailItem.contentTop * 2 + SidebarRailItem.contentHeight == G.Height.row52, "the glyph and the title are centred in the 52")
+    }
+
+    @Test func theWidestTitleWouldHaveMetTheMarkerWhereItWasCentredAtItsFloor() {
+        let left = (SidebarRailItem.labelRoom - setWidth("Pengaturan") * G.Row.railTitleScale) / 2
+        #expect(left < G.Row.markerInset + G.Row.markerWidth, "the reason the marker moved: \(left) < 8")
     }
 
     // MARK: Areas

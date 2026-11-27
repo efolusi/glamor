@@ -951,9 +951,10 @@ func sidebarBPixels(_ t: Target) {
     ink("rail-label", "rail area title (text2) on the window ground", title(across.frame), 4.5)
     ink("rail-glyph", "rail area glyph (text2) on the window ground", glyph(across.frame), 4.5)
     ink("rail-selected-label", "chosen area title on its panel fill", title(chosen.frame), 4.5)
-    // The marker is 4 pt wide, 4 pt in from the item's edge; the panel fill is read at the item's right end, clear of the label.
+    // The marker is 4 pt wide, 4 pt in from the item's edge, and as tall as the glyph (20 pt from 6 pt below the item's top, ending 4 pt above
+    // the title): its middle is 16 pt down, not the item's middle. The panel fill is read at the item's right end, clear of the label.
     let f = chosen.frame
-    let marker = at(CGPoint(x: f.minX + 6, y: f.midY)), panel = at(CGPoint(x: f.maxX - 4, y: f.midY))
+    let marker = at(CGPoint(x: f.minX + 6, y: f.minY + 16)), panel = at(CGPoint(x: f.maxX - 4, y: f.minY + 16))
     check("rail-marker", theme, "rail marker \(hex(marker)) against panel \(hex(panel))", f2(ratio(marker, panel)) + ":1", ">= 3:1", ratio(marker, panel) >= 3)
     // No title is cut: each is drawn at least as wide as it is set at the smallest scale (0.85, G.Row.railTitleScale), less 1.5 pt for the
     // anti-aliased edge. When the label room was 32 pt, "Targets" (42.1 pt set) drew about 32 pt: that fails here.
