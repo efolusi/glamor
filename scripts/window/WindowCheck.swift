@@ -386,7 +386,17 @@ func keysMode(_ t: Target) {
     // Space and Return, on every control that takes focus. A control that will not take focus is reported, not skipped silently.
     for e in expectedControls where e.role != "AXTextField" {
         guard let c = t.control(e.name) else { continue }
-        guard t.focus(c) else {
+        // Some controls (the glass theme switch) refuse AXFocused but take focus from Tab: reach them the way a user does.
+        func focusOrTab(_ name: String) -> Bool {
+            if let again = t.control(name), t.focus(again) { return true }
+            guard fka else { return false }
+            for _ in 0..<(order.count + 2) {
+                t.press(48)
+                if t.focused?.name == name { return true }
+            }
+            return false
+        }
+        guard focusOrTab(e.name) else {
             unproven("keys", theme, "\"\(e.name)\" does not take keyboard focus with Keyboard navigation \(fka ? "on" : "off"), so Space and Return could not be sent to it")
             continue
         }
@@ -403,11 +413,18 @@ func keysMode(_ t: Target) {
             note("keys", theme, "Return on focused \"\(e.name)\" \(opened2 ? "opens" : "does not open") its menu (system menu-button behaviour)")
             if opened2 { t.press(53) }
         } else if let event = e.pressEvent {
+            // Space presses a focused button. Return presses only the window's default button, so on any other
+            // button it is reported, not failed (the same system behaviour as Return on the menu buttons above).
             for (keyName, code) in [("Space", CGKeyCode(49)), ("Return", CGKeyCode(36))] {
-                guard t.focus(c) else { continue }
+                guard focusOrTab(e.name) else { continue }
                 let before = t.windowTitle
                 t.press(code)
-                check("keys", theme, "\(keyName) on focused \"\(e.name)\"", t.windowTitle == before ? "no event" : t.windowTitle, "event \"\(event)\"", t.windowTitle != before && t.windowTitle.contains(event))
+                let fired = t.windowTitle != before && t.windowTitle.contains(event)
+                if keyName == "Space" {
+                    check("keys", theme, "Space on focused \"\(e.name)\"", t.windowTitle == before ? "no event" : t.windowTitle, "event \"\(event)\"", fired)
+                } else {
+                    note("keys", theme, "Return on focused \"\(e.name)\" \(fired ? "presses it" : "does not press it") (a button that is not the default button ignores Return on macOS)")
+                }
             }
         }
     }
