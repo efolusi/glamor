@@ -4,9 +4,12 @@ import SwiftUI
 /// The look of a sidebar row (variant A). Not `RowStyle`: a lists-on-card row selects with `accentSubtle`, the sidebar
 /// selects with the `panel` fill, a hairline and the marker, as in the mocks the owner chose. Same sizes from `G.Row`.
 /// Under the pointer the row takes the hover fill of the window, pressed `G.Hover.pressed`. The focus ring sits inside
-/// the row's own shape, where the button's focus is read.
+/// the row's own shape, where the button's focus is read. The rail (variant B) draws the same look at 52 high with
+/// its content centred; a sidebar row is 32 high with its content at the leading edge.
 struct SidebarItemStyle: ButtonStyle {
     let isSelected: Bool
+    var height: CGFloat = G.Row.oneLine
+    var alignment: Alignment = .leading
     @State private var hover = false
 
     func makeBody(configuration: Configuration) -> some View {
@@ -15,7 +18,7 @@ struct SidebarItemStyle: ButtonStyle {
             : (isSelected ? G.panel : G.Hover.item(hover: hover, pressed: false, on: .window))
         configuration.label
             .padding(.horizontal, G.Row.padding)
-            .frame(maxWidth: .infinity, minHeight: G.Row.oneLine, maxHeight: G.Row.oneLine, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: height, maxHeight: height, alignment: alignment)
             .contentShape(shape)
             .background(fill, in: shape)
             .overlay { if isSelected { shape.strokeBorder(G.border, lineWidth: G.Line.hair) } }
