@@ -240,6 +240,13 @@ func readInk(_ s: Shot, rect: CGRect) -> InkReading {
 
 func f2(_ v: Double) -> String { String(format: "%.2f", v) }
 
+/// The shortest distance between two frames in points: 0 when they touch or overlap.
+func frameGap(_ a: CGRect, _ b: CGRect) -> Double {
+    let dx = max(0, a.minX - b.maxX, b.minX - a.maxX)
+    let dy = max(0, a.minY - b.maxY, b.minY - a.maxY)
+    return Double((dx * dx + dy * dy).squareRoot())
+}
+
 // MARK: Modes
 
 func pixelsMode(_ t: Target) {
@@ -433,10 +440,14 @@ func stringsMode(_ t: Target) {
     // Target size in the tree (WCAG 2.5.8 AA: 24 x 24 pt). Frames are the tree's; a click was not simulated.
     for e in t.scene.expected where e.role != "AXTextField" {
         if let c = t.control(e.name) {
-            // A switch is drawn small (controlSize .small); WCAG 2.5.8 lets a target under 24 x 24 pt stand when no other
-            // target sits within 24 pt of it. Its size is reported, not failed; the spacing is the person's look.
-            if e.role == "AXCheckBox" {
-                note("target-size", theme, "\"\(e.name)\" accessibility frame \(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt (a small switch; the 2.5.8 spacing exception applies)")
+            // A switch is drawn small (controlSize .small). WCAG 2.5.8 lets a target under 24 x 24 pt stand when no other
+            // target sits within 24 pt of it, so for a small one the size is a NOTE and the spacing is the CHECK. The gap
+            // is frame to frame, a little stricter than the standard's 24 pt circle round the target's centre.
+            if e.role == "AXCheckBox", c.frame.width < 24 || c.frame.height < 24 {
+                note("target-size", theme, "\"\(e.name)\" accessibility frame \(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt, under 24x24 pt: the spacing check below applies (WCAG 2.5.8)")
+                let nearest = t.controls.filter { !CFEqual($0.element, c.element) }.map { frameGap(c.frame, $0.frame) }.min()
+                check("target-spacing", theme, "\"\(e.name)\" to the nearest other target", nearest.map { "nearest target \(f2($0)) pt" } ?? "no other target",
+                      ">= 24 pt (WCAG 2.5.8)", (nearest ?? .infinity) >= 24)
                 continue
             }
             check("target-size", theme, "\"\(e.name)\" accessibility frame", "\(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt", ">= 24x24 pt",
