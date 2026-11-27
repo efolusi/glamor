@@ -33,6 +33,44 @@ struct SidebarSectionTests {
         open = false
     }
 
+    // MARK: A folded section that holds the chosen place
+
+    @Test func aFoldedHeaderNamesTheChosenPlaceInsideItInBothLanguages() {
+        #expect(GlamorText.string(.sidebarCollapsedSelected, language: "en", "Host") == "collapsed, Host selected")
+        #expect(GlamorText.string(.sidebarCollapsedSelected, language: "id", "Host") == "tertutup, Host dipilih")
+    }
+
+    @Test func theHeaderValueIsExpandedCollapsedOrCollapsedWithTheChosenPlace() {
+        func value(_ open: Bool, _ chosen: String?, _ language: String) -> String {
+            SidebarSectionBody<EmptyView>.headerValue(isExpanded: open, selectedTitle: chosen, language: language)
+        }
+        #expect(value(true, "Host", "en") == "expanded", "an open section shows its chosen row, so it says nothing more")
+        #expect(value(false, nil, "en") == "collapsed")
+        #expect(value(false, "Host", "en") == "collapsed, Host selected")
+        #expect(value(false, "Host", "id") == "tertutup, Host dipilih")
+    }
+
+    @Test func bothInitsTakeTheCueWithDefaultsSoACallerThatDoesNotAskIsUnchanged() {
+        var open = false
+        let binding = Binding(get: { open }, set: { open = $0 })
+        _ = SidebarSection("Targets", isExpanded: binding) { EmptyView() }
+        _ = SidebarSection("Targets", isExpanded: binding, containsSelection: true, selectedTitle: "Host") { EmptyView() }
+        _ = SidebarSection("Targets", id: "targets") { EmptyView() }
+        _ = SidebarSection("Targets", id: "targets", containsSelection: true, selectedTitle: "Host") { EmptyView() }
+        open = true
+    }
+
+    /// A folded section draws no rows, so the marker and the panel fill leave with them: the header carries a dot.
+    @Test func aFoldedSectionThatHoldsTheChosenPlaceDrawsAHiddenMarkerDotOnItsHeader() throws {
+        let text = try source("macOS/SidebarSectionBody.swift")
+        #expect(text.contains("!isExpanded && containsSelection"))
+        #expect(text.contains("Circle().fill(G.selectedMarker)"))
+        #expect(text.contains("G.Dot.d8"))
+        let start = try #require(text.range(of: "Circle().fill(G.selectedMarker)"))
+        #expect(text[start.upperBound...].prefix(120).contains(".accessibilityHidden(true)"), "VoiceOver gets the words, not the dot")
+        #expect(text.contains("headerValue(isExpanded: isExpanded"))
+    }
+
     // MARK: Source shape
 
     @Test func theHeaderIsAHeaderButtonThatSaysItsStateAndTheTitleAsItWasWritten() throws {
@@ -40,8 +78,8 @@ struct SidebarSectionTests {
         #expect(text.contains("Button"))
         #expect(text.contains(".accessibilityAddTraits(.isHeader)"))
         #expect(text.contains(".accessibilityLabel(title)"), "the label keeps the caller's case; the drawn title is upper case")
-        #expect(text.contains("GlamorText.string(.sidebarExpanded)"))
-        #expect(text.contains("GlamorText.string(.sidebarCollapsed)"))
+        #expect(text.contains("GlamorText.string(.sidebarExpanded,"))
+        #expect(text.contains("GlamorText.string(.sidebarCollapsed,"))
     }
 
     /// 32 high like a row, not the 16 high `ListSectionLabel`, and its title starts where a row's name starts.

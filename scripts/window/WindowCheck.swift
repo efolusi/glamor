@@ -716,6 +716,23 @@ func sidebarAPixels(_ t: Target) {
         }
         check("search-edge", theme, "unfocused search edge (\(name)) \(hex(best.color)) vs surround \(hex(surround))", f2(best.ratio) + ":1", ">= 3:1", best.ratio >= 3)
     }
+    // M1: a folded section that holds the chosen place (Targets, while Host is chosen) shows the marker colour as a dot on
+    // its header, left of the chevron: 12 pt padding, the 8 pt chevron, the 8 pt label-icon gap, then the 8 pt dot. The read
+    // is the 22 pt around it, mostly ground, so the dot is the ink. Open, the same spot is bare ground.
+    func dotSpot(_ f: CGRect) -> CGRect { CGRect(x: f.maxX - 44, y: f.midY - 7, width: 22, height: 14) }
+    let bare = readInk(shot, rect: dotSpot(header.frame))
+    check("folded-dot", theme, "the header \"Targets\" shows no dot while it is open (ink \(hex(bare.ink)) on \(hex(bare.ground)))",
+          f2(bare.typical) + ":1", "< 1.5:1", bare.typical < 1.5)
+    let folded = AXUIElementPerformAction(header.element, "AXPress" as CFString) == .success
+        && waitUntil(3) { t.control("Cloud") == nil } && waitUntil(3) { t.control("Targets")?.value.hasPrefix("collapsed") == true }
+    guard folded, let foldedHeader = t.control("Targets") else {
+        check("folded-dot", theme, "the header \"Targets\" folds", "did not fold", "folded", false); return
+    }
+    usleep(500_000)
+    let after = capture(t, name: theme + "-folded")
+    let dot = readInk(after, rect: dotSpot(foldedHeader.frame))
+    check("folded-dot", theme, "folded \"Targets\" (it holds the chosen \"\(sidebarAStart)\") shows the marker dot \(hex(dot.ink)) on \(hex(dot.ground))",
+          f2(dot.typical) + ":1", ">= 3:1", dot.typical >= 3)
 }
 
 /// Names that depend on an action, and the one name of the container (GL30 rule: proven, not assumed).
@@ -728,9 +745,11 @@ func sidebarAAfterActions(_ t: Target) {
     guard let header = t.control(title) else { check("voiceover", theme, "header \"\(title)\" found", "missing", "present", false); return }
     let pressed = AXUIElementPerformAction(header.element, "AXPress" as CFString) == .success
     let gone = pressed && waitUntil(3) { t.control(row) == nil }
-    let collapsed = waitUntil(3) { t.control(title)?.value == "collapsed" }
+    // Targets holds the chosen place, so its folded header names it; a folded section that does not hold it reads "collapsed" alone.
+    let folded = "collapsed, \(sidebarAStart) selected"
+    let collapsed = waitUntil(3) { t.control(title)?.value == folded }
     check("voiceover", theme, "AXPress on \"\(title)\" folds it: its row \"\(row)\" leaves the tree", gone ? "row gone" : "row still in the tree", "row gone", gone)
-    check("voiceover", theme, "a folded header reads \"collapsed\"", "AXValue \"\(t.control(title)?.value ?? "")\"", "\"collapsed\"", collapsed)
+    check("voiceover", theme, "a folded header that holds the chosen place reads \"\(folded)\"", "AXValue \"\(t.control(title)?.value ?? "")\"", "\"\(folded)\"", collapsed)
     if let again = t.control(title) { _ = AXUIElementPerformAction(again.element, "AXPress" as CFString) }
     let back = waitUntil(3) { t.control(row) != nil }
     let open = waitUntil(3) { t.control(title)?.value == "expanded" }

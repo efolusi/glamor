@@ -54,6 +54,15 @@ struct SidebarWindowCheckTests {
         #expect(check.contains("t.scene.keys?(t)"), "keys mode runs the scene's own checks at its end")
     }
 
+    /// A folded section that holds the chosen place: the window check reads its header value and samples the dot.
+    @Test func theWindowCheckReadsTheFoldedHeaderThatHoldsTheChosenPlace() throws {
+        let check = try read("scripts/window/WindowCheck.swift")
+        #expect(check.contains(#"let folded = "collapsed, \(sidebarAStart) selected""#))
+        #expect(check.contains(#"check("folded-dot""#))
+        let scene = try read("Sources/GlamorGallery/Scenes/SidebarAScene.swift")
+        #expect(scene.contains("containsSelection: chosen != nil, selectedTitle: chosen?.title"))
+    }
+
     @Test func theScriptRunsTheSceneInFourPixelModesAndInStringsAndKeys() throws {
         let script = try read("scripts/check-window.sh")
         let start = try #require(script.range(of: "scene sidebar-a"))

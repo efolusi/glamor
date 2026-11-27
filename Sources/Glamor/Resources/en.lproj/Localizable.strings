@@ -45,6 +45,9 @@
 /* What VoiceOver reads after a sidebar section header when its rows are hidden. */
 "sidebar.collapsed" = "collapsed";
 
+/* What VoiceOver reads after a sidebar section header when its rows are hidden and one of them is the chosen place. %@ is that place's name. */
+"sidebar.collapsedSelected" = "collapsed, %@ selected";
+
 /* What VoiceOver reads after a sidebar section header when its rows are showing. */
 "sidebar.expanded" = "expanded";
 

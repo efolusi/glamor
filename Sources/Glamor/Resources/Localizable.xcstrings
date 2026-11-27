@@ -271,6 +271,24 @@
         }
       }
     },
+    "sidebar.collapsedSelected": {
+      "comment": "What VoiceOver reads after a sidebar section header when its rows are hidden and one of them is the chosen place. %@ is that place's name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "collapsed, %@ selected"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tertutup, %@ dipilih"
+          }
+        }
+      }
+    },
     "sidebar.expanded": {
       "comment": "What VoiceOver reads after a sidebar section header when its rows are showing.",
       "extractionState": "manual",

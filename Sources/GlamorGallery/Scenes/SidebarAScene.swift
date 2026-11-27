@@ -27,7 +27,9 @@ struct SidebarAScene: View {
         } content: {
             item(registry.home)
             ForEach(registry.sections) { section in
-                SidebarSection(section.title, isExpanded: expanded(section.id)) {
+                let chosen = section.places.first { $0.id == selection }
+                SidebarSection(section.title, isExpanded: expanded(section.id),
+                               containsSelection: chosen != nil, selectedTitle: chosen?.title) {
                     ForEach(section.places) { item($0) }
                 }
             }

@@ -6,9 +6,13 @@ import SwiftUI
 /// `NSHostingView` (the gallery) has none:
 /// - `isExpanded:` the caller's binding, kept wherever the caller keeps it;
 /// - `id:` the state is kept per window in `SceneStorage`, under `storageKey(id:)`.
-/// A folded section's rows are not drawn, so they leave the accessibility tree and the Tab order.
+/// A folded section's rows are not drawn, so they leave the accessibility tree and the Tab order. The chosen place's
+/// marker and fill go with them: when a folded section holds that place, pass `containsSelection: true` and the
+/// place's name as `selectedTitle`, and the header shows a marker-coloured dot and reads "collapsed, <name> selected".
 public struct SidebarSection<Content: View>: View {
     public let title: String
+    private let containsSelection: Bool
+    private let selectedTitle: String?
     private let storage: Storage
     private let content: Content
 
@@ -17,14 +21,20 @@ public struct SidebarSection<Content: View>: View {
         case scene(id: String, startsExpanded: Bool)
     }
 
-    public init(_ title: String, isExpanded: Binding<Bool>, @ViewBuilder content: () -> Content) {
+    public init(_ title: String, isExpanded: Binding<Bool>, containsSelection: Bool = false, selectedTitle: String? = nil,
+                @ViewBuilder content: () -> Content) {
         self.title = title
+        self.containsSelection = containsSelection
+        self.selectedTitle = selectedTitle
         storage = .binding(isExpanded)
         self.content = content()
     }
 
-    public init(_ title: String, id: String, startsExpanded: Bool = true, @ViewBuilder content: () -> Content) {
+    public init(_ title: String, id: String, startsExpanded: Bool = true, containsSelection: Bool = false,
+                selectedTitle: String? = nil, @ViewBuilder content: () -> Content) {
         self.title = title
+        self.containsSelection = containsSelection
+        self.selectedTitle = selectedTitle
         storage = .scene(id: id, startsExpanded: startsExpanded)
         self.content = content()
     }
@@ -35,9 +45,11 @@ public struct SidebarSection<Content: View>: View {
     public var body: some View {
         switch storage {
         case .binding(let isExpanded):
-            SidebarSectionBody(title: title, isExpanded: isExpanded) { content }
+            SidebarSectionBody(title: title, isExpanded: isExpanded, containsSelection: containsSelection,
+                               selectedTitle: selectedTitle) { content }
         case .scene(let id, let startsExpanded):
-            SidebarSectionStored(title: title, id: id, startsExpanded: startsExpanded) { content }
+            SidebarSectionStored(title: title, id: id, startsExpanded: startsExpanded, containsSelection: containsSelection,
+                                 selectedTitle: selectedTitle) { content }
         }
     }
 }

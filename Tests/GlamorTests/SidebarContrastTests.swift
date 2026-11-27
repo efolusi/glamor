@@ -27,6 +27,12 @@ struct SidebarContrastTests {
         holds(G.selectedMarker, on: G.panel, 3, dark: dark, high: high)
     }
 
+    /// A folded section that holds the chosen place shows the marker colour as a dot on its header, on the window ground.
+    @Test(arguments: ColorMeasure.allModes) func theFoldedHeadersDotStandsThreeToOneOffTheWindowGround(dark: Bool, high: Bool) {
+        holds(G.selectedMarker, on: G.window, 3, dark: dark, high: high)
+        holds(G.selectedMarker, on: G.Hover.onWindow, 3, dark: dark, high: high)
+    }
+
     @Test(arguments: ColorMeasure.allModes) func aCountReadsOnItsPill(dark: Bool, high: Bool) {
         holds(G.accentFg, on: G.accentSubtle, 4.5, dark: dark, high: high)
     }
