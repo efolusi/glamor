@@ -24,7 +24,7 @@ STRICT=0
 # every key check would end UNPROVEN after ten minutes. Stop at once with a plain line instead.
 if [ "$STRICT" = 1 ]; then
     kbmode=$(defaults read NSGlobalDomain AppleKeyboardUIMode 2>/dev/null || echo 0)
-    [ "$kbmode" -ge 3 ] || { echo "Keyboard navigation is off: turn it on in System Settings, Keyboard, then run again" >&2; exit 2; }
+    [ "$kbmode" -ge 2 ] || { echo "Keyboard navigation is off: turn it on in System Settings, Keyboard, then run again" >&2; exit 2; }
 fi
 
 # One run at a time, and not under load: wait for the self-hosted runner, and for a 1-minute load under 10.
