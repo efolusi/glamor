@@ -86,7 +86,7 @@ struct SidebarItemTests {
         let text = try source("macOS/SidebarItemStyle.swift")
         #expect(text.contains("G.panel"))
         #expect(text.contains("strokeBorder(G.border"))
-        #expect(text.contains(".selectedMarker(isSelected)"))
+        #expect(text.contains(".selectedMarker(isSelected, height: markerHeight, top: markerTop)"))
         #expect(!text.contains("RowHighlight"), "RowHighlight selects with accentSubtle; the sidebar selects with panel")
     }
 

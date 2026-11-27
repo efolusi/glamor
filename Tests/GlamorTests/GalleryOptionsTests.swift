@@ -38,7 +38,7 @@ struct GalleryOptionsTests {
     // MARK: Scenes and their window-check lists
 
     @Test func theMarksSceneIsOneLineInAll() {
-        #expect(GalleryScenes.all.map(\.name) == ["components", "sidebar-a", "marks"])
+        #expect(GalleryScenes.all.map(\.name) == ["components", "sidebar-a", "sidebar-b", "profile", "marks"])
         #expect(GalleryScenes.named("marks") != nil)
         #expect(GalleryScenes.fallback.name == "components", "no --scene still shows the components scene")
     }

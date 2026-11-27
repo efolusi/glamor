@@ -296,6 +296,7 @@ public enum G {
         public static let splitListMin: CGFloat = 232     // a split's list (schema, cache keys) never gets narrower than a name and its count
         public static let splitDetailMin: CGFloat = 420   // a split's detail never gets narrower than about 50 mono characters
         public static let sidebar: CGFloat = 256
+        public static let rail: CGFloat = 72       // variant B: the rail of areas; the column beside it takes the rest of the sidebar's 256
         public static let pageMax: CGFloat = 1280
         public static let form: CGFloat = 640
         public static let addPage: CGFloat = 896   // the Add page: four kind cards and the importers (PageAdd)
@@ -402,6 +403,8 @@ public enum G {
         public static let markerWidth: CGFloat = 4
         public static let markerInset: CGFloat = Space.s4
         public static let markerHeight: CGFloat = 0.6
+        /// How far a rail item's short title may shrink before it is cut: 12 pt to 10.2 pt, so "Pengaturan" (64.8 pt set) fits the 64.
+        public static let railTitleScale: CGFloat = 0.85
     }
 
     public enum Inset {

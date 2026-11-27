@@ -42,6 +42,18 @@
 /* Demo menu choice. */
 "period.weekly" = "Mingguan";
 
+/* A row of the profile menu in the profile scene. */
+"profile.appearance" = "Tampilan";
+
+/* The line under the person's name in the profile scene. The window check reads it by this English text. */
+"profile.detail" = "Lokal · di Mac ini";
+
+/* A row of the profile menu in the profile scene. */
+"profile.settings" = "Pengaturan…";
+
+/* A row of the profile menu in the profile scene. */
+"profile.upgrade" = "Tingkatkan…";
+
 /* A selected demo row. %@ is the row's name. */
 "row.selected" = "%@ (dipilih)";
 

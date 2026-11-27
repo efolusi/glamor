@@ -42,6 +42,18 @@
 /* Demo menu choice. */
 "period.weekly" = "Weekly";
 
+/* A row of the profile menu in the profile scene. */
+"profile.appearance" = "Appearance";
+
+/* The line under the person's name in the profile scene. The window check reads it by this English text. */
+"profile.detail" = "Local · on this Mac";
+
+/* A row of the profile menu in the profile scene. */
+"profile.settings" = "Settings…";
+
+/* A row of the profile menu in the profile scene. */
+"profile.upgrade" = "Upgrade…";
+
 /* A selected demo row. %@ is the row's name. */
 "row.selected" = "%@ (selected)";
 

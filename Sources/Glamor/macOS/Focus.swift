@@ -22,7 +22,7 @@ public struct FocusRing: ViewModifier {
                 if isFocused ?? environmentFocused {
                     Group {
                         if inside {
-                            RoundedRectangle(cornerRadius: G.Row.radius, style: .continuous)
+                            RoundedRectangle(cornerRadius: radius > 0 ? radius : G.Row.radius, style: .continuous)
                                 .strokeBorder(G.focus, lineWidth: G.Line.strong)
                         } else if capsule { Capsule().strokeBorder(G.focus, lineWidth: G.Line.strong) }
                         else {
@@ -54,7 +54,8 @@ public extension View {
     /// The capsule ring for a control that tracks its own focus, such as a Menu: pair it with `.focused(_:)`.
     func focusRingCapsule(isFocused: Bool) -> some View { modifier(FocusRing(radius: 0, capsule: true, isFocused: isFocused)) }
     /// The ring inside a list row, on its highlight's shape (a host, connection or job row).
-    func focusRingInside() -> some View { modifier(FocusRing(radius: 0, inside: true)) }
+    /// `radius` is the shape's own corner radius when it is not a row's (a card's 12); without it the ring has the row's.
+    func focusRingInside(radius: CGFloat = 0) -> some View { modifier(FocusRing(radius: radius, inside: true)) }
 }
 
 /// `.plain` with the focus ring: for buttons whose label draws its own shape (rows, cards, tabs). Nothing fades
@@ -86,14 +87,16 @@ public extension ButtonStyle where Self == PlainFocusStyle {
 public extension View {
     /// A selected list row: a capsule in `selectedMarker`, G.Row.markerWidth wide and G.Row.markerHeight of
     /// the row's height, centred, G.Row.markerInset in from the leading edge. The fill alone is faint;
-    /// the capsule is 3:1 or more on every fill it sits on (ContrastTests).
-    func selectedMarker(_ on: Bool) -> some View {
+    /// the capsule is 3:1 or more on every fill it sits on (ContrastTests). With a `height` the capsule is that tall and
+    /// starts `top` from the row's top instead: the rail's, which sits beside the glyph and ends above the title.
+    func selectedMarker(_ on: Bool, height: CGFloat? = nil, top: CGFloat = 0) -> some View {
         overlay(alignment: .leading) {
             if on {
                 GeometryReader { row in
                     Capsule().fill(G.selectedMarker)
-                        .frame(width: G.Row.markerWidth, height: row.size.height * G.Row.markerHeight)
-                        .frame(maxHeight: .infinity)
+                        .frame(width: G.Row.markerWidth, height: height ?? row.size.height * G.Row.markerHeight)
+                        .frame(maxHeight: .infinity, alignment: height == nil ? .center : .top)
+                        .padding(.top, height == nil ? 0 : top)
                         .padding(.leading, G.Row.markerInset)
                 }
                 .accessibilityHidden(true)

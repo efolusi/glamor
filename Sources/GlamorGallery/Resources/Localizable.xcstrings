@@ -253,6 +253,78 @@
         }
       }
     },
+    "profile.appearance": {
+      "comment": "A row of the profile menu in the profile scene.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appearance"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilan"
+          }
+        }
+      }
+    },
+    "profile.detail": {
+      "comment": "The line under the person's name in the profile scene. The window check reads it by this English text.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local · on this Mac"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lokal · di Mac ini"
+          }
+        }
+      }
+    },
+    "profile.settings": {
+      "comment": "A row of the profile menu in the profile scene.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pengaturan…"
+          }
+        }
+      }
+    },
+    "profile.upgrade": {
+      "comment": "A row of the profile menu in the profile scene.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade…"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tingkatkan…"
+          }
+        }
+      }
+    },
     "row.selected": {
       "comment": "A selected demo row. %@ is the row's name.",
       "extractionState": "manual",
