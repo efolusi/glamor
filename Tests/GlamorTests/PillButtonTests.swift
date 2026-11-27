@@ -1,6 +1,6 @@
 #if os(macOS)
 import AppKit
-import Glamor
+@testable import Glamor
 import SwiftUI
 import Testing
 
@@ -67,6 +67,33 @@ struct PillButtonTests {
         #expect(isCapsule(small))
     }
 
+    /// A ghost button fills only under the pointer, which a test cannot raise, so the shape it fills is the one
+    /// drawn: `GhostButtonStyle.shape` is what its fill, hit area and ring all use.
+    private func ghostShape(wide: Bool, height: CGFloat, width: CGFloat = 80) throws -> Raster {
+        try raster(Color.black.frame(width: width, height: height)
+            .clipShape(GhostButtonStyle.shape(wide: wide, height: height)))
+    }
+
+    @Test func theGhostButtonIsACapsule() throws {
+        #expect(isCapsule(try ghostShape(wide: false, height: G.Height.control32)))
+        #expect(isCapsule(try ghostShape(wide: false, height: G.Height.control28)))
+    }
+
+    @Test func theGhostIconButtonIsACircle() throws {
+        let circle = try ghostShape(wide: false, height: G.Height.control24, width: G.Height.control24)
+        #expect(circle.alpha(x: 3, y: 3) < 0.2, "a circle leaves the corner empty")
+        #expect(circle.alpha(x: 12, y: 12) > 0.9)
+    }
+
+    @Test func aWideGhostButtonIsARowAndNotACapsule() throws {
+        #expect(!isCapsule(try ghostShape(wide: true, height: G.Height.control32)))
+        #expect(!isCapsule(try ghostShape(wide: true, height: G.Height.control28)))
+    }
+
+    @Test func theSharedControlShapeIsACapsule() throws {
+        #expect(isCapsule(try raster(Color.black.frame(width: 80, height: G.Height.control32).clipShape(G.controlShape))))
+    }
+
     // MARK: Height
 
     @Test func theMainButtonKeepsItsHeights() throws {
@@ -110,7 +137,7 @@ struct PillButtonTests {
         #expect(!buttons.contains("var radius: CGFloat { compact"), "ButtonMetrics has no radius any more")
         for style in [("PrimaryButtonStyle", "SecondaryButtonStyle"), ("SecondaryButtonStyle", "GhostButtonStyle")] {
             let body = try part(buttons, from: "public struct \(style.0)", to: "public struct \(style.1)")
-            #expect(body.contains("Capsule()"), "\(style.0) fills, rims and rings a Capsule")
+            #expect(body.contains("G.controlShape"), "\(style.0) fills, rims and rings the shared control shape")
             #expect(!body.contains("RoundedRectangle"), "\(style.0) has no rounded rectangle left")
             #expect(body.contains(".focusRingCapsule()"), "\(style.0) rings a capsule with the capsule ring")
         }
@@ -119,13 +146,13 @@ struct PillButtonTests {
     @Test func aGhostMenuRowKeepsItsRowRadiusAndEveryOtherGhostIsACapsule() throws {
         let ghost = try part(try source("macOS/Buttons.swift"), from: "public struct GhostButtonStyle", to: "public extension ButtonStyle where Self == PrimaryButtonStyle")
         #expect(ghost.contains("wide ?"), "the wide ghost (a menu row) picks its own shape")
-        #expect(ghost.contains("Capsule()"))
+        #expect(ghost.contains("G.controlShape"))
         #expect(ghost.contains("G.Radius.r8"), "a menu row stays r8: rows keep their radius")
     }
 
     @Test func theGlassMainActionIsACapsuleOnMacAndIOSAndKeepsItsHitArea() throws {
         let style = try source("Glass/GlassMainActionStyle.swift")
-        #expect(style.contains("let shape = Capsule()"))
+        #expect(style.contains("let shape = G.controlShape"))
         #expect(!style.contains("RoundedRectangle"))
         #expect(style.contains(".contentShape(shape)"))
         #expect(style.contains(".focusRingCapsule()"))
@@ -134,18 +161,37 @@ struct PillButtonTests {
 
     @Test func theMenuPickerIsACapsuleLikeTheSecondaryButtonBesideIt() throws {
         let picker = try part(try source("macOS/Controls.swift"), from: "public struct MenuPicker", to: "public struct SegmentedControl")
-        #expect(picker.contains("let shape = Capsule()"))
+        #expect(picker.contains("let shape = G.controlShape"))
         #expect(!picker.contains("RoundedRectangle"))
         #expect(picker.contains(".focusRingCapsule(isFocused: focused)"))
         #expect(picker.contains("small ? G.Height.control28 : G.Height.control32"), "the heights stay")
+        #expect(picker.contains("Text(title).textStyle(.bodyMedium).lineLimit(1)"), "a long title truncates, it does not grow a second line in a 32 high face")
     }
 
     @Test func theMoreMenuHoversAsACircleLikeTheGhostSquare() throws {
         let more = try part(try source("macOS/Lists.swift"), from: "public struct MoreMenu<", to: "    public init(size: CGFloat = G.Height.control28, label: String?")
-        #expect(more.contains("in: Capsule()"))
+        #expect(more.contains("in: G.controlShape"))
         #expect(!more.contains("RoundedRectangle"))
         #expect(more.contains(".focusRingCapsule(isFocused: focused)"))
-        #expect(more.contains(".contentShape(Capsule())"), "the hit area follows the circle")
+        #expect(more.contains(".contentShape(G.controlShape)"), "the hit area follows the circle")
+    }
+
+    /// One shape for every pressable style: `G.controlShape`. A literal `Capsule()` in one of them could drift
+    /// (a different style, a different corner) without a pixel test noticing, so the sources are pinned.
+    @Test func noPressableStyleHoldsALiteralCapsule() throws {
+        let controls = try source("macOS/Controls.swift"), lists = try source("macOS/Lists.swift")
+        let pressable: [(String, String)] = [
+            ("Buttons.swift", try source("macOS/Buttons.swift")),
+            ("GlassMainActionStyle.swift", try source("Glass/GlassMainActionStyle.swift")),
+            ("MenuPicker", try part(controls, from: "public struct MenuPicker", to: "public struct SegmentedControl")),
+            ("MoreMenu", try part(lists, from: "public struct MoreMenu<", to: "    public init(size: CGFloat = G.Height.control28, label: String?")),
+        ]
+        for (name, text) in pressable {
+            // `.focusRingCapsule()` is the ring and ends in the same letters: take it out before looking.
+            let literal = text.replacingOccurrences(of: "focusRingCapsule", with: "").contains("Capsule()")
+            #expect(!literal, "\(name) draws G.controlShape, not a literal Capsule()")
+            #expect(text.contains("G.controlShape"), "\(name) draws G.controlShape")
+        }
     }
 
     @Test func fieldsRowsBannersAndTheSegmentedControlKeepTheirRadius() throws {

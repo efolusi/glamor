@@ -15,7 +15,7 @@ struct GlassMainActionStyle: ButtonStyle {
     @Environment(\.isEnabled) private var enabled
 
     func makeBody(configuration: Configuration) -> some View {
-        let shape = Capsule()
+        let shape = G.controlShape
         let tint = enabled ? G.accent : G.accent.opacity(G.Opacity.disabled)
         let label = configuration.label
             .lineLimit(1)

@@ -4,6 +4,7 @@
 #   Increase contrast colours (the gallery's debug flag; SwiftUI's own environment values cannot be set); the label-to-icon gap on the Daily menu button; the VoiceOver strings and
 #   AXPress, and the names that appear only after an action (the theme switch after the toggle, "Clear the search"
 #   after typing, the sheet title as a heading, the unlabelled spinner "Working"); Tab order, Space and Return.
+#   The button shape (a Button is a capsule: its corner reads the ground) and the Pro and Soon marks (the marks scene) too.
 # The gallery shows one scene per run (--scene <name>); each scene has its own list of controls in
 # scripts/window/WindowCheck.swift. The run lines at the end say which scene each one uses.
 # Only that window is captured. Light and dark are the gallery's own appearance (a launch argument); the
@@ -99,6 +100,14 @@ run light-increased pixels --appearance light --increase-contrast
 run dark-increased pixels --appearance dark --increase-contrast
 run light strings --appearance light
 run light keys --appearance light
+
+# The Pro and Soon marks (GL36): word and outline pixels in four modes, and the spoken words.
+scene marks
+run light pixels --appearance light
+run dark pixels --appearance dark
+run light-increased pixels --appearance light --increase-contrast
+run dark-increased pixels --appearance dark --increase-contrast
+run light strings --appearance light
 
 echo "== screenshots and tables: $OUT"
 [ "$failed" -eq 0 ] || { echo "FAILED: see the FAIL lines above"; exit 1; }

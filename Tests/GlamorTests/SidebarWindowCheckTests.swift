@@ -73,7 +73,7 @@ struct SidebarWindowCheckTests {
     @Test func theScriptRunsTheSceneInFourPixelModesAndInStringsAndKeys() throws {
         let script = try read("scripts/check-window.sh")
         let start = try #require(script.range(of: "scene sidebar-a"))
-        let lines = script[start.upperBound...].split(separator: "\n").prefix { !$0.hasPrefix("echo") }
+        let lines = script[start.upperBound...].split(separator: "\n").prefix { !$0.hasPrefix("scene ") && !$0.hasPrefix("echo") }
         let runs = lines.filter { $0.hasPrefix("run ") }
         #expect(runs.count == 6)
         #expect(runs.filter { $0.contains(" pixels ") }.count == 4)

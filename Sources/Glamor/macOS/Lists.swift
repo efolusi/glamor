@@ -315,14 +315,14 @@ public struct MoreMenu<Items: View>: View {
             .foregroundStyle(hover ? G.text : G.text2)
             .frame(width: size, height: size)
             .background(hover ? G.Hover.fill(on: ground) : .clear,
-                        in: Capsule())
+                        in: G.controlShape)
             .overlay {
                 Menu { items() } label: { Color.clear }
                     .menuStyle(.borderlessButton)
                     .menuIndicator(.hidden)
                     .fixedSize()
                     .frame(width: size, height: size)
-                    .contentShape(Capsule())
+                    .contentShape(G.controlShape)
                     .focused($focused)
                     .help(help)
                     .accessibilityLabel(MoreMenuWords.label(label))
