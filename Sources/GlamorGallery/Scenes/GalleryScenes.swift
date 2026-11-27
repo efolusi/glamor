@@ -4,7 +4,7 @@ import SwiftUI
 
 /// Every scene the gallery can show. A new scene is one file in this folder and one line in `all`.
 enum GalleryScenes {
-    static let components = GalleryScene(name: "components", size: CGSize(width: 460, height: 460)) {
+    static let components = GalleryScene(name: "components", size: CGSize(width: 460, height: 560)) {
         NSHostingView(rootView: ComponentsScene())
     }
 

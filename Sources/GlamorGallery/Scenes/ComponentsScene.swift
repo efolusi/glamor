@@ -3,7 +3,7 @@ import Glamor
 import SwiftUI
 
 /// The components the window check drives: a list, the buttons and menus, the segmented control, the theme switch, the
-/// search field, a bar with a spinner, a progress bar. Its controls and their Tab order are the
+/// search field, a bar with a spinner, a progress bar and a ToggleCard. Its controls and their Tab order are the
 /// `components` list in scripts/window/WindowCheck.swift.
 struct ComponentsScene: View {
     /// A host name is data, not a word to translate.
@@ -13,6 +13,7 @@ struct ComponentsScene: View {
     @State private var search = ""
     @State private var appearance = Appearance.light
     @State private var sheetShown = Options.openSheet
+    @State private var reports = true
     @FocusState private var saveFocused: Bool
     var body: some View {
         VStack(alignment: .leading, spacing: G.Space.s16) {
@@ -43,6 +44,7 @@ struct ComponentsScene: View {
                 // A spinner with no label of its own: VoiceOver reads the library's "Working" (GL22).
                 .overlay(alignment: .trailing) { SpinnerSlot(shown: true).padding(.trailing, G.Space.s12) }
             ProgressBar(value: 0.6)
+            ToggleCard(title: Words.text("toggle.title"), help: Words.text("toggle.help"), isOn: $reports)
         }
         .textStyle(.body)
         .foregroundStyle(G.text)
@@ -52,6 +54,7 @@ struct ComponentsScene: View {
         .onAppear { saveFocused = true }
         .onChange(of: segment) { activated("segment \(segment)") }
         .onChange(of: appearance) { activated("theme \(appearance)") }
+        .onChange(of: reports) { activated(reports ? "switch on" : "switch off") }
         .background(EnvironmentProbe())
         .sheet(isPresented: $sheetShown) {
             SheetLayout(symbol: "desktopcomputer", title: Words.text("sheet.title")) {

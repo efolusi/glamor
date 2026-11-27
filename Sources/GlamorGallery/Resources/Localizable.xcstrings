@@ -253,6 +253,42 @@
         }
       }
     },
+    "toggle.help": {
+      "comment": "The help line under the ToggleCard's title in the demo.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reports arrive each morning."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laporan dikirim setiap pagi."
+          }
+        }
+      }
+    },
+    "toggle.title": {
+      "comment": "The ToggleCard title in the demo. The window check reads it by this English name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send reports"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kirim laporan"
+          }
+        }
+      }
+    },
     "toolbar.title": {
       "comment": "Demo glass bar text.",
       "extractionState": "manual",
