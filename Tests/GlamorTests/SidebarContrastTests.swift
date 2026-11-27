@@ -41,6 +41,12 @@ struct SidebarContrastTests {
         holds(G.text3, on: G.field, 4.5, dark: dark, high: high)
     }
 
+    /// Under the pointer and pressed the search label turns `text2`; it must read on the fill it then sits on.
+    @Test(arguments: ColorMeasure.allModes) func theSearchLabelReadsUnderThePointerAndPressed(dark: Bool, high: Bool) {
+        holds(G.text2, on: G.field, 4.5, dark: dark, high: high)
+        holds(G.text2, on: G.Hover.pressed, 4.5, dark: dark, high: high)
+    }
+
     @Test(arguments: ColorMeasure.allModes) func theUnfocusedSearchEdgeStandsThreeToOneOffTheWindowGround(dark: Bool, high: Bool) {
         holds(G.controlEdge, on: G.window, 3, dark: dark, high: high)
     }

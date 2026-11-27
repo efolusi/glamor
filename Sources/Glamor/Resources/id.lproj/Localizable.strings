@@ -36,6 +36,9 @@
 /* A progress bar's value for VoiceOver. %lld is 0 to 100. */
 "progress.percent" = "%lld persen";
 
+/* The sidebar search button: its name and the word it shows (it opens the command palette). */
+"search.title" = "Cari";
+
 /* The hidden button that Escape presses. */
 "sheet.close" = "Tutup";
 

@@ -217,6 +217,24 @@
         }
       }
     },
+    "search.title": {
+      "comment": "The sidebar search button: its name and the word it shows (it opens the command palette).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cari"
+          }
+        }
+      }
+    },
     "sheet.close": {
       "comment": "The hidden button that Escape presses.",
       "extractionState": "manual",
