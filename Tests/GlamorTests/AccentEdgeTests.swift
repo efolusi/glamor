@@ -24,6 +24,13 @@ struct AccentEdgeSourceTests {
         #expect(style.components(separatedBy: ".strokeBorder(G.accentEdge").count - 1 == 2)
     }
 
+    /// GL27: the ToggleCard's switch is tinted with the accent edge (ContrastTests hold the on state at 3:1 on a card).
+    @Test func theToggleCardTintsItsSwitchWithTheAccentEdge() throws {
+        let controls = try source("Sources/Glamor/macOS/Controls.swift")
+        let toggle = try #require(controls.range(of: "Toggle(title, isOn: $isOn)"))
+        #expect(controls[toggle.lowerBound...].prefix(260).contains(".tint(G.accentEdge)"))
+    }
+
     /// GL28: a disabled main action reads in `text3`, not in ink at 30%, and the glass one no longer fades as a whole.
     @Test func theDisabledMainActionHasItsOwnLabelColour() throws {
         let buttons = try source("Sources/Glamor/macOS/Buttons.swift")

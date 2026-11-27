@@ -116,6 +116,14 @@ struct ContrastTests {
         }
     }
 
+    /// GL27: the switch's on state is the track of the system `Toggle`, tinted `accentEdge`. It holds 3:1 against the card
+    /// the switch sits on (light, dark, both Increase contrast modes) and against the page and a sunken well.
+    @Test(arguments: ContrastTests.allModes) func theSwitchOnStateHoldsThreeToOneOnTheCard(dark: Bool, high: Bool) {
+        for ground in [G.card, G.window, G.subtle] {
+            #expect(ratio(G.accentEdge, ground, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
+        }
+    }
+
     /// GL26: a progress bar's default fill is `accentEdge` and holds 3:1 on its track (`border`) in every mode.
     @Test(arguments: ContrastTests.allModes) func theProgressBarDefaultFillHoldsThreeToOneOnItsTrack(dark: Bool, high: Bool) {
         #expect(ratio(ProgressBar(value: 0.5).tone, G.border, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
