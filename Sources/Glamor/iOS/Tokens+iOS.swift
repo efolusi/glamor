@@ -29,8 +29,9 @@ public enum G {
     public static let text = Color(T.textPrimary)
     public static let text2 = Color(T.textSecondary)
     public static let text3 = Color(T.textMuted)                   // text2 with Increase Contrast
-    public static let accent = Color(T.accent)                     // the ink fill of the main button
-    public static let onAccent = Color(T.accentContrast)
+    public static let accent = Color(T.accent)                     // the copper fill of the main button; never text, never a shape's only edge
+    public static let accentEdge = Color(T.accentEdge)             // the accent as a shape on a light ground: 3:1 or more
+    public static let onAccent = Color(T.accentContrast)           // the ink on an accent fill
     public static let accentFg = Color(T.accentSubtleFg)           // the brand's brown for a glyph on a tint
     public static let ok = Color(T.success600)
     public static let warn = Color(T.warning600)
@@ -44,7 +45,7 @@ public enum G {
     public static let listColumnNarrow: CGFloat = 320
 
     /// How strongly a tint shows behind its glyph or word, with the Mac's names (G.Opacity). Pills sit lower
-    /// than tiles, over an opaque card, so every status color keeps 4.6:1 or more on its pill.
+    /// than tiles, over an opaque card, so every status color keeps 4.5:1 or more on its pill.
     public enum Opacity {
         public static let tint: Double = 0.12           // opacity-tint: an icon tile's fill
         public static let pill: Double = 0.10           // a status pill over the card
@@ -102,6 +103,11 @@ public enum G {
     public enum Height {
         /// A one-line loading row: the spinner's height, so the row does not jump when its words appear.
         public static let row20: CGFloat = 20
+    }
+
+    /// Hairlines and borders, as the Mac's G.Line.hair: the main action's 1px accent rim.
+    public enum Line {
+        public static let hair: CGFloat = 1
     }
 
     /// A status dot, as the Mac's G.Dot.d8.

@@ -54,17 +54,22 @@ public enum G {
     /// A field's placeholder, including a search field on glass: muted text, 4.5:1 or more on every surface a
     /// field sits on and on glass over them (ContrastTests). The system's own placeholder colour is not used.
     public static let placeholder = Color(T.textMuted)
-    /// The ink fill of the main button, a progress bar and a switch that is on.
+    /// The copper fill of the main button, always with its ink label (`onAccent`). Copper is 2.1 to 2.7:1 against a
+    /// light surface, so as a shape it carries `accentEdge`; as text it is never used, a link is `link`.
     public static let accent = Color(T.accent)
     public static let accentHover = Color(T.accentHover)
     public static let accentPressed = Color(T.accentActive)
-    /// A glyph or word on an accent fill.
+    /// The accent where a shape needs 3:1 on a light ground: the 1px edge of the main button, a progress bar's fill,
+    /// a checked mark. 4.2 to 4.6:1 on page, card and sunken, 3.6 on a track, 3.8 on `border`. With Increase
+    /// contrast it is dark ink in light and tan in dark. In dark it equals `accent`, so the edge draws no line.
+    public static let accentEdge = Color(T.accentEdge)
+    /// The ink on an accent fill, 6.37:1 on copper in both themes.
     public static let onAccent = Color(T.accentContrast)
     /// A chosen row's or the active tab's fill, always with the selected marker.
     public static let accentSubtle = Color(T.accentSubtle)
     /// The brand's brown for a glyph or word on a light tint: icon tiles, an info banner.
     public static let accentFg = Color(T.accentSubtleFg)
-    /// The keyboard focus ring (focus): brown, 3:1 or more against every ground.
+    /// The keyboard focus ring (focus): copper brown, 3:1 or more against every ground.
     public static let focus = Color(T.focusRingColor)
     /// The one mark of a chosen item (selected-marker), so selection never rests on a fill alone.
     public static let selectedMarker = Color(T.accentSubtleFg)
@@ -92,7 +97,7 @@ public enum G {
     }
 
     /// How strongly a tint shows behind its glyph or word. Pills sit lower than tiles so every
-    /// status color keeps 4.6:1 or more on its pill in both themes (accent 4.63:1 in light is the lowest).
+    /// status color keeps 4.5:1 or more on its pill in light and dark (warning, 4.54:1 in light, is the lowest).
     public enum Opacity {
         public static let tint: Double = 0.12  // icon tiles
         public static let pill: Double = 0.10  // status pills and the Protected capsule, over an opaque card
@@ -104,7 +109,7 @@ public enum G {
         /// An attention or approval card's fill and border (the border matches a banner's).
         public static let attention: Double = 0.05
         public static let attentionEdge: Double = 0.25
-        /// accent at 70%: a focused field's outline.
+        /// focus at 70%: a focused field's outline.
         public static let ring: Double = 0.7
         /// onAccent behind the shortcut badge in a primary button.
         public static let kbd: Double = 0.18
@@ -112,7 +117,7 @@ public enum G {
         public static let softHairline: Double = 0.7
         /// card under an unchosen chip.
         public static let chip: Double = 0.6
-        /// The primary button when disabled.
+        /// The main action when disabled: its fill (and edge), or the whole glass button.
         public static let disabled: Double = 0.3
 
         /// The tile tint for this contrast: read `@Environment(\.colorSchemeContrast)` in the view.

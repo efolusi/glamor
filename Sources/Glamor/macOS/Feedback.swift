@@ -167,12 +167,12 @@ public struct OutputText: View {
     }
 }
 
-/// ProgressBar: a 4-high capsule on `border`, filled with its tone (`accent` while in progress, `ok`
+/// ProgressBar: a 4-high capsule on `border`, filled with its tone (`accentEdge` while in progress, `ok`
 /// when complete or healthy, `warn` when nearly full). The number always sits beside it.
 public struct ProgressBar: View {
     /// 0…1.
     public let value: Double
-    public var tone: Color = G.accent
+    public var tone: Color = G.accentEdge
     public var body: some View {
         GeometryReader { g in
             ZStack(alignment: .leading) {
@@ -186,7 +186,7 @@ public struct ProgressBar: View {
         .accessibilityValue(GlamorText.string(.percent, Int((min(max(value, 0), 1) * 100).rounded())))
     }
 
-    public init(value: Double, tone: Color = G.accent) {
+    public init(value: Double, tone: Color = G.accentEdge) {
         self.value = value
         self.tone = tone
     }
