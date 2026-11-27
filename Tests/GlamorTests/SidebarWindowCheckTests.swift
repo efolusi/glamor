@@ -63,6 +63,13 @@ struct SidebarWindowCheckTests {
         #expect(scene.contains("containsSelection: chosen != nil, selectedTitle: chosen?.title"))
     }
 
+    /// A tooltip on the row would be read a second time as its help text: every place row is checked for none.
+    @Test func theWindowCheckHoldsEveryPlaceRowToHavingNoHelpText() throws {
+        let check = try read("scripts/window/WindowCheck.swift")
+        #expect(check.contains("hasNoHelp: true"))
+        #expect(check.contains("c.help.isEmpty"))
+    }
+
     @Test func theScriptRunsTheSceneInFourPixelModesAndInStringsAndKeys() throws {
         let script = try read("scripts/check-window.sh")
         let start = try #require(script.range(of: "scene sidebar-a"))

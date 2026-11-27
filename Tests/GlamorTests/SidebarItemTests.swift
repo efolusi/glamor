@@ -48,9 +48,27 @@ struct SidebarItemTests {
         #expect(SidebarItem("Copy", symbol: "doc", isSelected: false, action: {}).spokenValue == "")
     }
 
-    @Test func theTooltipIsTheHelpOrElseTheTitle() {
-        #expect(SidebarItem("Copy", symbol: "doc", isSelected: false, action: {}).tooltip == "Copy")
-        #expect(SidebarItem("Copy", symbol: "doc", isSelected: false, help: "Copy files (⌘5)", action: {}).tooltip == "Copy files (⌘5)")
+    /// macOS reads a tooltip as the control's help text (AXHelp), so a row's own name as a tooltip on the whole row
+    /// would be read twice ("Copy, button, Copy"). Without a `help`, the name's tooltip sits on the clipped text, which
+    /// VoiceOver does not read; a `help` is the caller's extra words and goes on the row.
+    @Test func aRowWithoutHelpGivesVoiceOverNoHelpAndKeepsItsNameAsAHoverTooltip() {
+        let plain = SidebarItem("Copy", symbol: "doc", isSelected: false, action: {})
+        #expect(plain.rowHelp == nil)
+        #expect(plain.nameTooltip == "Copy")
+    }
+
+    @Test func aRowWithHelpHasThatHelpOnTheRowAndNoSecondTooltipOnTheName() {
+        let helped = SidebarItem("Copy", symbol: "doc", isSelected: false, help: "Copy files (⌘5)", action: {})
+        #expect(helped.rowHelp == "Copy files (⌘5)")
+        #expect(helped.nameTooltip == nil)
+    }
+
+    @Test func theRowSetsHelpOnlyWhenThereIsOneAndTheNameTooltipIsHiddenFromVoiceOver() throws {
+        let text = try source("macOS/SidebarItem.swift")
+        #expect(!text.contains(".help(tooltip)"), "the title as help on the button is read a second time")
+        #expect(text.contains(".help(ifPresent: rowHelp)"))
+        let name = try #require(text.range(of: ".help(ifPresent: nameTooltip)"))
+        #expect(text[name.upperBound...].prefix(60).contains(".accessibilityHidden(true)"), "the name's tooltip sits on text VoiceOver skips")
     }
 
     @Test func aCountKeepsItsNumberAndItsSpokenWords() {
@@ -95,7 +113,7 @@ struct SidebarItemTests {
         let text = try source("macOS/SidebarItem.swift")
         #expect(text.contains(".accessibilityLabel(title)"))
         #expect(text.contains(".accessibilityValue(spokenValue)"))
-        #expect(text.contains(".help(tooltip)"))
+        #expect(text.contains(".help(ifPresent: rowHelp)"))
         #expect(text.contains(".icon(G.Icon.md"), "Image.icon hides the symbol from VoiceOver")
         #expect(text.contains(".accessibilityHidden(true)"), "the count pill is spoken through the value, not twice")
         #expect(text.contains(".accessibilityAddTraits(isSelected ? .isSelected : [])"))

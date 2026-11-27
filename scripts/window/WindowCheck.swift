@@ -392,6 +392,8 @@ struct Expected {
     let selected: Bool
     let pressEvent: String?
     var value: String? = nil
+    /// A row with no explicit `help`: its tooltip must not become a second, spoken name (AXHelp stays empty).
+    var hasNoHelp = false
 }
 
 /// What one gallery scene (`GlamorGallery --scene <name>`) must show, and the checks that belong to it alone.
@@ -445,7 +447,7 @@ let sidebarACounts = ["Copy": "2 transfers running", "Doctor": "3 findings to re
 
 func sidebarARow(_ name: String) -> Expected {
     Expected(name: name, role: "AXButton", selected: name == sidebarAStart, pressEvent: name == sidebarAStart ? nil : name.lowercased(),
-             value: sidebarACounts[name])
+             value: sidebarACounts[name], hasNoHelp: true)
 }
 
 let sidebarAControls: [Expected] = [
@@ -487,6 +489,10 @@ func stringsMode(_ t: Target) {
         }
         if let value = e.value {
             check("voiceover", theme, "\"\(e.name)\" reads its value before any press", "AXValue \"\(c.value)\"", "\"\(value)\"", c.value == value)
+        }
+        if e.hasNoHelp {
+            check("voiceover", theme, "\"\(e.name)\" has no AXHelp (its name is not read a second time as help text)",
+                  c.help.isEmpty ? "no AXHelp" : "AXHelp \"\(c.help)\"", "no AXHelp", c.help.isEmpty)
         }
         // One name: a title and a description that differ are two names for one control.
         let names = Set([c.title, c.description].filter { !$0.isEmpty })
