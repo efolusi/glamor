@@ -1,7 +1,9 @@
 import SwiftUI
 
-/// The main action on glass: system glass tinted copper, with the label in `G.onAccent` and a 1px `G.accentEdge`
-/// rim (copper is 2.7:1 on a card in light; the rim is 4.6:1, and the same colour as the tint in dark).
+/// The main action on glass: system glass tinted copper (translucent, so the ground shows through), with the label
+/// in `G.onAccent` and a 1px `G.accentEdge` line drawn inside the shape over the glass. In light copper is 2.7:1 on a
+/// card and the line is 4.6:1. In dark the line is the colour of the tint, but the glass is translucent, so a 1px
+/// copper line may still show against it; what it looks like on screen is for the window check to judge.
 /// The system's `.glassProminent` paints its own label colour (light on the dark theme's accent, 2.05:1 on the old
 /// one) and ignores a `foregroundStyle` set outside it, so the label's colour is set here, inside the style.
 /// `G.onAccent` is the dark ink on copper in both themes (6.37:1); ContrastTests measure both.

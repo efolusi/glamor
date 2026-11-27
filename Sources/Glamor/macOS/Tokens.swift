@@ -61,7 +61,7 @@ public enum G {
     public static let accentPressed = Color(T.accentActive)
     /// The accent where a shape needs 3:1 on a light ground: the 1px edge of the main button, a progress bar's fill,
     /// a checked mark. 4.2 to 4.6:1 on page, card and sunken, 3.6 on a track, 3.8 on `border`. With Increase
-    /// contrast it is dark ink in light and tan in dark. In dark it equals `accent`, so the edge draws no line.
+    /// contrast it is dark ink in light and tan in dark. In dark it equals `accent`: on an opaque fill the edge draws no line; on translucent glass a 1px line may show.
     public static let accentEdge = Color(T.accentEdge)
     /// The ink on an accent fill, 6.37:1 on copper in both themes.
     public static let onAccent = Color(T.accentContrast)
