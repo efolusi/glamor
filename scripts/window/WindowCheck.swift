@@ -74,7 +74,7 @@ struct Control {
     var description: String { text(element, "AXDescription") }
     var title: String { text(element, "AXTitle") }
     var help: String { text(element, "AXHelp") }
-    /// AXValue as text: a switch reads "1" or "0", a disclosure header "expanded" or "collapsed".
+    /// AXValue as text. A switch is guessed to read "1" (on) or "0" (off): not yet seen on this macOS, proven by the owner's window run.
     var value: String { attr(element, "AXValue").map { "\($0)" } ?? "" }
     var placeholder: String { text(element, "AXPlaceholderValue") }
     var selected: Bool { (attr(element, "AXSelected") as? Bool) == true }
@@ -113,6 +113,8 @@ struct Target {
     var controls: [Control] {
         descendants(window).map(Control.init).filter {
             (["AXButton", "AXMenuButton", "AXTextField"].contains($0.role) && $0.subrole.isEmpty)
+                // UNPROVEN: a SwiftUI Toggle with .toggleStyle(.switch) is guessed to read AXCheckBox, subrole AXSwitch (or none).
+                // Not yet seen on this macOS; proven by the owner's window run (`strings` prints "switch-ax" with what was read).
                 || ($0.role == "AXCheckBox" && ["", "AXSwitch"].contains($0.subrole))
         }
     }
@@ -341,6 +343,8 @@ func pixelsMode(_ t: Target) {
 /// it sits on. The track is the flat colour that fills most of the switch's frame, so it is the most common colour there
 /// that is not the card (the knob and the edge are smaller, a glass sheen is not flat). The card ground is read 6 pt to
 /// the left of the frame, inside the card's padding.
+/// UNPROVEN: that the flat track is the most common non-card colour, and that 6 pt left of the frame is card ground, are
+/// guesses; not yet seen on this macOS, proven by the owner's window run (a reading it cannot make ends UNPROVEN).
 func switchTint(_ t: Target, _ shot: Shot) {
     let theme = t.theme
     guard let sw = t.control(switchName) else { check("switch-tint", theme, "switch found", "missing", "present", false); return }
@@ -401,6 +405,7 @@ let componentsControls: [Expected] = [
     Expected(name: "Month", role: "AXButton", selected: false, pressEvent: "segment 2"),
     Expected(name: "Switch to dark theme", role: "AXButton", selected: false, pressEvent: "theme dark"),
     Expected(name: "Search hosts", role: "AXTextField", selected: false, pressEvent: nil),
+    // UNPROVEN: role AXCheckBox, AXValue "1" and the press toggling it are guesses; not yet seen on this macOS, proven by the owner's window run.
     Expected(name: switchName, role: "AXCheckBox", selected: false, pressEvent: "switch false", value: "1"),
 ]
 
@@ -426,6 +431,9 @@ func stringsMode(_ t: Target) {
             let labelled = c.description == c.placeholder || c.title == c.placeholder
             check("voiceover", theme, "the text field is named by a label equal to its placeholder, not by the placeholder alone",
                   "AXDescription \"\(c.description)\", AXTitle \"\(c.title)\", placeholder \"\(c.placeholder)\"", "a label \"\(c.placeholder)\"", labelled)
+        }
+        if e.role == "AXCheckBox" {
+            note("switch-ax", theme, "\"\(e.name)\" read as role \(c.role), subrole \"\(c.subrole)\", role description \"\(c.roleDescription)\", AXValue \"\(c.value)\"; not yet seen on this macOS, proven by the owner's window run")
         }
         if let value = e.value {
             check("voiceover", theme, "\"\(e.name)\" reads its value before any press", "AXValue \"\(c.value)\"", "\"\(value)\"", c.value == value)
