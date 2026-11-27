@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.3.0 - 2026-11-27
 
 Semver level: MINOR (v0.3.0). The `G.*` names and the API stay; values change, six vendored constants disappear (nothing in Glamor read them), and `G.accentEdge` is new. While Glamor is used only inside Efolusi, a change of this kind ships as a minor, as design-tokens v0.8.0 does. Version files are not bumped here.
 
