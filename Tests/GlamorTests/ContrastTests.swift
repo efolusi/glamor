@@ -7,9 +7,18 @@ import Testing
 /// The contrast claims in tokens.json, measured on the resolved colors in light and dark.
 @MainActor
 struct ContrastTests {
-    private func rgb(_ color: Color, dark: Bool) -> (Double, Double, Double) {
+    /// Light, dark, light with Increase contrast, dark with Increase contrast: (dark, high).
+    static let allModes = [(false, false), (true, false), (false, true), (true, true)]
+
+    private func rgb(_ color: Color, dark: Bool, high: Bool = false) -> (Double, Double, Double) {
         var out = (0.0, 0.0, 0.0)
-        NSAppearance(named: dark ? .darkAqua : .aqua)!.performAsCurrentDrawingAppearance {
+        let name: NSAppearance.Name = switch (dark, high) {
+        case (false, false): .aqua
+        case (true, false): .darkAqua
+        case (false, true): .accessibilityHighContrastAqua
+        case (true, true): .accessibilityHighContrastDarkAqua
+        }
+        NSAppearance(named: name)!.performAsCurrentDrawingAppearance {
             let c = NSColor(color).usingColorSpace(.sRGB)!
             out = (Double(c.redComponent), Double(c.greenComponent), Double(c.blueComponent))
         }
@@ -21,8 +30,8 @@ struct ContrastTests {
         return 0.2126 * lin(c.0) + 0.7152 * lin(c.1) + 0.0722 * lin(c.2)
     }
 
-    private func ratio(_ a: Color, _ b: Color, dark: Bool) -> Double {
-        let x = luminance(rgb(a, dark: dark)), y = luminance(rgb(b, dark: dark))
+    private func ratio(_ a: Color, _ b: Color, dark: Bool, high: Bool = false) -> Double {
+        let x = luminance(rgb(a, dark: dark, high: high)), y = luminance(rgb(b, dark: dark, high: high))
         return (max(x, y) + 0.05) / (min(x, y) + 0.05)
     }
 
@@ -63,19 +72,44 @@ struct ContrastTests {
     }
 
     /// GL19: the label on the main action's fill is whichever of white and the dark ink reads better on it
-    /// (light: white 5.24, dark ink 3.30; dark: white 2.05, dark ink 8.43), and that one holds 4.5:1.
-    @Test(arguments: [false, true]) func theMainActionLabelIsTheBetterOfWhiteAndInkAndHolds4Point5(dark: Bool) {
+    /// (copper, both themes: white 2.72, dark ink 6.37), and that one holds 4.5:1, with Increase contrast too.
+    @Test(arguments: ContrastTests.allModes) func theMainActionLabelIsTheBetterOfWhiteAndInkAndHolds4Point5(dark: Bool, high: Bool) {
         let white = Color(.sRGB, red: 1, green: 1, blue: 1)
         let ink = Color(.sRGB, red: 0.1176, green: 0.102, blue: 0.0784)
-        let best = max(ratio(white, G.accent, dark: dark), ratio(ink, G.accent, dark: dark))
-        #expect(ratio(G.onAccent, G.accent, dark: dark) >= 4.5)
-        #expect(abs(ratio(G.onAccent, G.accent, dark: dark) - best) < 0.01, "dark=\(dark)")
+        let best = max(ratio(white, G.accent, dark: dark, high: high), ratio(ink, G.accent, dark: dark, high: high))
+        #expect(ratio(G.onAccent, G.accent, dark: dark, high: high) >= 4.5)
+        #expect(abs(ratio(G.onAccent, G.accent, dark: dark, high: high) - best) < 0.01, "dark=\(dark) high=\(high)")
     }
 
-    @Test(arguments: [false, true]) func statusColorsReadAsTextOnACard(dark: Bool) {
-        for status in [G.accent, G.ok, G.warn, G.danger] {
-            #expect(ratio(status, G.card, dark: dark) >= 4.5)
+    /// GL26: the accent is not text (copper on a card is 2.72:1 in light). Accent as text is the link colour,
+    /// so the status list reads `G.link` where it read `G.accent`; all four hold 4.5:1 on a card in every mode.
+    @Test(arguments: ContrastTests.allModes) func statusColorsReadAsTextOnACard(dark: Bool, high: Bool) {
+        for status in [G.link, G.ok, G.warn, G.danger] {
+            #expect(ratio(status, G.card, dark: dark, high: high) >= 4.5, "dark=\(dark) high=\(high)")
         }
+    }
+
+    /// GL26: the link colour, the accent as text, reads 4.5:1 on every ground a link sits on, and inside the
+    /// accent tint, in light, dark and both Increase contrast modes.
+    @Test(arguments: ContrastTests.allModes) func theLinkColourReadsOnEveryGroundALinkSitsOn(dark: Bool, high: Bool) {
+        for ground in [G.window, G.panel, G.card, G.subtle, G.cardHover, G.field, G.accentSubtle] {
+            #expect(ratio(G.link, ground, dark: dark, high: high) >= 4.5, "dark=\(dark) high=\(high)")
+        }
+    }
+
+    /// GL26: the accent as a shape (the main button's rim, a progress fill, a checked mark) is `accentEdge`, and it
+    /// holds 3:1 (WCAG 1.4.11) against the page, a card, a sunken well, a track and the border colour, in light,
+    /// dark, and both Increase contrast modes. Plain `G.accent` does not: 2.12 to 2.72 on those in light.
+    @Test(arguments: ContrastTests.allModes) func theAccentAsAShapeHoldsThreeToOneOnEveryGround(dark: Bool, high: Bool) {
+        let track = Color(GlamorTokens.Color.surfaceTrack)
+        for ground in [G.window, G.card, G.subtle, track, G.border] {
+            #expect(ratio(G.accentEdge, ground, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
+        }
+    }
+
+    /// GL26: a progress bar's default fill is `accentEdge` and holds 3:1 on its track (`border`) in every mode.
+    @Test(arguments: ContrastTests.allModes) func theProgressBarDefaultFillHoldsThreeToOneOnItsTrack(dark: Bool, high: Bool) {
+        #expect(ratio(ProgressBar(value: 0.5).tone, G.border, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
     }
 
     @Test(arguments: [false, true]) func controlEdgesAndButtonLabelsHoldTheirRatio(dark: Bool) {
@@ -86,7 +120,8 @@ struct ContrastTests {
             #expect(ratio(G.accentSubtle, ground, dark: dark) >= 1.05)
         }
         // A ProgressBar's fill against its track (non-text, 3:1), for the default tone and every status tone.
-        for tone in [G.accent, G.ok, G.warn, G.danger] {
+        // (The default tone in every mode: theAccentAsAShapeHoldsThreeToOneOnEveryGround.)
+        for tone in [ProgressBar(value: 0).tone, G.ok, G.warn, G.danger] {
             #expect(ratio(tone, G.border, dark: dark) >= 3)
         }
         // The brand's brown marks: focus ring, selected marker and tile glyphs, 3:1 or more on every surface.

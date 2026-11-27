@@ -43,5 +43,15 @@ struct ContrastTestsIOS {
         #expect(ratio(G.onAccent, G.accent, dark: dark, high: high) >= 4.5)
         #expect(ratio(G.onAvatar, G.avatar, dark: dark, high: high) >= 4.5)
     }
+
+    /// GL26: the accent as a shape is `accentEdge`: 3:1 against the page, a card, a sunken well, a track and the
+    /// border colour in light, dark and both Increase Contrast modes (plain `G.accent` is 2.12 to 2.72 in light).
+    @Test(arguments: [(false, false), (true, false), (false, true), (true, true)])
+    func theAccentAsAShapeHoldsThreeToOneOnEveryGround(dark: Bool, high: Bool) {
+        let track = Color(GlamorTokens.Color.surfaceTrack)
+        for ground in [G.window, G.card, G.subtle, track, G.border] {
+            #expect(ratio(G.accentEdge, ground, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
+        }
+    }
 }
 #endif

@@ -1,6 +1,6 @@
 # TextField
 
-A text input with a `field` fill, a 1pt `border`, `radius-8`, 32 high with 12 at the sides (28 high with 8 when compact). While it has focus, the border turns accent at 70% and 2. In Swift, put a `TextFieldBox` (the `FieldBox` holding a `TextField` or `SecureField`) inside a `FormField`:
+A text input with a `field` fill, a 1pt `border`, `radius-8`, 32 high with 12 at the sides (28 high with 8 when compact). While it has focus, the border turns `focus` at 70% and 2. In Swift, put a `TextFieldBox` (the `FieldBox` holding a `TextField` or `SecureField`) inside a `FormField`:
 
 ```swift
 FormField(label: "Local port", help: "Empty: komando picks a free one and shows it here.") {

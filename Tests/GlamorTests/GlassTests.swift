@@ -28,9 +28,9 @@ struct GlassTests {
     }
 }
 
-/// design-tokens v0.7.0 is what Glamor vendors: the halus warm glass direction.
+/// design-tokens v0.8.0 is what Glamor vendors: the warm glass direction with the copper accent.
 struct VendoredGlassTokensTests {
-    @Test func glassValuesComeFromV070() {
+    @Test func glassValuesComeFromV080() {
         #expect(GlamorTokens.Number.glassStrength == 0.33)
         #expect(GlamorTokens.Number.materialThickDark == 0.9472)
         let tint = GlamorTokens.Color.materialTint
@@ -38,10 +38,10 @@ struct VendoredGlassTokensTests {
         #expect(tint.dark == GlamorTokens.RGBA(0.149, 0.1255, 0.1059, 1.0))
     }
 
-    @Test func theScriptPinsV070() throws {
+    @Test func theScriptPinsV080() throws {
         let script = try repoFile("scripts/vendor-tokens.sh")
-        #expect(script.contains("TOKENS_VERSION=\"v0.7.0\""))
-        #expect(script.contains("TOKENS_COMMIT=\"ebee7d00e8d94870974c9b60d1fa565a123bb050\""))
+        #expect(script.contains("TOKENS_VERSION=\"v0.8.0\""))
+        #expect(script.contains("TOKENS_COMMIT=\"8e6c031deeca57aa3df535d10d138cf32dd3186f\""))
     }
 
     @Test func thereIsNoGlowToken() throws {
@@ -73,8 +73,9 @@ struct VendoredGlassTokensTests {
     }
 }
 
-/// GL19: the system's `.glassProminent` paints its own label colour (light on ember in dark, 2.05:1) and ignores a
-/// `foregroundStyle` set outside it. The main action draws its own glass and sets `G.onAccent` inside its style.
+/// GL19: the system's `.glassProminent` paints its own label colour (light on the dark theme's accent, 2.05:1 on the old
+/// one) and ignores a `foregroundStyle` set outside it. The main action draws its own glass and sets `G.onAccent`
+/// inside its style.
 struct GlassMainActionLabelTests {
     private func source(_ path: String) throws -> String {
         let root = URL(fileURLWithPath: #filePath)

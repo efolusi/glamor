@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// The main action on glass: system glass tinted ember, with the label in `G.onAccent`.
-/// The system's `.glassProminent` paints its own label colour (light on the light ember of the dark theme,
-/// 2.05:1) and ignores a `foregroundStyle` set outside it, so the label's colour is set here, inside the style.
-/// `G.onAccent` is white on the light theme's ember (5.24:1) and the dark ink on the dark theme's (8.43:1);
-/// ContrastTests measure both. The shape and size are the solid primary button's (32 high, `r8`), 44 high on iOS.
+/// The main action on glass: system glass tinted copper, with the label in `G.onAccent` and a 1px `G.accentEdge`
+/// rim (copper is 2.7:1 on a card in light; the rim is 4.6:1, and the same colour as the tint in dark).
+/// The system's `.glassProminent` paints its own label colour (light on the dark theme's accent, 2.05:1 on the old
+/// one) and ignores a `foregroundStyle` set outside it, so the label's colour is set here, inside the style.
+/// `G.onAccent` is the dark ink on copper in both themes (6.37:1); ContrastTests measure both.
+/// The shape and size are the solid primary button's (32 high, `r8`), 44 high on iOS.
 @available(iOS 26, macOS 26, *)
 struct GlassMainActionStyle: ButtonStyle {
     @Environment(\.isEnabled) private var enabled
@@ -21,6 +22,7 @@ struct GlassMainActionStyle: ButtonStyle {
             .frame(height: G.Height.control32)
             .contentShape(shape)    // the whole button is the hit and accessibility area, not the label's 16 pt
             .glassEffect(.regular.tint(G.accent), in: shape)
+            .overlay(shape.strokeBorder(G.accentEdge, lineWidth: G.Line.hair))
             .opacity(enabled ? 1 : G.Opacity.disabled)
             .focusRing(G.Radius.r8)
         #else
@@ -28,6 +30,7 @@ struct GlassMainActionStyle: ButtonStyle {
             .font(G.bodyStrong)
             .frame(minHeight: G.touch)
             .glassEffect(.regular.tint(G.accent).interactive(), in: shape)
+            .overlay(shape.strokeBorder(G.accentEdge, lineWidth: G.Line.hair))
             .opacity(enabled ? 1 : G.Opacity.disabled)
         #endif
     }

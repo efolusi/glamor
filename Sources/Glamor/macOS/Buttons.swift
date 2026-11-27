@@ -52,7 +52,8 @@ public struct ShortcutBadge: View {
     }
 }
 
-/// The main button: black in light mode, white in dark, with an optional shortcut badge.
+/// The main button: a copper fill with an ink label and a 1px `accentEdge` rim (the fill alone is 2.7:1 on a card in
+/// light), with an optional shortcut badge.
 public struct PrimaryButtonStyle: ButtonStyle {
     public var shortcut: String? = nil
     public var wide: Bool = false
@@ -77,6 +78,9 @@ public struct PrimaryButtonStyle: ButtonStyle {
         .frame(height: m.height)
         .frame(maxWidth: wide ? .infinity : nil)
         .background(fill, in: RoundedRectangle(cornerRadius: m.radius, style: .continuous))
+        // The rim is the shape's 3:1 edge on a light ground; in dark it is the fill's own colour. It fades with the fill.
+        .overlay(RoundedRectangle(cornerRadius: m.radius, style: .continuous)
+            .strokeBorder(G.accentEdge.opacity(enabled ? 1 : G.Opacity.disabled), lineWidth: G.Line.hair))
         // The secondary's shadow: a bigger one made the primary look taller beside it (EmptyState review).
         .shadow(enabled ? G.Shadow.control : G.Shadow.none)
         .focusRing(m.radius)
