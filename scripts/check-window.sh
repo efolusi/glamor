@@ -100,6 +100,22 @@ run dark-increased pixels --appearance dark --increase-contrast
 run light strings --appearance light
 run light keys --appearance light
 
+scene sidebar-b
+run light pixels --appearance light
+run dark pixels --appearance dark
+run light-increased pixels --appearance light --increase-contrast
+run dark-increased pixels --appearance dark --increase-contrast
+run light strings --appearance light
+run light keys --appearance light
+
+scene profile
+run light pixels --appearance light
+run dark pixels --appearance dark
+run light-increased pixels --appearance light --increase-contrast
+run dark-increased pixels --appearance dark --increase-contrast
+run light strings --appearance light
+run light keys --appearance light
+
 echo "== screenshots and tables: $OUT"
 [ "$failed" -eq 0 ] || { echo "FAILED: see the FAIL lines above"; exit 1; }
 [ "$STRICT" -eq 1 ] && [ "$unproven" -eq 1 ] && { echo "FAILED: --strict and something is UNPROVEN"; exit 1; }

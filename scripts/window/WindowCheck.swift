@@ -124,9 +124,10 @@ struct Target {
         descendants(window).filter { text($0, "AXRole") == "AXStaticText" }.map(spokenName).filter { !$0.isEmpty }
     }
 
-    /// What a popover (the profile menu) holds, by role and spoken name; empty when none is open.
+    /// What a popover (the profile menu) holds, by role and spoken name; empty when none is open. The popover is a window of
+    /// its own, so it is looked for under the application, not only under the gallery's window.
     var popoverChildren: [(role: String, name: String)] {
-        descendants(window).filter { text($0, "AXRole") == "AXPopover" }
+        descendants(app).filter { text($0, "AXRole") == "AXPopover" }
             .flatMap { descendants($0).dropFirst() }
             .map { (text($0, "AXRole"), spokenName($0)) }
     }
@@ -459,11 +460,34 @@ let sidebarAControls: [Expected] = [
     [Expected(name: section.title, role: "AXButton", selected: false, pressEvent: nil, value: "expanded")] + section.places.map(sidebarARow)
 } + [sidebarARow("Settings")]
 
+/// The sidebar-b scene (GL38): the rail (Home, four sections, Settings), the avatar in its footer, then the column of the chosen
+/// section (the search and its places), in reading order. Names are the gallery's English words. The rail's items carry no press
+/// event: pressing one replaces the column's rows, so the area presses run last (`sidebarBAfterActions`), after the rows.
+let sidebarBRailNames = ["Home", "Targets", "Across", "Own", "About", "Settings"]
+let sidebarBStartArea = "Targets"
+let profileName = "Alex Morgan"
+let profileDetail = "Local · on this Mac"
+let profileSpoken = "\(profileName), \(profileDetail)"
+
+let sidebarBControls: [Expected] = sidebarBRailNames.map {
+    Expected(name: $0, role: "AXButton", selected: $0 == sidebarBStartArea, pressEvent: nil)
+} + [
+    Expected(name: profileSpoken, role: "AXButton", selected: false, pressEvent: nil),
+    Expected(name: "Search", role: "AXButton", selected: false, pressEvent: "search"),
+] + sidebarASections[0].places.map(sidebarARow)
+
+/// The profile scene (GL37): one button, the card. Its menu is a popover that only opens by a press or a key.
+let profileControls: [Expected] = [Expected(name: profileSpoken, role: "AXButton", selected: false, pressEvent: nil)]
+
 let scenes: [String: SceneSpec] = [
     "components": SceneSpec(name: "components", readyButtons: 10, expected: componentsControls,
                             pixels: pixelsMode, afterActions: afterActionStrings, sheet: sheetMode),
     "sidebar-a": SceneSpec(name: "sidebar-a", readyButtons: 27, expected: sidebarAControls,
                            pixels: sidebarAPixels, afterActions: sidebarAAfterActions, sheet: nil, keys: sidebarAKeys),
+    "sidebar-b": SceneSpec(name: "sidebar-b", readyButtons: 17, expected: sidebarBControls,
+                           pixels: sidebarBPixels, afterActions: sidebarBAfterActions, sheet: nil, keys: sidebarBKeys),
+    "profile": SceneSpec(name: "profile", readyButtons: 1, expected: profileControls,
+                         pixels: profilePixels, afterActions: profileAfterActions, sheet: nil, keys: profileKeys),
 ]
 
 func stringsMode(_ t: Target) {
@@ -797,6 +821,134 @@ func sidebarAKeys(_ t: Target) {
     check("keys", theme, "after Tab to the last row \"\(last)\" it is inside the window frame (scrolled into view)",
           arrived ? "frame \(Int(frame.minX)),\(Int(frame.minY)) \(Int(frame.width))x\(Int(frame.height)); window \(axFrame(t.window).map { "\(Int($0.minY))..\(Int($0.maxY))" } ?? "?")" : "focus is on \"\(t.focused?.name ?? "none")\"",
           "row inside the window", inWindow)
+}
+
+// MARK: Scene sidebar-b (GL38)
+
+/// The pixel checks of the rail, from a capture of that window only. A rail item's accessibility frame is the whole 64 by 52
+/// button; the glyph sits in its top half and the short title in its lower half, clear of the marker at the leading edge.
+func sidebarBPixels(_ t: Target) {
+    let theme = t.theme
+    // No rail item may sit under focus when measured: put focus on the avatar, whose reads are not taken here.
+    if let avatar = t.control(profileSpoken) { _ = t.focus(avatar) }
+    guard let chosen = t.control(sidebarBStartArea), let across = t.control("Across") else {
+        check("setup", theme, "rail items found", "missing", "all", false); return
+    }
+    let shot = capture(t, name: theme)
+    note("shot", theme, "\(t.out.path)/\(theme).png, \(shot.width)x\(shot.height) px, scale \(f2(shot.scale))")
+    func at(_ p: CGPoint) -> RGB { let q = shot.pixel(p); return shot.px(q.x, q.y) }
+    func ink(_ id: String, _ what: String, _ rect: CGRect, _ need: Double) {
+        let r = readInk(shot, rect: rect)
+        check(id, theme, "\(what): ink \(hex(r.ink)) on \(hex(r.ground))", f2(r.typical) + ":1", ">= \(f2(need)):1", r.typical >= need)
+        if r.worst < need { note(id, theme, "against the weakest ground pixel the ratio is \(f2(r.worst)):1") }
+    }
+    /// The short title: the lower half of the item, from the marker's clear edge to the item's far side.
+    func title(_ f: CGRect) -> CGRect { CGRect(x: f.minX + 10, y: f.midY + 4, width: f.width - 14, height: f.height / 2 - 7) }
+    /// The glyph: 24 pt wide, centred, in the item's top half.
+    func glyph(_ f: CGRect) -> CGRect { CGRect(x: f.midX - 12, y: f.minY + 5, width: 24, height: 22) }
+
+    ink("rail-label", "rail area title (text2) on the window ground", title(across.frame), 4.5)
+    ink("rail-glyph", "rail area glyph (text2) on the window ground", glyph(across.frame), 4.5)
+    ink("rail-selected-label", "chosen area title on its panel fill", title(chosen.frame), 4.5)
+    // The marker is 4 pt wide, 4 pt in from the item's edge; the panel fill is read at the item's right end, clear of the label.
+    let f = chosen.frame
+    let marker = at(CGPoint(x: f.minX + 6, y: f.midY)), panel = at(CGPoint(x: f.maxX - 4, y: f.midY))
+    check("rail-marker", theme, "rail marker \(hex(marker)) against panel \(hex(panel))", f2(ratio(marker, panel)) + ":1", ">= 3:1", ratio(marker, panel) >= 3)
+}
+
+/// Names and sizes that only show once the scene is read, and what AXPress does to the column.
+func sidebarBAfterActions(_ t: Target) {
+    let theme = t.theme
+    let named = descendants(t.window).contains { text($0, "AXDescription") == "Sidebar" || text($0, "AXTitle") == "Sidebar" }
+    check("voiceover", theme, "the rail is named \"Sidebar\"", named ? "named" : "no element named Sidebar", "named", named)
+    let headings = descendants(t.window).filter { text($0, "AXRole") == "AXHeading" || text($0, "AXRoleDescription") == "heading" }.map(spokenName)
+    check("voiceover", theme, "the column's title \"Targets\" is read as a heading", headings.isEmpty ? "no heading in the tree" : headings.joined(separator: ", "), "a heading \"Targets\"", headings.contains("Targets"))
+    // A rail item and the avatar are touch-sized by the plan (44 by 44 or more), more than the 24 by 24 of WCAG 2.5.8.
+    for name in sidebarBRailNames + [profileSpoken] {
+        guard let c = t.control(name) else { continue }
+        check("target-size", theme, "\"\(name)\" accessibility frame is a 44 pt target", "\(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt", ">= 44x44 pt", c.frame.width >= 44 && c.frame.height >= 44)
+    }
+    // AXPress on another area replaces the column's rows: the names change, and the chosen area moves.
+    let about = sidebarASections[3].places, targets = sidebarASections[0].places
+    guard let item = t.control("About") else { check("voiceover", theme, "rail item \"About\" found", "missing", "present", false); return }
+    let pressed = AXUIElementPerformAction(item.element, "AXPress" as CFString) == .success
+    let swapped = pressed && waitUntil(3) { about.allSatisfy { t.control($0) != nil } && targets.allSatisfy { t.control($0) == nil } }
+    check("voiceover", theme, "AXPress on \"About\" replaces the column's rows with its \(about.count) places", swapped ? "rows replaced" : "rows now: \(t.controls.map(\.name).joined(separator: ", "))", "\(about.joined(separator: ", "))", swapped)
+    let moved = waitUntil(3) { t.control("About")?.selected == true && t.control("Targets")?.selected == false }
+    check("voiceover", theme, "the chosen area moves to \"About\"", "About selected \(t.control("About")?.selected == true), Targets selected \(t.control("Targets")?.selected == true)", "About only", moved)
+    // Home and Settings have no column: pressing Home takes every column row and the search out of the tree.
+    guard let home = t.control("Home") else { check("voiceover", theme, "rail item \"Home\" found", "missing", "present", false); return }
+    _ = AXUIElementPerformAction(home.element, "AXPress" as CFString)
+    let bare = waitUntil(3) { about.allSatisfy { t.control($0) == nil } && t.control("Search") == nil }
+    check("voiceover", theme, "AXPress on \"Home\" shows no column: no rows and no search", bare ? "column gone" : "rows now: \(t.controls.map(\.name).joined(separator: ", "))", "rail only", bare)
+}
+
+/// Keys: Space on a rail item chooses that area. The Tab order (rail, then its footer, then the column) is the generic walk.
+func sidebarBKeys(_ t: Target) {
+    let theme = t.theme
+    guard NSApplication.shared.isFullKeyboardAccessEnabled else {
+        unproven("keys", theme, "with Keyboard navigation off Space and Tab cannot be sent to the rail; rerun after turning it on yourself")
+        return
+    }
+    let area = "Across", row = sidebarASections[1].places[0]
+    guard let item = t.control(area), t.focus(item) else {
+        unproven("keys", theme, "\"\(area)\" did not take keyboard focus, so Space could not be sent to it"); return
+    }
+    t.press(49)
+    let shown = waitUntil(3) { t.control(row) != nil && t.control("Host") == nil }
+    check("keys", theme, "Space on the focused rail item \"\(area)\" shows its column: \"\(row)\" appears", shown ? "column replaced" : "rows now: \(t.controls.map(\.name).joined(separator: ", "))", "\"\(row)\" in the tree", shown)
+}
+
+// MARK: Scene profile (GL37)
+
+/// The pixel checks of the profile card, from a capture of that window only. The row is 52 high with the 32 tile 12 in from its
+/// edge; the name is the upper line and the detail the lower line, to the right of the tile. At rest the row is bare window ground.
+func profilePixels(_ t: Target) {
+    let theme = t.theme
+    guard let card = t.control(profileSpoken) else { check("setup", theme, "the profile card found", "missing", "present", false); return }
+    let shot = capture(t, name: theme)
+    note("shot", theme, "\(t.out.path)/\(theme).png, \(shot.width)x\(shot.height) px, scale \(f2(shot.scale))")
+    func ink(_ id: String, _ what: String, _ rect: CGRect, _ need: Double) {
+        let r = readInk(shot, rect: rect)
+        check(id, theme, "\(what): ink \(hex(r.ink)) on \(hex(r.ground))", f2(r.typical) + ":1", ">= \(f2(need)):1", r.typical >= need)
+        if r.worst < need { note(id, theme, "against the weakest ground pixel the ratio is \(f2(r.worst)):1") }
+    }
+    let f = card.frame
+    // The initial sits in the middle of the 32 tile: the 14 pt square around its centre is the fill and the letter.
+    ink("avatar-initial", "avatar initial (onAvatar) on the avatar fill", CGRect(x: f.minX + 12 + 16 - 7, y: f.midY - 7, width: 14, height: 14), 4.5)
+    ink("profile-name", "name (text) on the window ground", CGRect(x: f.minX + 56, y: f.minY + 10, width: 70, height: 15), 4.5)
+    ink("profile-detail", "detail line (text2) on the window ground", CGRect(x: f.minX + 56, y: f.minY + 27, width: 70, height: 14), 4.5)
+}
+
+/// What AXPress does to the card: the profile menu opens as a popover, holding its rows; Escape closes it.
+func profileAfterActions(_ t: Target) {
+    let theme = t.theme
+    check("voiceover", theme, "no popover is open before the card is pressed", "\(t.popoverChildren.count) children", "none", t.popoverChildren.isEmpty)
+    guard let card = t.control(profileSpoken) else { check("voiceover", theme, "the profile card found", "missing", "present", false); return }
+    let pressed = AXUIElementPerformAction(card.element, "AXPress" as CFString) == .success
+    let rows = ["Appearance", "Upgrade…", "Settings…"]
+    let opened = pressed && waitUntil(3) { let names = t.popoverChildren.map(\.name); return rows.allSatisfy(names.contains) }
+    let seen = t.popoverChildren.map { "\($0.role) \"\($0.name)\"" }.joined(separator: ", ")
+    check("voiceover", theme, "AXPress on the card opens a popover holding \(rows.joined(separator: ", "))", opened ? "popover open" : "popover holds: \(seen.isEmpty ? "nothing" : seen)", "the three rows", opened)
+    t.press(53)
+    let closed = waitUntil(3) { t.popoverChildren.isEmpty }
+    check("voiceover", theme, "Escape closes the popover", closed ? "closed" : "still open", "closed", closed)
+}
+
+/// Keys: Space on the focused card opens the menu, Escape closes it, and focus is back on the card.
+func profileKeys(_ t: Target) {
+    let theme = t.theme
+    guard let card = t.control(profileSpoken), t.focus(card) else {
+        unproven("keys", theme, "the profile card did not take keyboard focus, so Space could not be sent to it"); return
+    }
+    t.press(49)
+    let opened = waitUntil(3) { !t.popoverChildren.isEmpty }
+    check("keys", theme, "Space on the focused card opens the profile menu", opened ? "popover open" : "no popover", "popover open", opened)
+    t.press(53)
+    let closed = waitUntil(3) { t.popoverChildren.isEmpty }
+    check("keys", theme, "Escape closes the profile menu", closed ? "closed" : "still open", "closed", closed)
+    let back = waitUntil(3) { t.focused?.name == profileSpoken }
+    check("keys", theme, "focus returns to the card after Escape", "focus is on \"\(t.focused?.name ?? "none")\"", "\"\(profileSpoken)\"", back)
 }
 
 // MARK: Entry
