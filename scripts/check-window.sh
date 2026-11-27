@@ -2,7 +2,8 @@
 # Checks the GlamorGallery window on this Mac, as a user sees it, with no person at the keyboard:
 #   pixel contrast (search placeholder, Deploy label, unfocused search edge) in light and dark, and with the
 #   Increase contrast colours (the gallery's debug flag; SwiftUI's own environment values cannot be set); the label-to-icon gap on the Daily menu button; the VoiceOver strings and
-#   AXPress; Tab order, Space and Return.
+#   AXPress, and the names that appear only after an action (the theme switch after the toggle, "Clear the search"
+#   after typing, the sheet title as a heading, the unlabelled spinner "Working"); Tab order, Space and Return.
 # Only that window is captured. Light and dark are the gallery's own appearance (a launch argument); the
 # system's appearance, Reduce Transparency, Increase Contrast and Keyboard navigation are never changed.
 #
@@ -82,6 +83,7 @@ run dark pixels --appearance dark
 run light-increased pixels --appearance light --increase-contrast
 run dark-increased pixels --appearance dark --increase-contrast
 run light strings --appearance light
+run light sheet --appearance light --open-sheet
 run light keys --appearance light
 
 echo "== screenshots and tables: $OUT"

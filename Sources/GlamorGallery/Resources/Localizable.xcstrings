@@ -217,6 +217,42 @@
         }
       }
     },
+    "sheet.body": {
+      "comment": "Demo sheet body text.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The sheet the window check reads."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sheet yang dibaca pemeriksaan jendela."
+          }
+        }
+      }
+    },
+    "sheet.title": {
+      "comment": "Demo sheet title, read by VoiceOver as a heading.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit host"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ubah host"
+          }
+        }
+      }
+    },
     "toolbar.title": {
       "comment": "Demo glass bar text.",
       "extractionState": "manual",

@@ -242,5 +242,5 @@ DashedDivider()
 - Use the button styles `.primary`, `.secondary` and `.ghost` (32), with `compact: true` or `.controlSize(.small)` for 28. The sidebar has no create button; **Add** (⌘N) sits in the panel header.
 - Use `.card()`, `.card(padding: G.Space.s16)` and `.surface()` instead of repeating backgrounds and overlays.
 - `scripts/check-sizes.sh` fails the build check when a view uses a number that is not on the scale. Run it before every change to a view.
-- Keep SwiftUI's own controls where the system draws them: `Toggle(.switch)`, segmented `Picker`, `Menu`, `.alert`, `.popover` and `.sheet`. They take the system accent color, not `G.accent`.
+- Keep SwiftUI's own controls where the system draws them: `Toggle(.switch)`, segmented `Picker`, `Menu`, `.alert`, `.popover` and `.sheet`. They take the system accent color, not `G.accent`. The one tint to set is the switch: `ToggleCard` tints its `Toggle` with `G.accentEdge`, and an app tints a `Toggle` it draws itself the same way (`.tint(G.accentEdge)`), so the on state matches the web switch and holds 3:1 on a card in every mode.
 - Glass (macOS 26 and iOS 26 and up, solid below and with Reduce Transparency or Increase Contrast) is promised a 3:1 field edge against the surface tokens only. Over photos, video or pure black or white content, put a scrim behind the control, as design-tokens does for text.

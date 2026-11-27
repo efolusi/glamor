@@ -36,6 +36,12 @@
 /* Demo search placeholder. */
 "search.hosts" = "Search hosts";
 
+/* Demo sheet body text. */
+"sheet.body" = "The sheet the window check reads.";
+
+/* Demo sheet title, read by VoiceOver as a heading. */
+"sheet.title" = "Edit host";
+
 /* Demo glass bar text. */
 "toolbar.title" = "Toolbar";
 

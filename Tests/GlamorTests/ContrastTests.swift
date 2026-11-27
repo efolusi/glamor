@@ -116,9 +116,45 @@ struct ContrastTests {
         }
     }
 
+    /// GL27: the switch's on state is the track of the system `Toggle`, tinted `accentEdge`. It holds 3:1 against the card
+    /// the switch sits on (light, dark, both Increase contrast modes) and against the page and a sunken well.
+    @Test(arguments: ContrastTests.allModes) func theSwitchOnStateHoldsThreeToOneOnTheCard(dark: Bool, high: Bool) {
+        for ground in [G.card, G.window, G.subtle] {
+            #expect(ratio(G.accentEdge, ground, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
+        }
+    }
+
     /// GL26: a progress bar's default fill is `accentEdge` and holds 3:1 on its track (`border`) in every mode.
     @Test(arguments: ContrastTests.allModes) func theProgressBarDefaultFillHoldsThreeToOneOnItsTrack(dark: Bool, high: Bool) {
         #expect(ratio(ProgressBar(value: 0.5).tone, G.border, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
+    }
+
+    /// GL28: every ProgressBar tone (the default `accentEdge` and `ok`, `warn`, `danger`) holds 3:1 on the track the
+    /// bar draws (`surfaceTrack`), in light, dark and both Increase contrast modes. On `border`, the old track, the
+    /// status tones were 1.65 to 1.94:1 in light and dark Increase contrast, because `border` turns mid-tone there.
+    @Test(arguments: ContrastTests.allModes) func everyProgressBarToneHoldsThreeToOneOnItsTrack(dark: Bool, high: Bool) {
+        let track = Color(GlamorTokens.Color.surfaceTrack)
+        for (name, tone) in [("default", ProgressBar(value: 0).tone), ("ok", G.ok), ("warn", G.warn), ("danger", G.danger)] {
+            #expect(ratio(tone, track, dark: dark, high: high) >= 3, "\(name) dark=\(dark) high=\(high)")
+        }
+    }
+
+    /// GL28: a disabled main action has its own label colour. Its fill is the accent at 30% over the ground, and the
+    /// ink (`onAccent`) on that was 1.67 to 1.83:1 in dark. `text3` reads 3.5:1 or more in every mode and beats the
+    /// ink wherever the ink falls short (disabled controls are exempt from WCAG 1.4.3; 3:1 is the floor kept here).
+    @Test(arguments: ContrastTests.allModes) func theDisabledMainActionLabelReadsOnItsFill(dark: Bool, high: Bool) {
+        for ground in [G.window, G.panel, G.card, G.subtle] {
+            let g = rgb(ground, dark: dark, high: high), a = rgb(G.accent, dark: dark, high: high)
+            let fill = (a.0 * G.Opacity.disabled + g.0 * (1 - G.Opacity.disabled),
+                        a.1 * G.Opacity.disabled + g.1 * (1 - G.Opacity.disabled),
+                        a.2 * G.Opacity.disabled + g.2 * (1 - G.Opacity.disabled))
+            func against(_ c: Color) -> Double {
+                let x = luminance(rgb(c, dark: dark, high: high)), y = luminance(fill)
+                return (max(x, y) + 0.05) / (min(x, y) + 0.05)
+            }
+            #expect(against(G.text3) >= 3, "text3 dark=\(dark) high=\(high) ratio=\(against(G.text3))")
+            if against(G.onAccent) < 3 { #expect(against(G.text3) > against(G.onAccent), "dark=\(dark) high=\(high)") }
+        }
     }
 
     @Test(arguments: [false, true]) func controlEdgesAndButtonLabelsHoldTheirRatio(dark: Bool) {

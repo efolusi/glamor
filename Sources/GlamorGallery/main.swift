@@ -14,6 +14,7 @@ import SwiftUI
 // Launch arguments, for scripts/check-window.sh (they change only this app, never the system settings):
 //   --appearance light|dark   the app's own appearance
 //   --increase-contrast       draws the Increase contrast colours (IncreasedContrast.forced, debug builds only)
+//   --open-sheet              opens a sheet at launch (scripts/check-window.sh reads its title as a heading)
 //   --log-activations         puts the last activated control's name and a count in the window title, and prints
 //                             the accessibility environment the views received
 //
@@ -25,6 +26,7 @@ struct Options {
     static let args = CommandLine.arguments
     static let increaseContrast = args.contains("--increase-contrast")
     static let logActivations = args.contains("--log-activations")
+    static let openSheet = args.contains("--open-sheet")
     static var appearance: NSAppearance.Name? {
         guard let i = args.firstIndex(of: "--appearance"), i + 1 < args.count else { return nil }
         return args[i + 1] == "dark" ? .darkAqua : .aqua
@@ -74,6 +76,7 @@ struct Gallery: View {
     @State private var segment = 0
     @State private var search = ""
     @State private var appearance = Appearance.light
+    @State private var sheetShown = Options.openSheet
     @FocusState private var saveFocused: Bool
     var body: some View {
         VStack(alignment: .leading, spacing: G.Space.s16) {
@@ -101,6 +104,8 @@ struct Gallery: View {
             SearchBar(placeholder: Words.text("search.hosts"), text: $search)
             Text(Words.text("toolbar.title")).textStyle(.caption).foregroundStyle(G.text2)
                 .frame(maxWidth: .infinity, minHeight: G.Height.control32).glassBar()
+                // A spinner with no label of its own: VoiceOver reads the library's "Working" (GL22).
+                .overlay(alignment: .trailing) { SpinnerSlot(shown: true).padding(.trailing, G.Space.s12) }
             ProgressBar(value: 0.6)
         }
         .textStyle(.body)
@@ -112,6 +117,14 @@ struct Gallery: View {
         .onChange(of: segment) { activated("segment \(segment)") }
         .onChange(of: appearance) { activated("theme \(appearance)") }
         .background(EnvironmentProbe())
+        .sheet(isPresented: $sheetShown) {
+            SheetLayout(symbol: "desktopcomputer", title: Words.text("sheet.title")) {
+                Text(Words.text("sheet.body"))
+            } buttons: {
+                Button(Words.text("action.cancel")) { sheetShown = false }
+                    .buttonStyle(SecondaryButtonStyle()).keyboardShortcut(.cancelAction)
+            }
+        }
     }
 }
 

@@ -1,7 +1,10 @@
 // Checks of the running GlamorGallery window, driven by scripts/check-window.sh.
 //
 //   windowcheck pixels <pid> <theme> <out-dir>    pixel contrast and the label-to-icon gap, from a capture of that window only
-//   windowcheck strings <pid> <theme> <out-dir>   VoiceOver strings and AXPress activation, from the accessibility tree
+//   windowcheck strings <pid> <theme> <out-dir>   VoiceOver strings and AXPress activation, from the accessibility tree;
+//                                                 after the presses: the theme switch's new name, the clear button after
+//                                                 typing, the unlabelled spinner's name
+//   windowcheck sheet <pid> <theme> <out-dir>     the title of the sheet the gallery opens with --open-sheet, read as a heading
 //   windowcheck keys <pid> <theme> <out-dir>      Tab order, Space and Return
 //   windowcheck ready <pid>                       exits 0 once the window is on screen with its controls
 //
@@ -366,6 +369,65 @@ func stringsMode(_ t: Target) {
         check("press", theme, "AXPress on \"\(e.name)\"", "window title now \"\(t.windowTitle)\"", "event \"\(event)\"", r == .success && count == lastCount + 1 && parts.contains(event))
         lastCount = count
     }
+    afterActionStrings(t)
+}
+
+/// Polls the tree until `done` holds or `seconds` pass: a control that a press or a keystroke adds or renames
+/// shows up a moment later.
+func waitUntil(_ seconds: Double, _ done: () -> Bool) -> Bool {
+    let end = Date().addingTimeInterval(seconds)
+    while Date() < end {
+        if done() { return true }
+        usleep(200_000)
+    }
+    return done()
+}
+
+/// What VoiceOver reads for any element, not only the controls: the description, else the title, else the text value.
+func spokenName(_ e: AXUIElement) -> String {
+    [text(e, "AXDescription"), text(e, "AXTitle"), text(e, "AXValue")].first { !$0.isEmpty } ?? ""
+}
+
+/// The names that only appear once something is done (GL30), proven after the presses of stringsMode.
+func afterActionStrings(_ t: Target) {
+    let theme = t.theme
+
+    // The theme switch was pressed above ("Switch to dark theme"); it must now offer the way back.
+    let back = waitUntil(3) { t.control("Switch to light theme") != nil }
+    let themeNames = t.controls.map(\.name).filter { $0.contains("theme") }.joined(separator: ", ")
+    check("voiceover", theme, "after the toggle the theme switch is named \"Switch to light theme\"",
+          back ? "named" : "names now: \(themeNames)", "\"Switch to light theme\"", back)
+
+    // Typing in the search field adds the clear button, and VoiceOver must read "Clear the search".
+    guard let field = t.control("Search hosts") else {
+        check("voiceover", theme, "search field found to type into", "missing", "present", false); return
+    }
+    let typed = AXUIElementSetAttributeValue(field.element, "AXValue" as CFString, "web" as CFString) == .success
+    let clear = typed ? waitUntil(3) { t.control("Clear the search") != nil } : false
+    let names = t.controls.map(\.name).joined(separator: ", ")
+    check("voiceover", theme, "after typing the search field has a button named \"Clear the search\"",
+          typed ? (clear ? "named" : "no such button; names now: \(names)") : "the field refused the typed text",
+          "\"Clear the search\"", clear)
+
+    // A spinner built without a label reads the library's "Working" (GL22).
+    let spinners = descendants(t.window).filter { text($0, "AXRole") == "AXProgressIndicator" }
+    let working = spinners.contains { text($0, "AXDescription") == "Working" || text($0, "AXTitle") == "Working" }
+    let seen = spinners.map { "\"\(spokenName($0))\"" }.joined(separator: ", ")
+    check("voiceover", theme, "the unlabelled spinner is named \"Working\"",
+          spinners.isEmpty ? "no progress indicator in the tree" : seen, "\"Working\"", working)
+}
+
+/// The gallery's sheet (opened by --open-sheet) must say its title as a heading.
+func sheetMode(_ t: Target) {
+    let theme = t.theme
+    let title = "Edit host"
+    func headings() -> [AXUIElement] {
+        descendants(t.window).filter { text($0, "AXRole") == "AXHeading" || text($0, "AXRoleDescription") == "heading" }
+    }
+    let found = waitUntil(5) { headings().contains { spokenName($0) == title } }
+    let seen = headings().map { "\"\(spokenName($0))\"" }.joined(separator: ", ")
+    check("voiceover", theme, "the sheet title \"\(title)\" is read as a heading",
+          found ? "heading" : "headings in the tree: \(seen.isEmpty ? "none" : seen)", "a heading \"\(title)\"", found)
 }
 
 func keysMode(_ t: Target) {
@@ -451,7 +513,7 @@ if args.count == 3, args[1] == "ready", let pid = Int32(args[2]) {
     exit(buttons >= 10 && listed ? 0 : 1)
 }
 guard args.count == 5, let pidValue = Int32(args[2]) else {
-    FileHandle.standardError.write(Data("usage: windowcheck pixels|strings|keys <pid> <theme> <out-dir> | ready <pid>\n".utf8))
+    FileHandle.standardError.write(Data("usage: windowcheck pixels|strings|keys|sheet <pid> <theme> <out-dir> | ready <pid>\n".utf8))
     exit(2)
 }
 guard AXIsProcessTrusted() else {
@@ -464,6 +526,7 @@ switch args[1] {
 case "pixels": pixelsMode(target)
 case "strings": stringsMode(target)
 case "keys": keysMode(target)
+case "sheet": sheetMode(target)
 default: exit(2)
 }
 try? log.joined(separator: "\n").appending("\n").write(to: target.out.appendingPathComponent("\(args[1])-\(target.theme).tsv"), atomically: true, encoding: .utf8)

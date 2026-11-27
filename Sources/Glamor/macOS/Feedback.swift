@@ -167,8 +167,10 @@ public struct OutputText: View {
     }
 }
 
-/// ProgressBar: a 4-high capsule on `border`, filled with its tone (`accentEdge` while in progress, `ok`
-/// when complete or healthy, `warn` when nearly full). The number always sits beside it.
+/// ProgressBar: a 4-high capsule on the track colour (`surfaceTrack`), filled with its tone (`accentEdge` while in
+/// progress, `ok` when complete or healthy, `warn` when nearly full). The number always sits beside it. Every tone
+/// holds 3:1 on the track in light, dark and both Increase contrast modes. The track is not `border`: that turns
+/// mid-tone with Increase contrast, and `ok`, `warn` and `danger` were 1.65 to 1.94:1 on it (GL28).
 public struct ProgressBar: View {
     /// 0…1.
     public let value: Double
@@ -176,7 +178,7 @@ public struct ProgressBar: View {
     public var body: some View {
         GeometryReader { g in
             ZStack(alignment: .leading) {
-                Capsule().fill(G.border)
+                Capsule().fill(Color(GlamorTokens.Color.surfaceTrack))
                 Capsule().fill(tone).frame(width: g.size.width * min(max(value, 0), 1))
                     .gAnimation(.progress, value: value)   // motion-progress: never jumps (it does with Reduce Motion)
             }
