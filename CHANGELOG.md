@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+Semver level: MINOR (v0.4.0 in progress). Sixteen sizes that carried komando's page words leave `G`. The removal is breaking at MINOR level: nothing in Glamor reads them, and Glamor is used only inside Efolusi for now, as in v0.3.0.
+
+- **Breaking: 16 komando page names are out of `G` (GL42).** Removed from `G.Width`: `hostName`, `connName`, `secretName`, `jobLog`, `cacheKeys`, `forwardName`, `forwardKind`, `updateKind`. Removed from `G.Resize`: `recipes`, `jobs`, `audit`, `filesPane`, `filesTransfers`, `querySplit`, `cacheSplit`, `terminalSplit`. `G.Resize.areas` is now `[sidebar, agent]`. The `forward-columns` entry is removed from `tokens.json`. No alias. `ProductNameTokenTests` fails when any of the 16 names, or the `forward-columns` entry, comes back.
+- **New: the gallery shows one named scene per run (GL40 scaffold).** `swift run GlamorGallery --scene <name>`; with no flag it shows `components`, the same content as v0.3.1. `--scene=<name>` works too. A name it does not know, or an argument that starts with `--scene` and gives no name, stops with status 64 and one line on stderr. The gallery's window is 460 by 560 (it was 460 by 460).
+- **Changed: the gallery's screenshots are `glamor-app-<scene>-<mode>.png`.** With `GLAMOR_GALLERY_SHOTS=<dir>` the file names carry the scene (they were `glamor-app-<mode>.png`).
+- **New: the window check keeps one control list per scene (GL40 scaffold, GL43).** `scripts/window/WindowCheck.swift` takes the scene as its last argument and reads that scene's expected controls, Tab order and modes; `scripts/check-window.sh` has a `scene <name>` line before its `run` lines. The `components` list is the v0.3.1 list plus the ToggleCard switch (GL43): its name, value, press, Tab stop, switch-on track contrast and, because the small switch is under 24 by 24 pt, the distance to the nearest other control (a CHECK at 24 pt or more, WCAG 2.5.8). The switch's role, subrole and value are printed as `switch-ax` notes and stay unproven until the owner's window run.
+
+What an app does (Apps):
+
+1. Bump Glamor to exactly 0.4.0 and rebuild.
+2. Define the eight `G.Width` names in the app, in an `extension G` (they were komando's page widths).
+3. Drop the `forward-columns` entry from your copy of the token notes, if you keep one.
+4. Give the eight `G.Resize` areas their keys in the app (`ResizeArea(key:min:ideal:max:)`), and add them to the app's own list of areas where a test walks it.
+
 ## v0.3.1 - 2026-11-28
 
 Semver level: PATCH (v0.3.1). No `G.*` name and no existing API changes; the one addition (GL35) is new public API in a patch, which breaks nothing because apps pin exact versions. Three colour and tint values change (the switch tint, the disabled main action, the ProgressBar track) and the window check reads more. Version files are not bumped here. The v0.3.1 tag waits for the owner's run of `scripts/check-window.sh --strict` (see GL30 below).

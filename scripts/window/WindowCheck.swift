@@ -1,12 +1,15 @@
 // Checks of the running GlamorGallery window, driven by scripts/check-window.sh.
 //
+// Each takes an optional last argument, the scene the gallery was started with (`GlamorGallery --scene <name>`,
+// default `components`). A scene has its own list of controls and its own modes: see `scenes` below.
+//
 //   windowcheck pixels <pid> <theme> <out-dir>    pixel contrast and the label-to-icon gap, from a capture of that window only
 //   windowcheck strings <pid> <theme> <out-dir>   VoiceOver strings and AXPress activation, from the accessibility tree;
 //                                                 after the presses: the theme switch's new name, the clear button after
 //                                                 typing with key events, the unlabelled spinner's name (AXBusyIndicator)
 //   windowcheck sheet <pid> <theme> <out-dir>     the title of the sheet the gallery opens with --open-sheet, read as a heading
 //   windowcheck keys <pid> <theme> <out-dir>      Tab order, Space and Return
-//   windowcheck ready <pid>                       exits 0 once the window is on screen with its controls
+//   windowcheck ready <pid> [scene]               exits 0 once the window is on screen with its controls
 //
 // Every line it prints starts with CHECK, NOTE or UNPROVEN. A CHECK line ends in PASS or FAIL; any FAIL
 // makes the exit status 1. UNPROVEN means the system would not let the check run without changing a setting
@@ -71,6 +74,8 @@ struct Control {
     var description: String { text(element, "AXDescription") }
     var title: String { text(element, "AXTitle") }
     var help: String { text(element, "AXHelp") }
+    /// AXValue as text. A switch is guessed to read "1" (on) or "0" (off): not yet seen on this macOS, proven by the owner's window run.
+    var value: String { attr(element, "AXValue").map { "\($0)" } ?? "" }
     var placeholder: String { text(element, "AXPlaceholderValue") }
     var selected: Bool { (attr(element, "AXSelected") as? Bool) == true }
     var enabled: Bool { (attr(element, "AXEnabled") as? Bool) != false }
@@ -88,13 +93,15 @@ struct Target {
     let pid: pid_t
     let theme: String
     let out: URL
+    let scene: SceneSpec
     let app: AXUIElement
     let window: AXUIElement
 
-    init(pid: pid_t, theme: String, out: URL) {
+    init(pid: pid_t, theme: String, out: URL, scene: SceneSpec) {
         self.pid = pid
         self.theme = theme
         self.out = out
+        self.scene = scene
         app = AXUIElementCreateApplication(pid)
         guard let w = (attr(app, "AXWindows") as? [AXUIElement])?.first else {
             FileHandle.standardError.write(Data("no window for pid \(pid)\n".utf8))
@@ -105,8 +112,23 @@ struct Target {
 
     var controls: [Control] {
         descendants(window).map(Control.init).filter {
-            ["AXButton", "AXMenuButton", "AXTextField"].contains($0.role) && $0.subrole.isEmpty
+            (["AXButton", "AXMenuButton", "AXTextField"].contains($0.role) && $0.subrole.isEmpty)
+                // UNPROVEN: a SwiftUI Toggle with .toggleStyle(.switch) is guessed to read AXCheckBox, subrole AXSwitch (or none).
+                // Not yet seen on this macOS; proven by the owner's window run (`strings` prints "switch-ax" with what was read).
+                || ($0.role == "AXCheckBox" && ["", "AXSwitch"].contains($0.subrole))
         }
+    }
+
+    /// Text that is not a control (a mark's "Pro", a section's label): the tree's static texts, by their spoken string.
+    var staticTexts: [String] {
+        descendants(window).filter { text($0, "AXRole") == "AXStaticText" }.map(spokenName).filter { !$0.isEmpty }
+    }
+
+    /// What a popover (the profile menu) holds, by role and spoken name; empty when none is open.
+    var popoverChildren: [(role: String, name: String)] {
+        descendants(window).filter { text($0, "AXRole") == "AXPopover" }
+            .flatMap { descendants($0).dropFirst() }
+            .map { (text($0, "AXRole"), spokenName($0)) }
     }
 
     /// A control by any of the strings it carries: VoiceOver may read the description or the title.
@@ -238,6 +260,13 @@ func readInk(_ s: Shot, rect: CGRect) -> InkReading {
 
 func f2(_ v: Double) -> String { String(format: "%.2f", v) }
 
+/// The shortest distance between two frames in points: 0 when they touch or overlap.
+func frameGap(_ a: CGRect, _ b: CGRect) -> Double {
+    let dx = max(0, a.minX - b.maxX, b.minX - a.maxX)
+    let dy = max(0, a.minY - b.maxY, b.minY - a.maxY)
+    return Double((dx * dx + dy * dy).squareRoot())
+}
+
 // MARK: Modes
 
 func pixelsMode(_ t: Target) {
@@ -326,11 +355,63 @@ func pixelsMode(_ t: Target) {
     } else {
         check("label-icon-gap", theme, "Daily menu button chevron found", "\(runs.count) runs, none wider than tall", "one chevron", false)
     }
+
+    switchTint(t, shot)
 }
 
-struct Expected { let name: String; let role: String; let selected: Bool; let pressEvent: String? }
+/// GL43 (GL27): the ToggleCard's switch is on at launch and drawn in `accentEdge`; its track must stand 3:1 off the card
+/// it sits on. The track is the flat colour that fills most of the switch's frame, so it is the most common colour there
+/// that is not the card (the knob and the edge are smaller, a glass sheen is not flat). The card ground is read 6 pt to
+/// the left of the frame, inside the card's padding.
+/// UNPROVEN: that the flat track is the most common non-card colour, and that 6 pt left of the frame is card ground, are
+/// guesses; not yet seen on this macOS, proven by the owner's window run (a reading it cannot make ends UNPROVEN).
+func switchTint(_ t: Target, _ shot: Shot) {
+    let theme = t.theme
+    guard let sw = t.control(switchName) else { check("switch-tint", theme, "switch found", "missing", "present", false); return }
+    let f = sw.frame
+    let ground = shot.px(shot.pixel(CGPoint(x: f.minX - 6, y: f.midY)).x, shot.pixel(CGPoint(x: f.minX - 6, y: f.midY)).y)
+    let a = shot.pixel(f.origin), b = shot.pixel(CGPoint(x: f.maxX, y: f.maxY))
+    var counts: [String: (n: Int, color: RGB)] = [:]
+    for y in a.y..<b.y { for x in a.x..<b.x {
+        let c = shot.px(x, y)
+        guard ratio(c, ground) > 1.15 else { continue }
+        let key = hex(c)
+        counts[key] = ((counts[key]?.n ?? 0) + 1, c)
+    } }
+    guard let track = counts.values.max(by: { $0.n < $1.n }) else {
+        unproven("switch-tint", theme, "no pixel in the switch's frame \(Int(f.width))x\(Int(f.height)) pt differs from the card, so the track could not be read"); return
+    }
+    let r = ratio(track.color, ground)
+    check("switch-tint", theme, "switch-on track \(hex(track.color)) on card \(hex(ground))", f2(r) + ":1", ">= 3:1", r >= 3)
+}
 
-let expectedControls: [Expected] = [
+/// One control a scene must show. `value` is what AXValue reads before anything is pressed (a switch: "1" for on).
+struct Expected {
+    let name: String
+    let role: String
+    let selected: Bool
+    let pressEvent: String?
+    var value: String? = nil
+}
+
+/// What one gallery scene (`GlamorGallery --scene <name>`) must show, and the checks that belong to it alone.
+/// `expected` is the reading order of its controls: the Tab-order walk, the names and the presses all read it.
+/// A mode a scene has no function for is not run: the script says so and stops with status 2.
+struct SceneSpec {
+    let name: String
+    /// Buttons in the tree before `ready` says the window is up.
+    let readyButtons: Int
+    let expected: [Expected]
+    let pixels: ((Target) -> Void)?
+    /// Names that only appear after the presses of `strings` (GL30).
+    let afterActions: ((Target) -> Void)?
+    let sheet: ((Target) -> Void)?
+}
+
+/// The switch of the components scene (GL43). Not translated: the script runs the gallery in English.
+let switchName = "Send reports"
+
+let componentsControls: [Expected] = [
     Expected(name: "web-1", role: "AXButton", selected: false, pressEvent: "web-1"),
     Expected(name: "db-primary (selected)", role: "AXButton", selected: true, pressEvent: "db-primary"),
     Expected(name: "queue-3", role: "AXButton", selected: false, pressEvent: "queue-3"),
@@ -344,6 +425,13 @@ let expectedControls: [Expected] = [
     Expected(name: "Month", role: "AXButton", selected: false, pressEvent: "segment 2"),
     Expected(name: "Switch to dark theme", role: "AXButton", selected: false, pressEvent: "theme dark"),
     Expected(name: "Search hosts", role: "AXTextField", selected: false, pressEvent: nil),
+    // UNPROVEN: role AXCheckBox, AXValue "1" and the press toggling it are guesses; not yet seen on this macOS, proven by the owner's window run.
+    Expected(name: switchName, role: "AXCheckBox", selected: false, pressEvent: "switch false", value: "1"),
+]
+
+let scenes: [String: SceneSpec] = [
+    "components": SceneSpec(name: "components", readyButtons: 10, expected: componentsControls,
+                            pixels: pixelsMode, afterActions: afterActionStrings, sheet: sheetMode),
 ]
 
 func stringsMode(_ t: Target) {
@@ -352,7 +440,7 @@ func stringsMode(_ t: Target) {
     for c in t.controls {
         emit("TABLE\t\(c.name)\t\(c.role)\t\(c.roleDescription)\t\(c.nameSource)\t\(c.description)\t\(c.title)\t\(c.help)\t\(c.selected)\t\(Int(c.frame.width))x\(Int(c.frame.height))")
     }
-    for e in expectedControls {
+    for e in t.scene.expected {
         guard let c = t.control(e.name) else {
             check("voiceover", theme, "control named \"\(e.name)\"", "not in the accessibility tree", "present", false); continue
         }
@@ -364,6 +452,12 @@ func stringsMode(_ t: Target) {
             check("voiceover", theme, "the text field is named by a label equal to its placeholder, not by the placeholder alone",
                   "AXDescription \"\(c.description)\", AXTitle \"\(c.title)\", placeholder \"\(c.placeholder)\"", "a label \"\(c.placeholder)\"", labelled)
         }
+        if e.role == "AXCheckBox" {
+            note("switch-ax", theme, "\"\(e.name)\" read as role \(c.role), subrole \"\(c.subrole)\", role description \"\(c.roleDescription)\", AXValue \"\(c.value)\"; not yet seen on this macOS, proven by the owner's window run")
+        }
+        if let value = e.value {
+            check("voiceover", theme, "\"\(e.name)\" reads its value before any press", "AXValue \"\(c.value)\"", "\"\(value)\"", c.value == value)
+        }
         // One name: a title and a description that differ are two names for one control.
         let names = Set([c.title, c.description].filter { !$0.isEmpty })
         check("voiceover", theme, "\"\(e.name)\" has one name", "AXTitle \"\(c.title)\", AXDescription \"\(c.description)\"", "one", names.count <= 1)
@@ -372,15 +466,25 @@ func stringsMode(_ t: Target) {
         check("voiceover", theme, "every control has a name", "an unnamed \(c.role)", "named", false)
     }
     // Target size in the tree (WCAG 2.5.8 AA: 24 x 24 pt). Frames are the tree's; a click was not simulated.
-    for e in expectedControls where e.role != "AXTextField" {
+    for e in t.scene.expected where e.role != "AXTextField" {
         if let c = t.control(e.name) {
+            // A switch is drawn small (controlSize .small). WCAG 2.5.8 lets a target under 24 x 24 pt stand when no other
+            // target sits within 24 pt of it, so for a small one the size is a NOTE and the spacing is the CHECK. The gap
+            // is frame to frame, a little stricter than the standard's 24 pt circle round the target's centre.
+            if e.role == "AXCheckBox", c.frame.width < 24 || c.frame.height < 24 {
+                note("target-size", theme, "\"\(e.name)\" accessibility frame \(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt, under 24x24 pt: the spacing check below applies (WCAG 2.5.8)")
+                let nearest = t.controls.filter { !CFEqual($0.element, c.element) }.map { frameGap(c.frame, $0.frame) }.min()
+                check("target-spacing", theme, "\"\(e.name)\" to the nearest other target", nearest.map { "nearest target \(f2($0)) pt" } ?? "no other target",
+                      ">= 24 pt (WCAG 2.5.8)", (nearest ?? .infinity) >= 24)
+                continue
+            }
             check("target-size", theme, "\"\(e.name)\" accessibility frame", "\(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt", ">= 24x24 pt",
                   c.frame.width >= 24 && c.frame.height >= 24)
         }
     }
     // Activation by the accessibility action (what VoiceOver's "press" and Voice Control do).
     var lastCount = Int(t.windowTitle.split(separator: "|").last.map { $0.trimmingCharacters(in: .whitespaces) } ?? "") ?? 0
-    for e in expectedControls {
+    for e in t.scene.expected {
         guard let event = e.pressEvent, let c = t.control(e.name) else { continue }
         let r = AXUIElementPerformAction(c.element, "AXPress" as CFString)
         usleep(300_000)
@@ -389,7 +493,7 @@ func stringsMode(_ t: Target) {
         check("press", theme, "AXPress on \"\(e.name)\"", "window title now \"\(t.windowTitle)\"", "event \"\(event)\"", r == .success && count == lastCount + 1 && parts.contains(event))
         lastCount = count
     }
-    afterActionStrings(t)
+    t.scene.afterActions?(t)
 }
 
 /// Polls the tree until `done` holds or `seconds` pass: a control that a press or a keystroke adds or renames
@@ -489,7 +593,7 @@ func keysMode(_ t: Target) {
     }
 
     // Space and Return, on every control that takes focus. A control that will not take focus is reported, not skipped silently.
-    for e in expectedControls where e.role != "AXTextField" {
+    for e in t.scene.expected where e.role != "AXTextField" {
         guard let c = t.control(e.name) else { continue }
         // Some controls (the glass theme switch) refuse AXFocused but take focus from Tab: reach them the way a user does.
         func focusOrTab(_ name: String) -> Bool {
@@ -538,30 +642,46 @@ func keysMode(_ t: Target) {
 // MARK: Entry
 
 let args = CommandLine.arguments
-if args.count == 3, args[1] == "ready", let pid = Int32(args[2]) {
+func sceneNamed(_ name: String?) -> SceneSpec {
+    guard let spec = scenes[name ?? "components"] else {
+        FileHandle.standardError.write(Data("unknown scene \"\(name ?? "")\"; the scenes are \(scenes.keys.sorted().joined(separator: ", "))\n".utf8))
+        exit(2)
+    }
+    return spec
+}
+if args.count >= 3, args.count <= 4, args[1] == "ready", let pid = Int32(args[2]) {
+    let spec = sceneNamed(args.count == 4 ? args[3] : nil)
     let app = AXUIElementCreateApplication(pid)
     let window = (attr(app, "AXWindows") as? [AXUIElement])?.first
     let buttons = window.map { descendants($0).filter { text($0, "AXRole") == "AXButton" }.count } ?? 0
     let listed = (CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]] ?? [])
         .contains { ($0[kCGWindowOwnerPID as String] as? Int32) == pid && ($0[kCGWindowLayer as String] as? Int) == 0 }
-    exit(buttons >= 10 && listed ? 0 : 1)
+    exit(buttons >= spec.readyButtons && listed ? 0 : 1)
 }
-guard args.count == 5, let pidValue = Int32(args[2]) else {
-    FileHandle.standardError.write(Data("usage: windowcheck pixels|strings|keys|sheet <pid> <theme> <out-dir> | ready <pid>\n".utf8))
+guard args.count == 5 || args.count == 6, let pidValue = Int32(args[2]) else {
+    FileHandle.standardError.write(Data("usage: windowcheck pixels|strings|keys|sheet <pid> <theme> <out-dir> [scene] | ready <pid> [scene]\n".utf8))
     exit(2)
 }
 guard AXIsProcessTrusted() else {
     FileHandle.standardError.write(Data("Accessibility permission is missing for the app that runs this script (System Settings > Privacy & Security > Accessibility)\n".utf8))
     exit(2)
 }
-let target = Target(pid: pidValue, theme: args[3], out: URL(fileURLWithPath: args[4]))
+let target = Target(pid: pidValue, theme: args[3], out: URL(fileURLWithPath: args[4]), scene: sceneNamed(args.count == 6 ? args[5] : nil))
 try? FileManager.default.createDirectory(at: target.out, withIntermediateDirectories: true)
+func run(_ mode: String, _ body: ((Target) -> Void)?) {
+    guard let body else {
+        FileHandle.standardError.write(Data("scene \(target.scene.name) has no \(mode) mode\n".utf8))
+        exit(2)
+    }
+    body(target)
+}
 switch args[1] {
-case "pixels": pixelsMode(target)
+case "pixels": run("pixels", target.scene.pixels)
 case "strings": stringsMode(target)
 case "keys": keysMode(target)
-case "sheet": sheetMode(target)
+case "sheet": run("sheet", target.scene.sheet)
 default: exit(2)
 }
-try? log.joined(separator: "\n").appending("\n").write(to: target.out.appendingPathComponent("\(args[1])-\(target.theme).tsv"), atomically: true, encoding: .utf8)
+let tsvName = target.scene.name == "components" ? "\(args[1])-\(target.theme).tsv" : "\(target.scene.name)-\(args[1])-\(target.theme).tsv"
+try? log.joined(separator: "\n").appending("\n").write(to: target.out.appendingPathComponent(tsvName), atomically: true, encoding: .utf8)
 exit(failures == 0 ? 0 : 1)

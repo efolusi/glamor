@@ -294,7 +294,8 @@ struct LocalisationTests {
 
     @Test func theGalleryUsesExactlyItsCatalogsKeys() throws {
         let keys = Set(try catalog("Sources/GlamorGallery/Resources/Localizable.xcstrings").map(\.key))
-        let text = try String(contentsOf: Self.root.appendingPathComponent("Sources/GlamorGallery/main.swift"), encoding: .utf8)
+        // The gallery is several files (a launch file and one per scene): the keys are looked up in all of them.
+        let text = try sourceFiles("Sources/GlamorGallery").map { try String(contentsOf: $0, encoding: .utf8) }.joined(separator: "\n")
         let pattern = try NSRegularExpression(pattern: #""([a-z]+\.[A-Za-z]+)""#)
         let used = Set(pattern.matches(in: text, range: NSRange(text.startIndex..., in: text)).map { String(text[Range($0.range(at: 1), in: text)!]) })
         #expect(used.subtracting(keys).isEmpty, "the gallery asks for strings the catalog lacks: \(used.subtracting(keys).sorted())")
