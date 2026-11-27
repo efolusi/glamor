@@ -21,7 +21,7 @@ struct RailAndProfileWindowCheckTests {
 
     @Test func theGalleryListsBothScenesWithOneLineEach() throws {
         let all = try read("Sources/GlamorGallery/Scenes/GalleryScenes.swift")
-        #expect(all.contains("static let all = [components, sidebarA, sidebarB, profile]"))
+        #expect(all.contains("static let all = [components, sidebarA, sidebarB, profile, marks]"))
         let rail = try read("Sources/GlamorGallery/Scenes/SidebarBScene.swift")
         #expect(rail.contains(#"GalleryScene(name: "sidebar-b", size: CGSize(width: G.Width.sidebar, height: G.Height.windowMin)"#))
         let profile = try read("Sources/GlamorGallery/Scenes/ProfileScene.swift")
