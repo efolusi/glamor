@@ -38,24 +38,42 @@ public struct StatusDot: View {
     }
 }
 
+/// A word of status in a capsule: its tint on an opaque card ground. `Pill(mark:)` is the outlined Pro or Soon mark.
 public struct Pill: View {
     public let text: String
     public var color: Color = G.text2
+    /// Set by `init(mark:)`: the mark is outlined instead of tinted, and VoiceOver says what it means.
+    public let mark: PlanMark?
     @Environment(\.colorSchemeContrast) private var contrast
-    public var body: some View {
+    @ViewBuilder public var body: some View {
         // caption2 (11 at default) grows with Dynamic Type; padding instead of a fixed height so it never clips.
-        // A 10% tint on an opaque card ground, so the row behind never shows through: every status color
-        // reads 4.6:1 or more in both themes (G.Opacity.pill, as on the Mac).
-        Text(DisplayText.line(text)).font(G.tiny.weight(.medium))
+        let word = Text(DisplayText.line(text)).font(G.tiny.weight(.medium))
             .padding(.horizontal, G.Space.s8).padding(.vertical, G.Space.s4)
-            .foregroundStyle(color)
-            .background(color.opacity(G.Opacity.pill(contrast)), in: Capsule())
-            .background(G.card, in: Capsule())
+        if let mark {
+            word.foregroundStyle(mark.label)
+                .overlay(PlanMarkEdge(mark: mark))
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(mark.spoken())
+        } else {
+            // A 10% tint on an opaque card ground, so the row behind never shows through: every status color
+            // reads 4.6:1 or more in both themes (G.Opacity.pill, as on the Mac).
+            word.foregroundStyle(color)
+                .background(color.opacity(G.Opacity.pill(contrast)), in: Capsule())
+                .background(G.card, in: Capsule())
+        }
     }
 
     public init(text: String, color: Color = G.text2) {
         self.text = text
         self.color = color
+        self.mark = nil
+    }
+
+    /// The Pro or Soon mark (GL36): the word and its outline from `PlanMark`, in the person's language.
+    public init(mark: PlanMark) {
+        self.text = mark.word()
+        self.color = mark.label
+        self.mark = mark
     }
 }
 

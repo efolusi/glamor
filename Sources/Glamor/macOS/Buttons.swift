@@ -10,7 +10,6 @@ private struct ButtonMetrics {
         self.compact = compact || controlSize == .small || controlSize == .mini
     }
     var height: CGFloat { compact ? G.Height.control28 : G.Height.control32 }
-    var radius: CGFloat { compact ? G.Radius.r6 : G.Radius.r8 }
     /// The symbol beside a button's title is 12 at both sizes (design system: Button).
     var icon: CGFloat { G.Icon.sm }
 }
@@ -77,13 +76,13 @@ public struct PrimaryButtonStyle: ButtonStyle {
         .padding(.horizontal, G.Space.s12)
         .frame(height: m.height)
         .frame(maxWidth: wide ? .infinity : nil)
-        .background(fill, in: RoundedRectangle(cornerRadius: m.radius, style: .continuous))
+        .background(fill, in: Capsule())
         // The rim is the shape's 3:1 edge on a light ground; in dark it is the fill's own colour. It fades with the fill.
-        .overlay(RoundedRectangle(cornerRadius: m.radius, style: .continuous)
+        .overlay(Capsule()
             .strokeBorder(G.accentEdge.opacity(enabled ? 1 : G.Opacity.disabled), lineWidth: G.Line.hair))
         // The secondary's shadow: a bigger one made the primary look taller beside it (EmptyState review).
         .shadow(enabled ? G.Shadow.control : G.Shadow.none)
-        .focusRing(m.radius)
+        .focusRingCapsule()
         .onHover { hover = $0 }
     }
 
@@ -112,10 +111,10 @@ public struct SecondaryButtonStyle: ButtonStyle {
             .frame(height: m.height)
             // card, cardHover under the pointer, G.Hover.pressed while pressed. A destructive one hovers the same.
             .background(configuration.isPressed ? G.Hover.pressed : (hover ? G.cardHover : G.card),
-                        in: RoundedRectangle(cornerRadius: m.radius, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: m.radius, style: .continuous).strokeBorder(G.border))
+                        in: Capsule())
+            .overlay(Capsule().strokeBorder(G.border))
             .shadow(G.Shadow.control)
-            .focusRing(m.radius)
+            .focusRingCapsule()
             .onHover { hover = $0 }
     }
 
@@ -124,8 +123,9 @@ public struct SecondaryButtonStyle: ButtonStyle {
     }
 }
 
-/// Text that gains a fill under the pointer. `square` makes an icon-only button as wide as it is
-/// high; `size` sets that side (24 inside rows); `wide` fills the width, as a menu row.
+/// Text that gains a fill under the pointer, in a capsule. `square` makes an icon-only button as wide as it is
+/// high, so a circle; `size` sets that side (24 inside rows); `wide` fills the width, as a menu row, and a menu row
+/// keeps the row's rounded corner (r8, r6 when compact) instead of the capsule.
 public struct GhostButtonStyle: ButtonStyle {
     public var compact: Bool = false
     public var square: Bool = false
@@ -141,7 +141,8 @@ public struct GhostButtonStyle: ButtonStyle {
         let active = enabled && (hover || configuration.isPressed)
         let fill: Color = !enabled ? .clear : G.Hover.item(hover: hover, pressed: configuration.isPressed, on: ground)
         let height = size ?? m.height
-        let radius = height > G.Height.control28 ? G.Radius.r8 : G.Radius.r6
+        let rowRadius = height > G.Height.control28 ? G.Radius.r8 : G.Radius.r6
+        let shape = wide ? AnyShape(RoundedRectangle(cornerRadius: rowRadius, style: .continuous)) : AnyShape(Capsule())
         // Only an icon-only square of 28 or more draws its symbol at 16.
         let icon = square && height >= G.Height.control28 ? G.Icon.md : m.icon
         configuration.label
@@ -152,9 +153,9 @@ public struct GhostButtonStyle: ButtonStyle {
             .padding(.horizontal, square ? 0 : G.Space.s8)
             .frame(maxWidth: wide ? .infinity : nil, alignment: .leading)
             .frame(width: square ? height : nil, height: height)
-            .background(fill, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
-            .contentShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
-            .focusRing(radius)
+            .background(fill, in: shape)
+            .contentShape(shape)
+            .modifier(FocusRing(radius: rowRadius, capsule: !wide))
             .onHover { hover = $0 }
     }
 

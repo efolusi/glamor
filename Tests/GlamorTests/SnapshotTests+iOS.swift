@@ -20,6 +20,7 @@ struct SnapshotTestsIOS {
                 StatusDot(color: G.warn); Pill(text: "Degraded", color: G.warn)
                 StatusDot(color: G.danger); Pill(text: "Stopped", color: G.danger)
             }
+            HStack(spacing: G.Space.s8) { Pill(mark: .pro); Pill(mark: .soon) }
             HStack(spacing: G.Space.s8) {
                 SeverityMark(problem: true); Text("A problem").foregroundStyle(G.text)
                 SeverityMark(problem: false); Text("A warning").foregroundStyle(G.text2)

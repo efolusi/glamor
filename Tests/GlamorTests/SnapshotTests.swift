@@ -21,7 +21,7 @@ struct SnapshotTests {
             }
             HStack(spacing: G.Space.s16) {
                 Button("Save") {}.buttonStyle(PrimaryButtonStyle())
-                    .focusRing(G.Radius.r8, isFocused: true)
+                    .focusRingCapsule(isFocused: true)
                 Button("Cancel") {}.buttonStyle(SecondaryButtonStyle())
             }
             HStack(spacing: G.Space.s16) {
@@ -29,6 +29,7 @@ struct SnapshotTests {
                 SegmentedControl(items: ["Day", "Week", "Month"], selection: .constant(1))
                 ThemeSwitch(appearance: .constant(.light), words: .english)
             }
+            HStack(spacing: G.Space.s8) { Pill(mark: .pro); Pill(mark: .soon); Pill(text: "Up", color: G.ok) }
             SearchBar(placeholder: "Search hosts", text: .constant(""))
             VStack(alignment: .leading, spacing: G.Space.s8) {
                 ProgressBar(value: 0.6)

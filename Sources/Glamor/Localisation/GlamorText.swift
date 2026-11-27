@@ -19,6 +19,8 @@ enum GlamorText {
         case splitValueAtLeast = "split.valueAtLeast", splitValueRange = "split.valueRange"
         case skeletonItemName = "skeleton.itemName", skeletonDetailLine = "skeleton.detailLine"
         case themeToDark = "theme.toDark", themeToLight = "theme.toLight"
+        case markPro = "mark.pro", markProSpoken = "mark.proSpoken"
+        case markSoon = "mark.soon", markSoonSpoken = "mark.soonSpoken"
     }
 
     /// The languages the catalog ships.

@@ -1,5 +1,5 @@
 #if os(iOS)
-import Glamor
+@testable import Glamor
 import SwiftUI
 import Testing
 import UIKit
@@ -42,6 +42,21 @@ struct ContrastTestsIOS {
         }
         #expect(ratio(G.onAccent, G.accent, dark: dark, high: high) >= 4.5)
         #expect(ratio(G.onAvatar, G.avatar, dark: dark, high: high) >= 4.5)
+    }
+
+    /// GL36: the Pro and Soon words are text: 4.5:1 on every ground a mark sits on, in every mode; the Pro outline is a
+    /// shape, `accentEdge`, 3:1 on the page, a card and a subtle well. The Soon outline is a dashed hairline carried by
+    /// its word and its dash, so it has no 3:1 claim.
+    @Test(arguments: [(false, false), (true, false), (false, true), (true, true)])
+    func theProAndSoonMarksReadOnEveryGroundAMarkSitsOn(dark: Bool, high: Bool) {
+        for mark in PlanMark.allCases {
+            for ground in [G.window, G.card, G.subtle] {
+                #expect(ratio(mark.label, ground, dark: dark, high: high) >= 4.5, "\(mark) dark=\(dark) high=\(high)")
+            }
+        }
+        for ground in [G.window, G.card, G.subtle] {
+            #expect(ratio(PlanMark.pro.edge, ground, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
+        }
     }
 
     /// GL26: the accent as a shape is `accentEdge`: 3:1 against the page, a card, a sunken well, a track and the
