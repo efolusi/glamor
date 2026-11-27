@@ -36,6 +36,12 @@
 /* Demo search placeholder. */
 "search.hosts" = "Cari host";
 
+/* Demo sheet body text. */
+"sheet.body" = "Sheet yang dibaca pemeriksaan jendela.";
+
+/* Demo sheet title, read by VoiceOver as a heading. */
+"sheet.title" = "Ubah host";
+
 /* Demo glass bar text. */
 "toolbar.title" = "Bilah alat";
 
