@@ -10,9 +10,9 @@ import SwiftUI
 /// of the Tab order until they are scrolled to, and a sidebar has about 25 rows.
 /// Variant B (the narrow window) passes `isResizable: false` and a fixed width for its column.
 public struct Sidebar<Header: View, Content: View, Footer: View>: View {
-    @Binding public var width: CGFloat
-    public let isResizable: Bool
-    public let onHide: () -> Void
+    @Binding var width: CGFloat
+    let isResizable: Bool
+    let onHide: () -> Void
     private let header: Header
     private let content: Content
     private let footer: Footer

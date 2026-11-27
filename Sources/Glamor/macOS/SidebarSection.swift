@@ -12,7 +12,7 @@ import SwiftUI
 /// marker and fill go with them: when a folded section holds that place, pass `containsSelection: true` and the
 /// place's name as `selectedTitle`, and the header shows a marker-coloured dot and reads "collapsed, <name> selected".
 public struct SidebarSection<Content: View>: View {
-    public let title: String
+    let title: String
     private let containsSelection: Bool
     private let selectedTitle: String?
     private let storage: Storage

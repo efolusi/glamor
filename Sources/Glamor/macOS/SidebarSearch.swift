@@ -5,9 +5,9 @@ import SwiftUI
 /// palette and its key binding stay the app's, and `action` is what opens it. The shortcut is drawn as a badge and
 /// repeated in the tooltip; VoiceOver reads the name once.
 public struct SidebarSearch: View {
-    public let title: String
-    public let shortcut: String
-    public let action: () -> Void
+    let title: String
+    let shortcut: String
+    let action: () -> Void
 
     /// The key that opens the palette in every Efolusi app. A key chord is not a translated word.
     public static let defaultShortcut = "⌘K"

@@ -14,6 +14,16 @@ struct SidebarContainerTests {
         return try String(contentsOf: root.appendingPathComponent("Sources/Glamor").appendingPathComponent(path), encoding: .utf8)
     }
 
+    /// A view's stored fields are its inputs, not an interface: callers use the init, and the public surface stays small.
+    @Test func theSidebarViewsKeepTheirStoredFieldsInternal() throws {
+        for file in ["Sidebar", "SidebarItem", "SidebarSearch", "SidebarSection"] {
+            let text = try source("macOS/\(file).swift")
+            #expect(!text.contains("public let"), "\(file).swift has a public stored field")
+            #expect(!text.contains("public var width"), "\(file).swift has a public binding")
+        }
+        #expect(try source("macOS/SidebarSearch.swift").contains("public static let defaultShortcut"), "the public init's default argument")
+    }
+
     @Test func theSidebarSitsOnTheWindowGroundAndHoversOnIt() throws {
         let text = try source("macOS/Sidebar.swift")
         #expect(text.contains(".background(G.window)"))

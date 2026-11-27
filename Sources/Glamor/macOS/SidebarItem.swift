@@ -7,12 +7,12 @@ import SwiftUI
 /// one the name is the tooltip of the (clipped) text alone: on macOS a tooltip is the row's AXHelp, so the name as the
 /// row's tooltip would be read a second time.
 public struct SidebarItem: View {
-    public let title: String
-    public let symbol: String
-    public let isSelected: Bool
-    public let count: SidebarCount?
-    public let help: String?
-    public let action: () -> Void
+    let title: String
+    let symbol: String
+    let isSelected: Bool
+    let count: SidebarCount?
+    let help: String?
+    let action: () -> Void
 
     public init(_ title: String, symbol: String, isSelected: Bool,
                 count: SidebarCount? = nil, help: String? = nil, action: @escaping () -> Void) {
