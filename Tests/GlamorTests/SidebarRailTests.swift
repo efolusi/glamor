@@ -1,4 +1,6 @@
 #if os(macOS)
+import AppKit
+import CoreText
 import Foundation
 import SwiftUI
 import Testing
@@ -39,8 +41,34 @@ struct SidebarRailTests {
         #expect(G.Row.markerWidth == 4, "3 fails check-sizes.sh; every marker is G.Row.markerWidth")
         let item = try source("macOS/SidebarRailItem.swift")
         #expect(item.contains("SidebarItemStyle(isSelected: isSelected, height: G.Height.row52"))
+        #expect(item.contains("horizontalPadding: 0"), "the title gets the whole 64 (see theTitleRoomIs...)")
         let style = try source("macOS/SidebarItemStyle.swift")
         #expect(style.contains(".selectedMarker(isSelected)"), "the rail draws the marker the item draws")
+    }
+
+    // MARK: Title room
+
+    /// The width of `title` in the rail's caption font, as the line is set (CoreText, no window).
+    private func setWidth(_ title: String) -> CGFloat {
+        let font = NSFont.systemFont(ofSize: GlamorTokens.Length.textXs)
+        let line = CTLineCreateWithAttributedString(NSAttributedString(string: title, attributes: [.font: font]))
+        return CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
+    }
+
+    /// The short titles of the gallery in English and Indonesian, and the longest word a caller is likely to bring.
+    /// "Pengaturan" (Settings) is the longest at 64.8 pt; "Targets" is 42.1 pt and was cut to "Targe…" when the room was 32.
+    private let railTitles = ["Home", "Beranda", "Targets", "Target", "Across", "Own", "About", "Settings", "Pengaturan"]
+
+    @Test func theTitleRoomIsTheButtonWidthWithNoPaddingOfItsOwn() {
+        #expect(G.Width.rail - 2 * G.Row.cardInset == 64, "the button is 64 wide")
+        #expect(SidebarRailItem.labelRoom == 64, "an item and its style add no horizontal padding: the title gets all 64")
+    }
+
+    @Test func everyRailTitleFitsItsRoomWithoutAnEllipsis() {
+        for title in railTitles {
+            let shown = setWidth(title) * G.Row.railTitleScale
+            #expect(shown <= SidebarRailItem.labelRoom, "\(title) is \(shown) pt at the smallest scale, in \(SidebarRailItem.labelRoom) pt")
+        }
     }
 
     // MARK: Areas

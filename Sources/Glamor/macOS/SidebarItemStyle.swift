@@ -10,6 +10,8 @@ struct SidebarItemStyle: ButtonStyle {
     let isSelected: Bool
     var height: CGFloat = G.Row.oneLine
     var alignment: Alignment = .leading
+    /// From the highlight's edge to the content on each side. The rail takes 0: its 64 wide button is all the room a title has.
+    var horizontalPadding: CGFloat = G.Row.padding
     @State private var hover = false
 
     func makeBody(configuration: Configuration) -> some View {
@@ -17,7 +19,7 @@ struct SidebarItemStyle: ButtonStyle {
         let fill: Color = configuration.isPressed ? G.Hover.pressed
             : (isSelected ? G.panel : G.Hover.item(hover: hover, pressed: false, on: .window))
         configuration.label
-            .padding(.horizontal, G.Row.padding)
+            .padding(.horizontal, horizontalPadding)
             .frame(maxWidth: .infinity, minHeight: height, maxHeight: height, alignment: alignment)
             .contentShape(shape)
             .background(fill, in: shape)

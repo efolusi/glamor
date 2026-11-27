@@ -954,6 +954,32 @@ func sidebarBPixels(_ t: Target) {
     let f = chosen.frame
     let marker = at(CGPoint(x: f.minX + 6, y: f.midY)), panel = at(CGPoint(x: f.maxX - 4, y: f.midY))
     check("rail-marker", theme, "rail marker \(hex(marker)) against panel \(hex(panel))", f2(ratio(marker, panel)) + ":1", ">= 3:1", ratio(marker, panel) >= 3)
+    // No title is cut: each is drawn at least as wide as it is set at the smallest scale (0.85, G.Row.railTitleScale), less 1.5 pt for the
+    // anti-aliased edge. When the label room was 32 pt, "Targets" (42.1 pt set) drew about 32 pt: that fails here.
+    for name in sidebarBRailNames {
+        guard let item = t.control(name) else { continue }
+        let drawn = railTitleDrawnWidth(shot, item.frame), need = setTitleWidth(name) * 0.85 - 1.5
+        check("rail-title-width", theme, "\"\(name)\" is drawn whole, not cut with an ellipsis", "drawn \(f2(drawn)) pt, set \(f2(setTitleWidth(name))) pt", ">= \(f2(need)) pt", drawn >= need)
+    }
+}
+
+/// How wide a rail item's title is drawn, in points, from the capture: twice the distance from the item's centre line to the
+/// rightmost inked pixel of the title row (the title is centred, so the marker at the left edge does not count). A title that
+/// the rail cut to "Targe…" reads about 32 pt; a title that fits reads its set width, or that width at the smallest scale.
+func railTitleDrawnWidth(_ shot: Shot, _ f: CGRect) -> Double {
+    let a = shot.pixel(CGPoint(x: f.midX, y: f.midY + 4)), b = shot.pixel(CGPoint(x: f.maxX - 2, y: f.maxY - 3))
+    var region: [RGB] = []
+    for y in a.y..<b.y { for x in a.x..<b.x { region.append(shot.px(x, y)) } }
+    let ground = region.sorted { lum($0) < lum($1) }[region.count / 2]
+    var right = a.x
+    for y in a.y..<b.y { for x in a.x..<b.x where colorGap(shot.px(x, y), ground) > 0.2 { right = max(right, x) } }
+    return 2 * Double(right - a.x + 1) / shot.scale
+}
+
+/// The width of `title` as the 12 pt caption sets it, with no scaling and no cut (CoreText).
+func setTitleWidth(_ title: String) -> Double {
+    let line = CTLineCreateWithAttributedString(NSAttributedString(string: title, attributes: [.font: NSFont.systemFont(ofSize: 12)]))
+    return CTLineGetTypographicBounds(line, nil, nil, nil)
 }
 
 /// Names and sizes that only show once the scene is read, and what AXPress does to the column.

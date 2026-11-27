@@ -401,6 +401,8 @@ public enum G {
         public static let markerWidth: CGFloat = 4
         public static let markerInset: CGFloat = Space.s4
         public static let markerHeight: CGFloat = 0.6
+        /// How far a rail item's short title may shrink before it is cut: 12 pt to 10.2 pt, so "Pengaturan" (64.8 pt set) fits the 64.
+        public static let railTitleScale: CGFloat = 0.85
     }
 
     public enum Inset {
