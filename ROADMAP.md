@@ -64,7 +64,7 @@ What waits on what:
 | 13 | Android through Skip | glamor | deferred | after Apple apps adopt Glamor |
 | 14 | Windows and Linux | glamor | deferred | no framework covers SwiftUI there yet |
 | 15 | Move Komando-only tokens back to komando-apps | komando-apps | open | 3 |
-| 16 | Move Komando-only sizes out of `G` (`Width.hostName`, `connName`, named `Resize` areas, window sizes) | glamor, komando-apps | open | 9 |
+| 16 | Move Komando-only sizes out of `G`. GL42 (v0.4.0) removed 16 page names: eight `G.Width` (`hostName`, `connName`, `secretName`, `jobLog`, `cacheKeys`, `forwardName`, `forwardKind`, `updateKind`) and eight `G.Resize` areas (`recipes`, `jobs`, `audit`, `filesPane`, `filesTransfers`, `querySplit`, `cacheSplit`, `terminalSplit`); komando-apps defines them in an `extension G`. Still open: `G.Width.state`, the `side-panel-width` usage text (GL46) and the window sizes | glamor, komando-apps | open (16 names done) | 9 |
 | 17 | Rename `K.`/`MK.` to `G.` in `components/` cards | glamor | open | Komando-specific cards decision (12) |
 | 18 | Same token names on Mac and iOS where the meaning is the same (done: `G.Opacity`, `increased:`, `G.Space`, `G.Icon`; open: fonts) | glamor | open | 9, 10 |
 | 19 | Apache-2.0 license | glamor | done | |
