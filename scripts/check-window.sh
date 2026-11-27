@@ -54,6 +54,9 @@ run() {
     echo "== $scenario / $mode (gallery pid $PID)"
     for _ in $(seq 1 40); do "$CHECK" ready "$PID" && break; sleep 0.5; done
     "$CHECK" ready "$PID" || { echo "the gallery window did not appear" >&2; stop; failed=2; return; }
+    # An inactive window gets the system's inactive material (grey, untinted), so the pixel checks must run
+    # with the gallery in front: bring that one process forward by PID (no other app is touched).
+    osascript -e "tell application \"System Events\" to set frontmost of (first process whose unix id is $PID) to true" >/dev/null 2>&1 || true
     sleep 1
     echo "ENV	$scenario	$(grep '^environment:' "$OUT/gallery-$scenario-$mode.log" | head -1)"
     local out status
