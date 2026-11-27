@@ -4,8 +4,8 @@ import SwiftUI
 import Testing
 @testable import Glamor
 
-/// GL37: `ProfileCard`. The look and the popover are proven in a real window (scene `profile`); these pin the words
-/// VoiceOver gets, the initial, and the source shape the window check depends on.
+/// GL37: `ProfileCard`. The look, the names, the target sizes and the popover are proven in a real window (scene `profile`);
+/// these pin the words VoiceOver gets, the initial, the fills, and the few source shapes the window check cannot see.
 @MainActor
 struct ProfileCardTests {
     private func source(_ path: String) throws -> String {
@@ -47,18 +47,10 @@ struct ProfileCardTests {
 
     // MARK: Source shape
 
-    @Test func theRowIsTwoLinesHighWithATileAvatarAndTheTokenFonts() throws {
-        let card = try source("macOS/ProfileCard.swift")
-        #expect(try source("macOS/ProfileCardButtonStyle.swift").contains("G.Height.row52"))
-        #expect(card.contains("G.Tile.t32"))
-        #expect(card.contains("G.avatar"))
-        #expect(card.contains("G.onAvatar"))
-        #expect(card.contains(".textStyle(.bodyMedium)"))
-        #expect(card.contains(".textStyle(.caption)"))
-        #expect(card.contains("chevron.up.chevron.down"))
-        #expect(card.contains("G.Icon.sm"))
-        #expect(card.contains("G.text2"))
-        #expect(card.contains("G.text3"))
+    /// The sizes the window check reads in the tree: the row is the 52 of a two-line row, the tile 32 in it, the avatar a 44 target.
+    @Test func theRowIsTwoLinesHighTheTileFitsItAndTheAvatarIsAtLeast44Square() {
+        #expect(G.Height.row52 == 52 && G.Tile.t32 + 2 * G.Space.s8 <= G.Height.row52, "the 32 tile fits the 52 row with 8 above and below")
+        #expect(G.Height.toolbar >= 44, "the rail's avatar is a 44 point target")
     }
 
     /// The foot is ONE bordered account card: at rest the row is the card fill with a `border` hairline, as the sso rail foot is;
@@ -108,12 +100,6 @@ struct ProfileCardTests {
         let inTheLabel = String(card[label.upperBound..<labelEnd.lowerBound])
         #expect(inTheLabel.contains(".help(spokenName)"), "the name is the tooltip of the label")
         #expect(inTheLabel.contains(".accessibilityHidden(true)"), "and that label is hidden from VoiceOver")
-    }
-
-    @Test func theAvatarStyleIsAtLeast44SquareAndTheRowIsTheRowRadius() throws {
-        let style = try source("macOS/ProfileCardButtonStyle.swift")
-        #expect(style.contains("G.Height.toolbar"), "the rail's avatar is a 44 point target")
-        #expect(style.contains("focusRingCapsule()"), "a square 44 target is a circle: the capsule ring")
     }
 }
 #endif

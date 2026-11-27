@@ -39,14 +39,13 @@ struct SidebarRailTests {
     @Test func aRailItemIsAtLeast44HighAndTheMarkerIsTheTokenWidth() throws {
         #expect(G.Height.row52 >= 44, "a pointer target of 44 or more (the mock draws 52)")
         #expect(G.Row.markerWidth == 4, "3 fails check-sizes.sh; every marker is G.Row.markerWidth")
-        let item = try source("macOS/SidebarRailItem.swift")
-        #expect(item.contains("SidebarItemStyle(isSelected: isSelected, height: G.Height.row52"))
-        #expect(item.contains("horizontalPadding: 0"), "the title gets the whole 64 (see theTitleRoomIs...)")
-        let style = try source("macOS/SidebarItemStyle.swift")
-        #expect(style.contains(".selectedMarker(isSelected, height: markerHeight, top: markerTop)"), "the rail draws the marker the item draws")
+        #expect(SidebarRailItem.contentTop >= 0 && SidebarRailItem.contentHeight <= G.Height.row52, "the glyph and the title fit the 52")
     }
 
     // MARK: Title room
+
+    // The rail's names, roles, the selected trait, the 44 point targets, the ground and the title's ink are proven in a real window
+    // (scene `sidebar-b`, scripts/window/WindowCheck.swift); the tests here are the model and measured sizes, not greps for modifiers.
 
     /// The width of `title` in the rail's caption font, as the line is set (CoreText, no window).
     private func setWidth(_ title: String) -> CGFloat {
@@ -135,52 +134,20 @@ struct SidebarRailTests {
 
     // MARK: Source shape
 
-    @Test func theRailSitsOnTheWindowGroundInAPlainStackAndKeepsTheTrafficLightsRoom() throws {
-        let rail = try source("macOS/SidebarRail.swift")
-        #expect(rail.contains(".background(G.window)"))
-        #expect(rail.contains(".hoverGround(.window)"))
-        #expect(rail.contains("G.Width.rail"))
-        #expect(rail.contains("G.Height.trafficLights"))
-        #expect(rail.contains("WindowDragArea()"))
-        #expect(!rail.contains("LazyVStack"), "every area must stay in the accessibility tree and the Tab order")
-        #expect(rail.contains("footer"))
-    }
-
-    @Test func theRailAndTheColumnAreEachOneNamedElement() throws {
-        let rail = try source("macOS/SidebarRail.swift")
-        #expect(rail.contains("GlamorText.string(.sidebarLabel)"))
-        #expect(rail.contains(".accessibilityElement(children: .contain)"))
-        let column = try source("macOS/SidebarColumn.swift")
-        #expect(column.contains(".accessibilityElement(children: .contain)"))
-        #expect(!column.contains(".accessibilityLabel(title)"), "the title is the heading: as the container's label too, VoiceOver reads it twice")
-    }
-
-    @Test func aRailItemIsOneButtonWithTheGlyphOverTheShortTitle() throws {
+    /// On macOS a button's tooltip is its AXHelp, read after its name. The rail's tooltip sits on the hidden label, and the
+    /// button after its style has none; the window check reads AXHelp of every rail item and fails when it is not empty.
+    @Test func theRailButtonHasNoHelpOfItsOwnAndTheTooltipIsOnTheHiddenLabel() throws {
         let item = try source("macOS/SidebarRailItem.swift")
-        #expect(item.contains("Button(action: action)"))
-        #expect(item.contains("G.Icon.lg"))
-        #expect(item.contains(".textStyle(.caption)"))
-        #expect(item.contains(".accessibilityLabel(area.name)"))
-        #expect(!item.contains(".help(area.help)"), "the button has no help of its own: a tooltip equal to the name is read twice")
-        #expect(item.contains(".help(ifPresent: area.tooltip)"))
-        #expect(item.contains(".accessibilityAddTraits(isSelected ? .isSelected : [])"))
-        #expect(item.contains(".foregroundStyle(isSelected ? G.text : G.text2)"))
+        let style = try #require(item.range(of: ".buttonStyle("))
+        #expect(!item[style.upperBound...].contains(".help("), "a tooltip on the button is read a second time")
+        let label = String(item[..<style.lowerBound])
+        #expect(label.contains(".help(ifPresent: area.tooltip)") && label.contains(".accessibilityHidden(true)"))
     }
 
     /// The title starts where the rows' glyphs start: the list inset (8) and the row's padding (12), 20 from the column's edge.
     @Test func theColumnTitleStartsWhereTheRowGlyphsStart() throws {
         #expect(SidebarColumn<EmptyView>.titleInset == 20)
         #expect(SidebarColumn<EmptyView>.titleInset == G.Row.listInset + G.Row.padding)
-    }
-
-    @Test func theColumnTitleIsTitleSAndAHeaderAndTheRowsScrollInAPlainStack() throws {
-        let column = try source("macOS/SidebarColumn.swift")
-        #expect(column.contains(".textStyle(.titleS)"))
-        #expect(column.contains(".accessibilityAddTraits(.isHeader)"))
-        #expect(column.contains("G.Width.sidebar - G.Width.rail"))
-        #expect(column.contains("ScrollView"))
-        #expect(!column.contains("LazyVStack"))
-        #expect(column.contains(".background(G.window)"))
     }
 
     @Test func theAreaBindingIsTheOnlyStateTheRailKeeps() throws {
