@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+Semver level: MINOR (v0.4.0 in progress). Sixteen sizes that carried komando's page words leave `G`. The removal is breaking at MINOR level: nothing in Glamor reads them, and Glamor is used only inside Efolusi for now, as in v0.3.0.
+
+- **Breaking: 16 komando page names are out of `G` (GL42).** Removed from `G.Width`: `hostName`, `connName`, `secretName`, `jobLog`, `cacheKeys`, `forwardName`, `forwardKind`, `updateKind`. Removed from `G.Resize`: `recipes`, `jobs`, `audit`, `filesPane`, `filesTransfers`, `querySplit`, `cacheSplit`, `terminalSplit`. `G.Resize.areas` is now `[sidebar, agent]`. The `forward-columns` entry is removed from `tokens.json`. No alias. `ProductNameTokenTests` fails when any of the 16 names, or the `forward-columns` entry, comes back.
+- **New: the gallery shows one named scene per run (GL40 scaffold).** `swift run GlamorGallery --scene <name>`; with no flag it shows `components`, the same content as v0.3.1. A name it does not know, or a `--scene` with no name after it, stops with status 64 and one line on stderr. The gallery's window is 460 by 560 (it was 460 by 460).
+- **Changed: the gallery's screenshots are `glamor-app-<scene>-<mode>.png`.** With `GLAMOR_GALLERY_SHOTS=<dir>` the file names carry the scene (they were `glamor-app-<mode>.png`).
+- **New: the window check keeps one control list per scene (GL40 scaffold, GL43).** `scripts/window/WindowCheck.swift` takes the scene as its last argument and reads that scene's expected controls, Tab order and modes; `scripts/check-window.sh` has a `scene <name>` line before its `run` lines. The `components` list is the v0.3.1 list plus the ToggleCard switch (GL43): its name, value, press, Tab stop and switch-on track contrast.
+
+What an app does (Apps):
+
+1. Bump Glamor to exactly 0.4.0 and rebuild.
+2. Define the eight `G.Width` names in the app, in an `extension G` (they were komando's page widths).
+3. Drop the `forward-columns` entry from your copy of the token notes, if you keep one.
+4. Give the eight `G.Resize` areas their keys in the app (`ResizeArea(key:min:ideal:max:)`), and add them to the app's own list of areas where a test walks it.
+
 ## v0.3.0 - 2026-11-27
 
 Semver level: MINOR (v0.3.0). The `G.*` names and the API stay; values change, six vendored constants disappear (nothing in Glamor read them), and `G.accentEdge` is new. While Glamor is used only inside Efolusi, a change of this kind ships as a minor, as design-tokens v0.8.0 does. Version files are not bumped here.
