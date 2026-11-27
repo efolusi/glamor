@@ -35,7 +35,7 @@ struct SidebarSectionBody<Content: View>: View {
         VStack(alignment: .leading, spacing: G.Row.gap) {
             Button { withGAnimation(.fast) { isExpanded.toggle() } } label: {
                 HStack(spacing: G.Space.labelIcon) {
-                    Text(title.uppercased()).textStyle(.sectionLabel).tracking(G.Font.sectionTracking).lineLimit(1)
+                    Text(title).textStyle(.sectionLabel).textCase(.uppercase).tracking(G.Font.sectionTracking).lineLimit(1)
                     Spacer(minLength: G.Space.s8)
                     if !isExpanded && containsSelection {
                         Circle().fill(G.selectedMarker).frame(width: G.Dot.d8, height: G.Dot.d8)

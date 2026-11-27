@@ -103,7 +103,8 @@ struct SidebarSectionTests {
         #expect(text.contains("SidebarItemStyle(isSelected: false)"), "the same 32 high row, inset and focus ring as an item")
         #expect(text.contains("textStyle(.sectionLabel)"))
         #expect(text.contains(".tracking(G.Font.sectionTracking)"))
-        #expect(text.contains(".uppercased()"))
+        #expect(text.contains(".textCase(.uppercase)"), "the system cases the title for the language; String.uppercased() ignores it")
+        #expect(!text.contains(".uppercased()"))
         #expect(text.contains("G.text3"))
     }
 
