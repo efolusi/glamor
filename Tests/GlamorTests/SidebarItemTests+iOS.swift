@@ -4,7 +4,7 @@ import Testing
 @testable import Glamor
 
 /// GL39: the iOS `SidebarItem`. The interface and the words VoiceOver gets are the Mac's; the row is a touch target
-/// high. `SidebarSourceTestsIOS` pins the source shape on the Mac; these run in a simulator.
+/// high. `SidebarSourceTestsIOS` pins the source shape on the Mac; these need an iOS simulator run (`xcodebuild test`, CONTRIBUTING).
 @MainActor
 struct SidebarItemTestsIOS {
     private let place = Place(id: "host", title: "Host", symbol: "desktopcomputer")

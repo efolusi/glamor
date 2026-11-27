@@ -2,7 +2,7 @@ import Foundation
 import Testing
 
 /// GL39: the shape of the 44 high `SidebarItem` on iOS. An iOS test target cannot run in `swift test`, so these
-/// read the source, which runs on the Mac (`SidebarItemTestsIOS` proves the behaviour in a simulator).
+/// read the source, which runs on the Mac (`SidebarItemTestsIOS` holds the behaviour; it needs an iOS simulator run).
 struct SidebarSourceTestsIOS {
     private let files = TokenSource()
 
