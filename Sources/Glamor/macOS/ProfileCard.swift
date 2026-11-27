@@ -45,16 +45,26 @@ public struct ProfileCard<Menu: View>: View {
         }
     }
 
+    /// The tile, the two lines and the chevron, 12 apart as a tile and its text are in every row (`space-3`). That is not the
+    /// 8 between a label and its icon: the chevron sits at the far end behind a spacer, so it is not paired with the words.
     private var row: some View {
         HStack(spacing: G.Space.s12) {
             avatar
-            VStack(alignment: .leading, spacing: 0) {
-                Text(name).textStyle(.bodyMedium).foregroundStyle(G.text).lineLimit(1)
-                Text(detail).textStyle(.caption).foregroundStyle(G.text2).lineLimit(1)
-            }
+            lines
             Spacer(minLength: G.Space.s8)
-            Image(systemName: "chevron.up.chevron.down").icon(G.Icon.sm).foregroundStyle(G.text3)
+            chevron
         }
+    }
+
+    private var lines: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(name).textStyle(.bodyMedium).foregroundStyle(G.text).lineLimit(1)
+            Text(detail).textStyle(.caption).foregroundStyle(G.text2).lineLimit(1)
+        }
+    }
+
+    private var chevron: some View {
+        Image(systemName: "chevron.up.chevron.down").icon(G.Icon.sm).foregroundStyle(G.text3)
     }
 
     /// One solid circle, the same in both themes. A name with no letter shows the person glyph instead of an initial.
