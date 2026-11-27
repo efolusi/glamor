@@ -247,7 +247,9 @@ func pixelsMode(_ t: Target) {
     guard let field = t.controls.first(where: { $0.role == "AXTextField" }),
           let deploy = t.control("Deploy"), let daily = t.controls.first(where: { $0.title == "Daily" }),
           let host = descendants(t.window).first(where: { text($0, "AXSubrole") == "AXHostingView" }) else {
-        check("setup", theme, "gallery controls found", "missing", "all", false); return
+        let have = t.controls.map { "\($0.name) (\($0.role))" }.joined(separator: ", ")
+        let hosting = descendants(t.window).contains { text($0, "AXSubrole") == "AXHostingView" }
+        check("setup", theme, "gallery controls found", "missing; hosting view \(hosting ? "present" : "absent"), controls read: \(have.isEmpty ? "none" : have)", "a text field, Deploy, Daily, a hosting view", false); return
     }
     check("setup", theme, "search field is not focused when measured", (attr(field.element, "AXFocused") as? Bool) == true ? "focused" : "unfocused", "unfocused",
           (attr(field.element, "AXFocused") as? Bool) != true)
