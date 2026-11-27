@@ -1,12 +1,15 @@
 // Checks of the running GlamorGallery window, driven by scripts/check-window.sh.
 //
+// Each takes an optional last argument, the scene the gallery was started with (`GlamorGallery --scene <name>`,
+// default `components`). A scene has its own list of controls and its own modes: see `scenes` below.
+//
 //   windowcheck pixels <pid> <theme> <out-dir>    pixel contrast and the label-to-icon gap, from a capture of that window only
 //   windowcheck strings <pid> <theme> <out-dir>   VoiceOver strings and AXPress activation, from the accessibility tree;
 //                                                 after the presses: the theme switch's new name, the clear button after
 //                                                 typing, the unlabelled spinner's name
 //   windowcheck sheet <pid> <theme> <out-dir>     the title of the sheet the gallery opens with --open-sheet, read as a heading
 //   windowcheck keys <pid> <theme> <out-dir>      Tab order, Space and Return
-//   windowcheck ready <pid>                       exits 0 once the window is on screen with its controls
+//   windowcheck ready <pid> [scene]               exits 0 once the window is on screen with its controls
 //
 // Every line it prints starts with CHECK, NOTE or UNPROVEN. A CHECK line ends in PASS or FAIL; any FAIL
 // makes the exit status 1. UNPROVEN means the system would not let the check run without changing a setting
@@ -71,6 +74,8 @@ struct Control {
     var description: String { text(element, "AXDescription") }
     var title: String { text(element, "AXTitle") }
     var help: String { text(element, "AXHelp") }
+    /// AXValue as text: a switch reads "1" or "0", a disclosure header "expanded" or "collapsed".
+    var value: String { attr(element, "AXValue").map { "\($0)" } ?? "" }
     var placeholder: String { text(element, "AXPlaceholderValue") }
     var selected: Bool { (attr(element, "AXSelected") as? Bool) == true }
     var enabled: Bool { (attr(element, "AXEnabled") as? Bool) != false }
@@ -88,13 +93,15 @@ struct Target {
     let pid: pid_t
     let theme: String
     let out: URL
+    let scene: SceneSpec
     let app: AXUIElement
     let window: AXUIElement
 
-    init(pid: pid_t, theme: String, out: URL) {
+    init(pid: pid_t, theme: String, out: URL, scene: SceneSpec) {
         self.pid = pid
         self.theme = theme
         self.out = out
+        self.scene = scene
         app = AXUIElementCreateApplication(pid)
         guard let w = (attr(app, "AXWindows") as? [AXUIElement])?.first else {
             FileHandle.standardError.write(Data("no window for pid \(pid)\n".utf8))
@@ -107,6 +114,18 @@ struct Target {
         descendants(window).map(Control.init).filter {
             ["AXButton", "AXMenuButton", "AXTextField"].contains($0.role) && $0.subrole.isEmpty
         }
+    }
+
+    /// Text that is not a control (a mark's "Pro", a section's label): the tree's static texts, by their spoken string.
+    var staticTexts: [String] {
+        descendants(window).filter { text($0, "AXRole") == "AXStaticText" }.map(spokenName).filter { !$0.isEmpty }
+    }
+
+    /// What a popover (the profile menu) holds, by role and spoken name; empty when none is open.
+    var popoverChildren: [(role: String, name: String)] {
+        descendants(window).filter { text($0, "AXRole") == "AXPopover" }
+            .flatMap { descendants($0).dropFirst() }
+            .map { (text($0, "AXRole"), spokenName($0)) }
     }
 
     /// A control by any of the strings it carries: VoiceOver may read the description or the title.
@@ -308,9 +327,30 @@ func pixelsMode(_ t: Target) {
     }
 }
 
-struct Expected { let name: String; let role: String; let selected: Bool; let pressEvent: String? }
+/// One control a scene must show. `value` is what AXValue reads before anything is pressed (a switch: "1" for on).
+struct Expected {
+    let name: String
+    let role: String
+    let selected: Bool
+    let pressEvent: String?
+    var value: String? = nil
+}
 
-let expectedControls: [Expected] = [
+/// What one gallery scene (`GlamorGallery --scene <name>`) must show, and the checks that belong to it alone.
+/// `expected` is the reading order of its controls: the Tab-order walk, the names and the presses all read it.
+/// A mode a scene has no function for is not run: the script says so and stops with status 2.
+struct SceneSpec {
+    let name: String
+    /// Buttons in the tree before `ready` says the window is up.
+    let readyButtons: Int
+    let expected: [Expected]
+    let pixels: ((Target) -> Void)?
+    /// Names that only appear after the presses of `strings` (GL30).
+    let afterActions: ((Target) -> Void)?
+    let sheet: ((Target) -> Void)?
+}
+
+let componentsControls: [Expected] = [
     Expected(name: "web-1", role: "AXButton", selected: false, pressEvent: "web-1"),
     Expected(name: "db-primary (selected)", role: "AXButton", selected: true, pressEvent: "db-primary"),
     Expected(name: "queue-3", role: "AXButton", selected: false, pressEvent: "queue-3"),
@@ -326,13 +366,18 @@ let expectedControls: [Expected] = [
     Expected(name: "Search hosts", role: "AXTextField", selected: false, pressEvent: nil),
 ]
 
+let scenes: [String: SceneSpec] = [
+    "components": SceneSpec(name: "components", readyButtons: 10, expected: componentsControls,
+                            pixels: pixelsMode, afterActions: afterActionStrings, sheet: sheetMode),
+]
+
 func stringsMode(_ t: Target) {
     let theme = t.theme
     emit("TABLE\tname\trole\troleDescription\tname from\tAXDescription\tAXTitle\tAXHelp\tselected\tframe (pt)")
     for c in t.controls {
         emit("TABLE\t\(c.name)\t\(c.role)\t\(c.roleDescription)\t\(c.nameSource)\t\(c.description)\t\(c.title)\t\(c.help)\t\(c.selected)\t\(Int(c.frame.width))x\(Int(c.frame.height))")
     }
-    for e in expectedControls {
+    for e in t.scene.expected {
         guard let c = t.control(e.name) else {
             check("voiceover", theme, "control named \"\(e.name)\"", "not in the accessibility tree", "present", false); continue
         }
@@ -352,7 +397,7 @@ func stringsMode(_ t: Target) {
         check("voiceover", theme, "every control has a name", "an unnamed \(c.role)", "named", false)
     }
     // Target size in the tree (WCAG 2.5.8 AA: 24 x 24 pt). Frames are the tree's; a click was not simulated.
-    for e in expectedControls where e.role != "AXTextField" {
+    for e in t.scene.expected where e.role != "AXTextField" {
         if let c = t.control(e.name) {
             check("target-size", theme, "\"\(e.name)\" accessibility frame", "\(f2(Double(c.frame.width)))x\(f2(Double(c.frame.height))) pt", ">= 24x24 pt",
                   c.frame.width >= 24 && c.frame.height >= 24)
@@ -360,7 +405,7 @@ func stringsMode(_ t: Target) {
     }
     // Activation by the accessibility action (what VoiceOver's "press" and Voice Control do).
     var lastCount = Int(t.windowTitle.split(separator: "|").last.map { $0.trimmingCharacters(in: .whitespaces) } ?? "") ?? 0
-    for e in expectedControls {
+    for e in t.scene.expected {
         guard let event = e.pressEvent, let c = t.control(e.name) else { continue }
         let r = AXUIElementPerformAction(c.element, "AXPress" as CFString)
         usleep(300_000)
@@ -369,7 +414,7 @@ func stringsMode(_ t: Target) {
         check("press", theme, "AXPress on \"\(e.name)\"", "window title now \"\(t.windowTitle)\"", "event \"\(event)\"", r == .success && count == lastCount + 1 && parts.contains(event))
         lastCount = count
     }
-    afterActionStrings(t)
+    t.scene.afterActions?(t)
 }
 
 /// Polls the tree until `done` holds or `seconds` pass: a control that a press or a keystroke adds or renames
@@ -455,7 +500,7 @@ func keysMode(_ t: Target) {
     }
 
     // Space and Return, on every control that takes focus. A control that will not take focus is reported, not skipped silently.
-    for e in expectedControls where e.role != "AXTextField" {
+    for e in t.scene.expected where e.role != "AXTextField" {
         guard let c = t.control(e.name) else { continue }
         // Some controls (the glass theme switch) refuse AXFocused but take focus from Tab: reach them the way a user does.
         func focusOrTab(_ name: String) -> Bool {
@@ -504,30 +549,46 @@ func keysMode(_ t: Target) {
 // MARK: Entry
 
 let args = CommandLine.arguments
-if args.count == 3, args[1] == "ready", let pid = Int32(args[2]) {
+func sceneNamed(_ name: String?) -> SceneSpec {
+    guard let spec = scenes[name ?? "components"] else {
+        FileHandle.standardError.write(Data("unknown scene \"\(name ?? "")\"; the scenes are \(scenes.keys.sorted().joined(separator: ", "))\n".utf8))
+        exit(2)
+    }
+    return spec
+}
+if args.count >= 3, args.count <= 4, args[1] == "ready", let pid = Int32(args[2]) {
+    let spec = sceneNamed(args.count == 4 ? args[3] : nil)
     let app = AXUIElementCreateApplication(pid)
     let window = (attr(app, "AXWindows") as? [AXUIElement])?.first
     let buttons = window.map { descendants($0).filter { text($0, "AXRole") == "AXButton" }.count } ?? 0
     let listed = (CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]] ?? [])
         .contains { ($0[kCGWindowOwnerPID as String] as? Int32) == pid && ($0[kCGWindowLayer as String] as? Int) == 0 }
-    exit(buttons >= 10 && listed ? 0 : 1)
+    exit(buttons >= spec.readyButtons && listed ? 0 : 1)
 }
-guard args.count == 5, let pidValue = Int32(args[2]) else {
-    FileHandle.standardError.write(Data("usage: windowcheck pixels|strings|keys|sheet <pid> <theme> <out-dir> | ready <pid>\n".utf8))
+guard args.count == 5 || args.count == 6, let pidValue = Int32(args[2]) else {
+    FileHandle.standardError.write(Data("usage: windowcheck pixels|strings|keys|sheet <pid> <theme> <out-dir> [scene] | ready <pid> [scene]\n".utf8))
     exit(2)
 }
 guard AXIsProcessTrusted() else {
     FileHandle.standardError.write(Data("Accessibility permission is missing for the app that runs this script (System Settings > Privacy & Security > Accessibility)\n".utf8))
     exit(2)
 }
-let target = Target(pid: pidValue, theme: args[3], out: URL(fileURLWithPath: args[4]))
+let target = Target(pid: pidValue, theme: args[3], out: URL(fileURLWithPath: args[4]), scene: sceneNamed(args.count == 6 ? args[5] : nil))
 try? FileManager.default.createDirectory(at: target.out, withIntermediateDirectories: true)
+func run(_ mode: String, _ body: ((Target) -> Void)?) {
+    guard let body else {
+        FileHandle.standardError.write(Data("scene \(target.scene.name) has no \(mode) mode\n".utf8))
+        exit(2)
+    }
+    body(target)
+}
 switch args[1] {
-case "pixels": pixelsMode(target)
+case "pixels": run("pixels", target.scene.pixels)
 case "strings": stringsMode(target)
 case "keys": keysMode(target)
-case "sheet": sheetMode(target)
+case "sheet": run("sheet", target.scene.sheet)
 default: exit(2)
 }
-try? log.joined(separator: "\n").appending("\n").write(to: target.out.appendingPathComponent("\(args[1])-\(target.theme).tsv"), atomically: true, encoding: .utf8)
+let tsvName = target.scene.name == "components" ? "\(args[1])-\(target.theme).tsv" : "\(target.scene.name)-\(args[1])-\(target.theme).tsv"
+try? log.joined(separator: "\n").appending("\n").write(to: target.out.appendingPathComponent(tsvName), atomically: true, encoding: .utf8)
 exit(failures == 0 ? 0 : 1)

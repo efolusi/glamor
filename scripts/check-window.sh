@@ -4,6 +4,8 @@
 #   Increase contrast colours (the gallery's debug flag; SwiftUI's own environment values cannot be set); the label-to-icon gap on the Daily menu button; the VoiceOver strings and
 #   AXPress, and the names that appear only after an action (the theme switch after the toggle, "Clear the search"
 #   after typing, the sheet title as a heading, the unlabelled spinner "Working"); Tab order, Space and Return.
+# The gallery shows one scene per run (--scene <name>); each scene has its own list of controls in
+# scripts/window/WindowCheck.swift. The run lines at the end say which scene each one uses.
 # Only that window is captured. Light and dark are the gallery's own appearance (a launch argument); the
 # system's appearance, Reduce Transparency, Increase Contrast and Keyboard navigation are never changed.
 #
@@ -51,26 +53,29 @@ trap stop EXIT
 
 failed=0
 unproven=0
+# scene <name>: the gallery scene the run lines after it use (the gallery's --scene, the name of its list in WindowCheck.swift).
+SCENE=components
+scene() { SCENE=$1; }
 # run <scenario> <mode> <gallery args...>: launch the gallery, run one mode against its PID, stop that PID.
 # The gallery runs in English (-AppleLanguages): WindowCheck.swift looks controls up by their English names
 # ("Daily", "Deploy"), so a Mac set to Indonesian would otherwise fail every lookup.
 run() {
     local scenario=$1 mode=$2
     shift 2
-    "$GALLERY" --log-activations "$@" -AppleLanguages '(en)' >"$OUT/gallery-$scenario-$mode.log" 2>&1 &
+    "$GALLERY" --scene "$SCENE" --log-activations "$@" -AppleLanguages '(en)' >"$OUT/gallery-$SCENE-$scenario-$mode.log" 2>&1 &
     PID=$!
-    echo "== $scenario / $mode (gallery pid $PID)"
-    for _ in $(seq 1 40); do "$CHECK" ready "$PID" && break; sleep 0.5; done
-    "$CHECK" ready "$PID" || { echo "the gallery window did not appear" >&2; stop; failed=2; return; }
+    echo "== $SCENE / $scenario / $mode (gallery pid $PID)"
+    for _ in $(seq 1 40); do "$CHECK" ready "$PID" "$SCENE" && break; sleep 0.5; done
+    "$CHECK" ready "$PID" "$SCENE" || { echo "the gallery window did not appear" >&2; stop; failed=2; return; }
     # An inactive window gets the system's inactive material (grey, untinted), so the pixel checks must run
     # with the gallery in front: bring that one process forward by PID (no other app is touched).
     osascript -e "tell application \"System Events\" to set frontmost of (first process whose unix id is $PID) to true" >/dev/null 2>&1 || true
     sleep 1
     front=$(osascript -e "tell application \"System Events\" to get frontmost of (first process whose unix id is $PID)" 2>/dev/null || echo unknown)
     echo "WINDOW	$scenario	gallery is the front app: $front"
-    echo "ENV	$scenario	$(grep '^environment:' "$OUT/gallery-$scenario-$mode.log" | head -1)"
+    echo "ENV	$scenario	$(grep '^environment:' "$OUT/gallery-$SCENE-$scenario-$mode.log" | head -1)"
     local out status
-    out=$("$CHECK" "$mode" "$PID" "$scenario" "$OUT"); status=$?
+    out=$("$CHECK" "$mode" "$PID" "$scenario" "$OUT" "$SCENE"); status=$?
     echo "$out"
     [ $status -eq 1 ] && failed=1
     [ $status -ge 2 ] && { echo "windowcheck stopped with status $status" >&2; stop; exit 2; }
@@ -78,6 +83,7 @@ run() {
     stop
 }
 
+scene components
 run light pixels --appearance light
 run dark pixels --appearance dark
 run light-increased pixels --appearance light --increase-contrast
