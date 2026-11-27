@@ -79,6 +79,8 @@ public struct TextFieldBox: View {
 }
 
 /// A bordered card with a title, a line of help and a switch, as for "Reach through a server or VPN".
+/// The switch is the system `Toggle`, which takes the app's `AccentColor`: do not set that to copper (2.7:1 on a
+/// light card), or tint the control with `G.accentEdge`.
 public struct ToggleCard<Extra: View>: View {
     public let title: String
     public let help: String

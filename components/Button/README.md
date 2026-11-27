@@ -1,6 +1,6 @@
 # Button
 
-Three button styles: **primary** is the owl's copper with an ink label and a 1px `accentEdge` rim (the fill alone is 2.7:1 on a card in light; the rim is 4.6:1 and is the fill's own colour in dark), **secondary** is a raised card with a hairline, and **ghost** is text that gains a fill under the pointer. In Swift: `.buttonStyle(.primary)`, `.secondary` or `.ghost`, and `PrimaryButtonStyle(shortcut: "⌘N", wide: true)` for the sidebar's main action.
+Three button styles: **primary** is the owl's copper with an ink label and a 1px `accentEdge` rim (the fill alone is 2.7:1 on a card in light; the rim is 4.6:1; on the solid button it is the fill's own colour in dark, on glass it is a 1px line over a translucent tint), **secondary** is a raised card with a hairline, and **ghost** is text that gains a fill under the pointer. In Swift: `.buttonStyle(.primary)`, `.secondary` or `.ghost`, and `PrimaryButtonStyle(shortcut: "⌘N", wide: true)` for the sidebar's main action.
 
 **Provide:** a Title Case verb label, and optionally an SF Symbol through `Label("New Host", systemImage: "plus")`.
 

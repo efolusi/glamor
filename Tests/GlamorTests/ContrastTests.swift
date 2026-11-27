@@ -81,6 +81,15 @@ struct ContrastTests {
         #expect(abs(ratio(G.onAccent, G.accent, dark: dark, high: high) - best) < 0.01, "dark=\(dark) high=\(high)")
     }
 
+    /// GL26: the label also reads on the main action's hover and pressed fills, in every mode (the vendored tokens
+    /// have no Increase contrast value for these, so all four modes resolve alike): ink on `accentHover` 8.01,
+    /// on `accentPressed` 5.28.
+    @Test(arguments: ContrastTests.allModes) func theMainActionLabelHoldsFourPointFiveOnHoverAndPressed(dark: Bool, high: Bool) {
+        for fill in [G.accentHover, G.accentPressed] {
+            #expect(ratio(G.onAccent, fill, dark: dark, high: high) >= 4.5, "dark=\(dark) high=\(high)")
+        }
+    }
+
     /// GL26: the accent is not text (copper on a card is 2.72:1 in light). Accent as text is the link colour,
     /// so the status list reads `G.link` where it read `G.accent`; all four hold 4.5:1 on a card in every mode.
     @Test(arguments: ContrastTests.allModes) func statusColorsReadAsTextOnACard(dark: Bool, high: Bool) {
