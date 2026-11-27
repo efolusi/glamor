@@ -2,13 +2,30 @@
 
 The one list of planned work for Glamor. Mark an item `done` or `deferred` (with the reason and what it waits on). Never delete an item.
 
-## Where things stand (2026-11-18)
+## Where things stand
+
+Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27):
 
 - One Swift package, one library `Glamor` (macOS 15, iOS 18). Tokens live in `enum G`; Mac files in `Sources/Glamor/macOS/`, iPhone and iPad files in `Sources/Glamor/iOS/` (named `<Name>+iOS.swift`), shared text cleaning in `Sources/Glamor/Text/`.
-- No Komando imports. The Komando logo, terminal palette and ANSI colors were removed; they stay in komando-apps.
-- `tokens.json` here and in design-tokens hold the same colors. Two copies of one fact.
-- Framework: SwiftUI-first; Android through Skip later (decided 2026-11-18).
-- Token format: DTCG, as Meridian already produces (decided 2026-11-18). Komando-only tokens go back to komando-apps.
+- No Komando imports. The Komando logo, terminal palette and ANSI colors stay in komando-apps.
+- Colors and sizes come from design-tokens through `scripts/vendor-tokens.sh` (v0.7.0 at v0.2.0); the brand is the same as Meridian's.
+- Warm glass on bars, sheets, the theme switch, segments, the search field and the main action. Reduce Transparency, Increase Contrast, macOS 15 and iOS 18 draw the solid path.
+- Localisation in English and Indonesian, from one String Catalog, checked by `LocalisationTests`.
+- CI on every pull request and push to `main` (`.github/workflows/checks.yml`): vendored tokens, color, motion and size checks, `swift test`, generic iOS build.
+- The window check (`scripts/check-window.sh`) runs the gallery on macOS 26 and checks the real window. CI cannot run it, so `scripts/release-gate.sh` runs it on a Mac before a tag.
+- Framework: SwiftUI first, Android through Skip later. Token format: DTCG, as Meridian.
+
+What is next:
+
+- GL25: add a default button to the gallery (the Save button of a sheet) and make the window check fail when Return does not press it. Planned for v0.2.1.
+- Items 9 and 10: komando-apps adopts Glamor. Items 7, 15, 16, 18, 20 and 23 wait on it.
+- Items 12, 17 and 21: shared preview cards and design moved out of komando-apps, after the plan with the komando coordinator.
+
+What waits on what:
+
+- GL02 (glamor.efolusi.com as a Cloudflare Worker) waits on the owner for DNS and the token scope.
+- GL06 (Decor tests and cost) waits on the next design generation, which changes tokens.
+- Items 13 and 14 (Android through Skip, Windows and Linux) are deferred, see the table.
 
 ## How Glamor consumes design-tokens
 
