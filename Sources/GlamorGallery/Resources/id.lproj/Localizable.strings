@@ -15,6 +15,12 @@
 /* Demo button. */
 "action.save" = "Simpan";
 
+/* Demo row of the marks scene, next to the Soon mark. */
+"marks.approvals" = "Persetujuan";
+
+/* Demo row of the marks scene, next to the Pro mark. */
+"marks.sync" = "Sinkronisasi antarperangkat";
+
 /* Demo menu choice. */
 "period.daily" = "Harian";
 

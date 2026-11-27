@@ -91,6 +91,42 @@
         }
       }
     },
+    "marks.approvals": {
+      "comment": "Demo row of the marks scene, next to the Soon mark.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approvals"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Persetujuan"
+          }
+        }
+      }
+    },
+    "marks.sync": {
+      "comment": "Demo row of the marks scene, next to the Pro mark.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync across devices"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sinkronisasi antarperangkat"
+          }
+        }
+      }
+    },
     "period.daily": {
       "comment": "Demo menu choice.",
       "extractionState": "manual",

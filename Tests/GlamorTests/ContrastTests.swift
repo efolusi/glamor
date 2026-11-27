@@ -167,11 +167,11 @@ struct ContrastTests {
         }
     }
 
-    /// GL36: the Pro outline is a shape, so it is `accentEdge`: 3:1 against the page, a card and a subtle well in every
+    /// GL36: the Pro outline is a shape, so it is `accentEdge`: 3:1 against the page, a panel, a card and a subtle well in every
     /// mode. The Soon outline is dashed in the border colour, 1.10 to 1.40:1: nearly invisible, and that is fine,
     /// because the word carries the meaning, not the outline. It has no 3:1 claim; the Soon word has 4.5:1 above.
     @Test(arguments: ContrastTests.allModes) func theProOutlineHoldsThreeToOneOnEveryGroundAMarkSitsOn(dark: Bool, high: Bool) {
-        for ground in [G.window, G.card, G.subtle] {
+        for ground in [G.window, G.panel, G.card, G.subtle] {
             #expect(ratio(PlanMark.pro.edge, ground, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
         }
     }
