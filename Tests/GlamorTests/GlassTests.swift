@@ -74,8 +74,8 @@ struct VendoredGlassTokensTests {
 }
 
 /// GL19: the system's `.glassProminent` paints its own label colour (light on the dark theme's accent, 2.05:1 on the old
-/// one) and ignores a
-/// `foregroundStyle` set outside it. The main action draws its own glass and sets `G.onAccent` inside its style.
+/// one) and ignores a `foregroundStyle` set outside it. The main action draws its own glass and sets `G.onAccent`
+/// inside its style.
 struct GlassMainActionLabelTests {
     private func source(_ path: String) throws -> String {
         let root = URL(fileURLWithPath: #filePath)
