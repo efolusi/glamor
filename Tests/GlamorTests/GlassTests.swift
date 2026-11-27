@@ -89,8 +89,9 @@ struct GlassMainActionLabelTests {
 
     @Test func theMainActionStyleSetsTheLabelColourInsideItself() throws {
         let style = try source("GlassMainActionStyle.swift")
-        #expect(style.contains(".foregroundStyle(G.onAccent)"))
-        #expect(style.contains(".tint(G.accent)"))
+        // Enabled: the ink on the accent tint. Disabled: its own colour (GL28, AccentEdgeSourceTests holds the pair).
+        #expect(style.contains(".foregroundStyle(enabled ? G.onAccent : G.text3)"))
+        #expect(style.contains("let tint = enabled ? G.accent : G.accent.opacity(G.Opacity.disabled)"))
         #expect(try source("GlassSurface.swift").contains("GlassMainActionStyle()"))
     }
 }

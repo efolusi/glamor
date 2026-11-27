@@ -24,6 +24,23 @@ struct AccentEdgeSourceTests {
         #expect(style.components(separatedBy: ".strokeBorder(G.accentEdge").count - 1 == 2)
     }
 
+    /// GL28: a disabled main action reads in `text3`, not in ink at 30%, and the glass one no longer fades as a whole.
+    @Test func theDisabledMainActionHasItsOwnLabelColour() throws {
+        let buttons = try source("Sources/Glamor/macOS/Buttons.swift")
+        #expect(buttons.contains(".foregroundStyle(enabled ? G.onAccent : G.text3)"))
+        let style = try source("Sources/Glamor/Glass/GlassMainActionStyle.swift")
+        #expect(style.contains(".foregroundStyle(enabled ? G.onAccent : G.text3)"))
+        #expect(!style.contains("\n            .opacity(enabled"), "a whole-view opacity on its own line would fade the label with the tint")
+        #expect(style.components(separatedBy: ".tint(tint)").count - 1 == 2)
+    }
+
+    /// GL28: the bar's track is `surfaceTrack`; `border` turns mid-tone with Increase contrast and fails the status tones.
+    @Test func theProgressBarDrawsItsTrackInSurfaceTrack() throws {
+        let feedback = try source("Sources/Glamor/macOS/Feedback.swift")
+        #expect(feedback.contains("Capsule().fill(Color(GlamorTokens.Color.surfaceTrack))"))
+        #expect(!feedback.contains("Capsule().fill(G.border)"))
+    }
+
     @Test func theProgressBarFillDefaultsToTheAccentEdge() throws {
         let feedback = try source("Sources/Glamor/macOS/Feedback.swift")
         #expect(feedback.components(separatedBy: "tone: Color = G.accentEdge").count - 1 == 2)

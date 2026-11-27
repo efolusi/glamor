@@ -64,7 +64,7 @@ public struct PrimaryButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         let m = ButtonMetrics(compact, controlSize)
         // primary at rest, then primaryHover and primaryPressed (opaque, so the ground never shows through);
-        // 30% when disabled.
+        // 30% when disabled, with its own label colour: ink on that fill is 1.7 to 2.0:1 in dark (GL28), `text3` is not.
         let fill: Color = !enabled ? G.accent.opacity(G.Opacity.disabled)
             : (configuration.isPressed ? G.accentPressed : (hover ? G.accentHover : G.accent))
         HStack(spacing: G.Space.s8) {
@@ -73,7 +73,7 @@ public struct PrimaryButtonStyle: ButtonStyle {
         }
         .textStyle(.bodyStrong)
         .labelStyle(ButtonLabelStyle(icon: m.icon, weight: .semibold))
-        .foregroundStyle(G.onAccent)
+        .foregroundStyle(enabled ? G.onAccent : G.text3)
         .padding(.horizontal, G.Space.s12)
         .frame(height: m.height)
         .frame(maxWidth: wide ? .infinity : nil)
