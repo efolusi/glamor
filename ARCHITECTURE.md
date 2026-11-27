@@ -10,7 +10,7 @@ glamor/
 ├── assets/ · components/   # brand files; flat HTML preview cards
 ├── guidelines/
 ├── Package.swift         # one library: Glamor (macOS 15, iOS 18)
-├── Sources/Glamor/        # macOS/, iOS/ (files end in +iOS), Places/ (registry, no SwiftUI), Marks/, Text/, Localisation/, Generated/
+├── Sources/Glamor/        # macOS/, iOS/ (files end in +iOS), Places/ (registry and the sidebar count, no SwiftUI), Marks/, Text/, Localisation/, Generated/
 │   └── Resources/          # Localizable.xcstrings (en, id); en.lproj/, id.lproj/ written from it
 ├── scripts/                # design-preview.py, check-*.sh
 ├── Tests/ · build/         # build/ is gitignored preview out
