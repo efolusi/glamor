@@ -41,7 +41,7 @@ See [guidelines/ecosystem.md](guidelines/ecosystem.md) and [ARCHITECTURE.md](ARC
 Add Glamor to `Package.swift`, pinned to a tag:
 
 ```swift
-.package(url: "https://github.com/efolusi/glamor", exact: "0.3.0"),
+.package(url: "https://github.com/efolusi/glamor", exact: "0.3.1"),
 ```
 
 Then add `"Glamor"` to your target's dependencies and `import Glamor`. The newest tag and what changed are in [CHANGELOG.md](CHANGELOG.md).
@@ -121,7 +121,7 @@ On macOS 26, system glass loses its tint when its window is not the key window. 
 
 Glamor does not work around it. A solid fill swapped in while the window is inactive would flicker on every focus change and would no longer be the system's glass. The label colour (`G.onAccent`) does not change, so the text stays readable in both states. Reduce Transparency and Increase Contrast use the solid path, which keeps its colours in every window state.
 
-## Known limits in v0.3.0 (not machine-proven)
+## Known limits in v0.3.1 (not machine-proven)
 
 The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, which proves Tab order and Space on every button with Keyboard navigation on (it stops at once with one line when that is off). The rows below are what it does not prove. Each row says what was proven instead.
 

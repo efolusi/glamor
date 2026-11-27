@@ -5,9 +5,9 @@
 | Version | Supported |
 |---|---|
 | `main` | Yes. Fixes land here first |
-| The newest tag (`v0.3.0`) | Yes, for security fixes |
+| The newest tag (`v0.3.1`) | Yes, for security fixes |
 
-Older tags (`v0.2.0`, `v0.1.0`, `v0.0.1`) get no fixes. Each new tag takes the place of the one above.
+Older tags (`v0.3.0`, `v0.2.0`, `v0.1.0`, `v0.0.1`) get no fixes. Each new tag takes the place of the one above.
 
 ## Reporting a vulnerability
 
