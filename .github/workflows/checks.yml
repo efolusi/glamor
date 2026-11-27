@@ -43,3 +43,6 @@ jobs:
 
       - name: Generic iOS build
         run: xcodebuild build -scheme Glamor -destination 'generic/platform=iOS' -quiet
+
+      - name: Generic iOS test build (the iOS-only tests compile; they are not run)
+        run: xcodebuild build-for-testing -scheme Glamor -destination 'generic/platform=iOS' -quiet
