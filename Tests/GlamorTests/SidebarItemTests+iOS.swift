@@ -38,9 +38,16 @@ struct SidebarItemTestsIOS {
         #expect(SidebarItem("Copy", symbol: "doc", isSelected: false, action: {}).spokenValue == "")
     }
 
-    @Test func theHelpIsTheCallersOrElseTheTitle() {
-        #expect(SidebarItem("Copy", symbol: "doc", isSelected: false, action: {}).tooltip == "Copy")
-        #expect(SidebarItem("Copy", symbol: "doc", isSelected: false, help: "Copy files", action: {}).tooltip == "Copy files")
+    @Test func aRowWithoutHelpGivesVoiceOverNoHintAndKeepsItsNameAsATooltip() {
+        let plain = SidebarItem("Copy", symbol: "doc", isSelected: false, action: {})
+        #expect(plain.rowHelp == nil)
+        #expect(plain.nameTooltip == "Copy")
+    }
+
+    @Test func aRowWithHelpHasThatHelpOnTheRowAndNoSecondTooltipOnTheName() {
+        let helped = SidebarItem("Copy", symbol: "doc", isSelected: false, help: "Copy files", action: {})
+        #expect(helped.rowHelp == "Copy files")
+        #expect(helped.nameTooltip == nil)
     }
 
     @Test func aRowIsNeverShorterThanATouchTarget() {
