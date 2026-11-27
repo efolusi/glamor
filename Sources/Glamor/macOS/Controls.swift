@@ -284,7 +284,7 @@ public extension SearchBar where Accessory == EmptyView {
     }
 }
 
-/// A choice from a list, drawn as a secondary button (32, or 28 when compact) so it matches the buttons
+/// A choice from a list, drawn as a secondary button (32, or 28 when compact, a capsule) so it matches the buttons
 /// beside it. The system menu opens it, with the same Picker inside.
 public struct MenuPicker<Value: Hashable, Options: View>: View {
     public let title: String
@@ -297,8 +297,7 @@ public struct MenuPicker<Value: Hashable, Options: View>: View {
     @FocusState private var focused: Bool
     public var body: some View {
         let small = compact || controlSize == .small || controlSize == .mini
-        let radius = small ? G.Radius.r6 : G.Radius.r8
-        let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+        let shape = Capsule()
         // The face is drawn here, outside the Menu: the system re-lays out a Menu's label (it put the chevron
         // first, 7 pt from the word), so the label is an empty rectangle of the face's size and the Menu covers
         // the whole face: that is its hit and accessibility area (GL21).
@@ -327,7 +326,7 @@ public struct MenuPicker<Value: Hashable, Options: View>: View {
                 .accessibilityLabel(title)
                 .focused($focused)
         }
-        .focusRing(radius, isFocused: focused)
+        .focusRingCapsule(isFocused: focused)
         .onHover { hover = $0 }
     }
 

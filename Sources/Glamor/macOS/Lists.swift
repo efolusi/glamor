@@ -296,8 +296,8 @@ public enum MoreMenuWords {
     }
 }
 
-/// The ⋯ button that opens a menu: 28 square, or 24 inside a row. It hovers like a ghost square: the ground's
-/// hover fill and `text` (design system: k-more). `label` names the row it belongs to, for VoiceOver
+/// The ⋯ button that opens a menu: 28 square, or 24 inside a row. It hovers like a ghost square, a circle: the
+/// ground's hover fill and `text` (design system: k-more). `label` names the row it belongs to, for VoiceOver
 /// ("web-1" reads "More for web-1"); `help` is the tooltip, which may list the menu's items.
 public struct MoreMenu<Items: View>: View {
     public var size: CGFloat = G.Height.control28
@@ -315,19 +315,19 @@ public struct MoreMenu<Items: View>: View {
             .foregroundStyle(hover ? G.text : G.text2)
             .frame(width: size, height: size)
             .background(hover ? G.Hover.fill(on: ground) : .clear,
-                        in: RoundedRectangle(cornerRadius: G.Radius.r6, style: .continuous))
+                        in: Capsule())
             .overlay {
                 Menu { items() } label: { Color.clear }
                     .menuStyle(.borderlessButton)
                     .menuIndicator(.hidden)
                     .fixedSize()
                     .frame(width: size, height: size)
-                    .contentShape(Rectangle())
+                    .contentShape(Capsule())
                     .focused($focused)
                     .help(help)
                     .accessibilityLabel(MoreMenuWords.label(label))
             }
-            .focusRing(G.Radius.r6, isFocused: focused)
+            .focusRingCapsule(isFocused: focused)
             .onHover { hover = $0 }
     }
 

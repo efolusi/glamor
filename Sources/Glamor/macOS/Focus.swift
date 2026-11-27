@@ -51,6 +51,8 @@ public extension View {
     /// The ring for a control that tracks its own focus, such as a Menu: pair it with `.focused(_:)`.
     func focusRing(_ radius: CGFloat, isFocused: Bool) -> some View { modifier(FocusRing(radius: radius, isFocused: isFocused)) }
     func focusRingCapsule() -> some View { modifier(FocusRing(radius: 0, capsule: true)) }
+    /// The capsule ring for a control that tracks its own focus, such as a Menu: pair it with `.focused(_:)`.
+    func focusRingCapsule(isFocused: Bool) -> some View { modifier(FocusRing(radius: 0, capsule: true, isFocused: isFocused)) }
     /// The ring inside a list row, on its highlight's shape (a host, connection or job row).
     func focusRingInside() -> some View { modifier(FocusRing(radius: 0, inside: true)) }
 }

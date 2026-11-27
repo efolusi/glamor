@@ -21,7 +21,7 @@ struct SnapshotTests {
             }
             HStack(spacing: G.Space.s16) {
                 Button("Save") {}.buttonStyle(PrimaryButtonStyle())
-                    .focusRing(G.Radius.r8, isFocused: true)
+                    .focusRingCapsule(isFocused: true)
                 Button("Cancel") {}.buttonStyle(SecondaryButtonStyle())
             }
             HStack(spacing: G.Space.s16) {
