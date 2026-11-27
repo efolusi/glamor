@@ -72,6 +72,8 @@ public enum G {
         public static func tint(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? increased : tint }
         /// The pill tint for this contrast.
         public static func pill(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? increased : pill }
+        /// The banner tint for this contrast.
+        public static func banner(_ contrast: ColorSchemeContrast) -> Double { contrast == .increased ? increased : banner }
     }
 
     /// Corner radii (radius-8, radius-12): code and chips, cards and bubbles.
