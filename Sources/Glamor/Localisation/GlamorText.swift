@@ -21,6 +21,7 @@ enum GlamorText {
         case themeToDark = "theme.toDark", themeToLight = "theme.toLight"
         case markPro = "mark.pro", markProSpoken = "mark.proSpoken"
         case markSoon = "mark.soon", markSoonSpoken = "mark.soonSpoken"
+        case sidebarLabel = "sidebar.label", sidebarHide = "sidebar.hide", sidebarWidth = "sidebar.width"
     }
 
     /// The languages the catalog ships.

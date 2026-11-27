@@ -235,6 +235,60 @@
         }
       }
     },
+    "sidebar.hide": {
+      "comment": "The Hide button's name and tooltip.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide sidebar"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sembunyikan bilah samping"
+          }
+        }
+      }
+    },
+    "sidebar.label": {
+      "comment": "The name VoiceOver reads for the sidebar container.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sidebar"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilah samping"
+          }
+        }
+      }
+    },
+    "sidebar.width": {
+      "comment": "What the sidebar's edge divider sizes, for VoiceOver.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sidebar width"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lebar bilah samping"
+          }
+        }
+      }
+    },
     "skeleton.detailLine": {
       "comment": "Redacted placeholder line in the iOS list skeleton.",
       "extractionState": "manual",

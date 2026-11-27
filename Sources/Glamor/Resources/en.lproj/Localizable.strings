@@ -39,6 +39,15 @@
 /* The hidden button that Escape presses. */
 "sheet.close" = "Close";
 
+/* The Hide button's name and tooltip. */
+"sidebar.hide" = "Hide sidebar";
+
+/* The name VoiceOver reads for the sidebar container. */
+"sidebar.label" = "Sidebar";
+
+/* What the sidebar's edge divider sizes, for VoiceOver. */
+"sidebar.width" = "Sidebar width";
+
 /* Redacted placeholder line in the iOS list skeleton. */
 "skeleton.detailLine" = "Loading detail line";
 
