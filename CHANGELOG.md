@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.3.1 - 2026-11-28
+
+Semver level: PATCH (v0.3.1). No `G.*` name and no existing API changes; the one addition (GL35) is new public API in a patch, which breaks nothing because apps pin exact versions. Three colour and tint values change (the switch tint, the disabled main action, the ProgressBar track) and the window check reads more. Version files are not bumped here. The v0.3.1 tag waits for the owner's run of `scripts/check-window.sh --strict` (see GL30 below).
+
+- **Added: `PlaceRegistry` types (GL35).** Groundwork for the sidebar in v0.4.0; no UI yet. Additive public API in a patch: apps pin exact versions, so nothing breaks.
+- **Fix: `ToggleCard` tints its switch with `G.accentEdge` (GL27).** The system tint left the switch at 2.7:1 or less on a light card. `G.accentEdge` holds 4.2:1 or more on card, page and sunken in all four modes, held in `ContrastTests`. iOS has no Toggle in the library: an app tints its own with `G.accentEdge` (`guidelines/overview.md`).
+- **Fix: the disabled main action reads in `text3` in every mode (GL28).** In dark it was 1.7 to 2.0:1 and is now 3.3 to 3.9:1. The glass main action fades its tint and rim, not the whole view.
+- **Fix: `ProgressBar`'s track is `surfaceTrack`, not `G.border` (GL28).** No `ok`, `warn` or `danger` tone reaches 3:1 on `border` in Increase contrast. The fill is 3.6:1 or more on the track in four modes. The empty track in Increase contrast is 1.28:1 on the card, so the number carries the value. A stronger track returns with design-tokens `okEdge`, `warnEdge` and `dangerEdge` (rows DT19 and GL44).
+- **Check: the window check asserts four more VoiceOver lines (GL30).** The theme switch name ("Switch to light theme") after the toggle; "Clear the search" after typing; the sheet title as a heading, through a new `sheet` window mode and the gallery flag `--open-sheet`; the unlabelled spinner "Working", read through its real role `AXBusyIndicator` (the check also accepts `AXProgressIndicator`). The first run on the owner's Mac (2026-11-28) showed two faults in the new lines, not in the library: the text was set by value instead of key events, and the spinner role was guessed. Both are fixed, and the second strict run passed: 98 PASS, 0 FAIL, 0 UNPROVEN (macOS 27.2.1, Keyboard navigation on). The check also reads what it finds when a line fails.
+- **Rule: when a VoiceOver sitting is needed (GL30).** Only when a release changes a label, a role or a control. A release that changes only colours needs the window check and nothing more.
+
+What an app does (Apps):
+
+1. Bump Glamor to exactly 0.3.1 and rebuild.
+2. A `Toggle` you draw yourself: tint it with `G.accentEdge` (`.tint(G.accentEdge)`).
+3. Look at a disabled main action and a progress bar in dark and in Increase contrast.
+
 ## v0.3.0 - 2026-11-27
 
 Semver level: MINOR (v0.3.0). The `G.*` names and the API stay; values change, six vendored constants disappear (nothing in Glamor read them), and `G.accentEdge` is new. While Glamor is used only inside Efolusi, a change of this kind ships as a minor, as design-tokens v0.8.0 does. Version files are not bumped here.
