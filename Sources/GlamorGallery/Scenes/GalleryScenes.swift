@@ -8,7 +8,7 @@ enum GalleryScenes {
         NSHostingView(rootView: ComponentsScene())
     }
 
-    static let all = [components, sidebarA]
+    static let all = [components, sidebarA, sidebarB, profile]
 
     /// The scene a launch with no `--scene` shows.
     static let fallback = components
