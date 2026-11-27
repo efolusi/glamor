@@ -309,11 +309,6 @@ public enum G {
         public static let settings: CGFloat = 640  // the Settings window, by G.Height.settings
         public static let detail: CGFloat = 760    // a target's Overview
         public static let time: CGFloat = 112      // a relative time at the end of a row
-        public static let hostName: CGFloat = 304  // the name column on Hosts (grows for a longer name)
-        public static let connName: CGFloat = 296  // the name column on Connections
-        public static let secretName: CGFloat = 240
-        public static let jobLog: CGFloat = 400    // the log beside the jobs
-        public static let cacheKeys: CGFloat = 340
         public static let state: CGFloat = 72      // a job's state word
         public static let gutter: CGFloat = 48     // line numbers beside SQL
         public static let agent: CGFloat = 400     // the agent drawer
@@ -322,15 +317,12 @@ public enum G {
         public static let windowDefault: CGFloat = 1320  // the main window's first size: sidebar, panel and a wide page
         public static let cardMin: CGFloat = 248      // a card in a card grid never gets narrower than this
         public static let cardMax: CGFloat = 420      // nor wider, so a wide window adds columns instead
-        public static let forwardName: CGFloat = 280   // a forward's address and target column, so rows line up
-        public static let forwardKind: CGFloat = 112   // a forward's kind column, as wide as a relative time
         public static let numberField: CGFloat = 112  // a Port or DB number field: five digits and room for its placeholder
-        public static let updateKind: CGFloat = 88    // the Kind column on a host's Updates tab: a Security pill
     }
 
     /// One area a SplitDivider sizes: its settings key, its smallest width (or height), its default and its
-    /// largest. A nil default is half the room (the Files panes, the query, cache and terminal splits; `defaultSize(room:)`); a nil largest has no
-    /// limit but the room there is (the page passes that in).
+    /// largest. A nil default is half the room (`defaultSize(room:)`); a nil largest has no limit but the room there
+    /// is (the page passes that in).
     public struct ResizeArea: Equatable, Sendable {
         public let key: String
         public let min: CGFloat
@@ -361,14 +353,6 @@ public enum G {
 
         public static let sidebar = ResizeArea(key: "sidebar", min: 200, ideal: 256, max: 320)   // under 200 it hides
         public static let agent = ResizeArea(key: "agent", min: 320, ideal: 400, max: 560)
-        public static let recipes = ResizeArea(key: "recipes", min: 224, ideal: 272, max: 400)
-        public static let jobs = ResizeArea(key: "jobs", min: 320, ideal: 400, max: 640)
-        public static let audit = ResizeArea(key: "audit", min: 280, ideal: 340, max: 480)
-        public static let filesPane = ResizeArea(key: "files.pane", min: 320, ideal: nil, max: nil)
-        public static let filesTransfers = ResizeArea(key: "files.transfers", min: 96, ideal: 160, max: nil)  // largest: half the page
-        public static let querySplit = ResizeArea(key: "query.split", min: 240, ideal: nil, max: nil)
-        public static let cacheSplit = ResizeArea(key: "cache.split", min: 240, ideal: nil, max: nil)
-        public static let terminalSplit = ResizeArea(key: "terminal.split", min: 240, ideal: nil, max: nil)
 
         /// A table column's edge drags between these (DataTable card); its width is saved per table.
         public static let columnMin: CGFloat = 64
@@ -387,8 +371,7 @@ public enum G {
         public static func windowMin(sidebar: CGFloat) -> CGFloat { sidebar + pageMin + windowInsets }
 
         /// Every area, so a test can check that the keys differ and the numbers sit on the scale.
-        public static let areas = [sidebar, agent, recipes, jobs, audit, filesPane, filesTransfers, querySplit, cacheSplit,
-                            terminalSplit]
+        public static let areas = [sidebar, agent]
     }
 
 
