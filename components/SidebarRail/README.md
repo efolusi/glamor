@@ -1,0 +1,12 @@
+# SidebarRail
+
+The narrow-window sidebar (variant B): a rail 72 wide with one button per area, and a column of 184 beside it for the chosen area's places. Together they are the 256 of the Mac sidebar (variant A), so a window too narrow for the full sidebar keeps the same five areas in less room. In Swift: `SidebarRail(registry: registry, area: $area) { footer }` and `SidebarColumn(title) { rows }`, both in `Sources/Glamor/macOS`; the pair is drawn together in the `sidebar-b` scene of the gallery. iPhone does not use them: it takes the system tab bar, fed by the same registry.
+
+**Provide:** the registry (`PlaceRegistry`: Home, the sections, Settings), the `area` binding (the id of Home, a section or Settings), the rail's footer (the `ProfileCard` in its `avatar` style), and for the column its title and rows (`SidebarItem`s under a `SidebarSearch`). The app draws the column only for a section: Home and Settings are the rail alone.
+
+- **An area** is a button 64 wide and 52 high (a pointer target of 44 or more): a 24 symbol over its short title in `caption`, `text2`. A section is named by its `shortTitle` ("Across") and keeps its full title ("Across types") as the tooltip; Home and Settings use their title.
+- **The chosen area** is the look of a chosen sidebar row (**SidebarItem**): `panel` fill, `border` hairline, `text`, and the `selected-marker` capsule 4 wide (`G.Row.markerWidth`; a 3 wide marker fails `check-sizes.sh`), 4 in from the leading edge. Under the pointer an area takes `hover-window`; pressed, `pressed`; focused, the 2pt `focus` ring inside its shape.
+- **The rail** sits on `window`, leaves the 40 high row of the traffic lights (the window drags from there) and pins its footer at the bottom, 8 up from the edge. It keeps no state: the `area` binding is the app's.
+- **The column** is `window` too. Its title is `title-s` (16, semibold) in the traffic lights' row, a heading for VoiceOver; the rows scroll in a plain stack (every row stays in the Tab order), 8 in from the edges and 2 apart. It is named by its title, so VoiceOver does not say "Sidebar" twice.
+- **VoiceOver:** the rail is one element named "Sidebar"; each area is a button named by its short title, with the selected trait on the chosen one; Home and Settings read as rail items, not as headings. Tab order: the rail from Home to Settings, its footer, then the column.
+- **Token:** `rail-width` 72 (`G.Width.rail`, Mac only), the one new size; the column is `sidebar-width` less that.

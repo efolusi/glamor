@@ -118,6 +118,7 @@ Everything sits on a 4-point grid. Every height, padding, gap, margin and radius
 | Tile / dot / bar | 20, 28, 32, 40, 48 / 6, 8 / 4 | – | 25% / full / full | – |
 
 - **Sidebar:** content inset 12; places are 32 high with 8 inside, so their icons line up on x = 20, and the logo row uses the same 20.
+- **Narrow sidebar:** a rail 72 wide (`G.Width.rail`) of areas 52 high (a pointer target of 44 or more), a symbol over a short title, and a column of 184 beside it; the chosen area has the marker `G.Row.markerWidth` (4) wide, as a chosen place does.
 - **Page:** 24 top and bottom, 32 at the sides, 24 between sections, 16 between cards, 16 inside cards.
 - **Between controls:** 8 between any two controls side by side, icon-only buttons included (the agent and refresh in the header too), 16 before a header's primary. 8 between a glyph and its label, 12 between a tile and its text.
 - **A control inside another:** a button or × inside a field, a tab or a bar sits 8 from that edge, the same as the text on the other side, never 4.
@@ -201,7 +202,7 @@ A product's symbols for its own places and kinds of item belong in that product'
 
 `G` is Glamor's namespace: `Sources/Glamor/macOS/Tokens.swift` on the Mac and `Sources/Glamor/iOS/Tokens+iOS.swift` on iPhone and iPad. It wraps the vendored `GlamorTokens` (`Sources/Glamor/Generated/GlamorTokens.swift`, copied from efolusi/design-tokens by `scripts/vendor-tokens.sh`) in SwiftUI colours, fonts and lengths, so a view never writes a colour or a number. `scripts/check-colors.sh` and `scripts/check-sizes.sh` enforce it.
 
-The building blocks sit beside the tokens, one file per kind: `Typography.swift`, `Buttons.swift`, `Controls.swift`, `Lists.swift`, `Surfaces.swift`, `Feedback.swift`, `Layout.swift`, `Focus.swift`, `Hover.swift`, `Motion.swift`, `SplitDivider.swift`, `SpinnerGate.swift` and the sidebar (`Sidebar.swift` with `SidebarItem.swift`, `SidebarSection.swift`, `SidebarSearch.swift` and their styles) on the Mac; `Surfaces+iOS.swift`, `Feedback+iOS.swift`, `Motion+iOS.swift` and `PhoneMotion+iOS.swift` on iOS.
+The building blocks sit beside the tokens, one file per kind: `Typography.swift`, `Buttons.swift`, `Controls.swift`, `Lists.swift`, `Surfaces.swift`, `Feedback.swift`, `Layout.swift`, `Focus.swift`, `Hover.swift`, `Motion.swift`, `SplitDivider.swift`, `SpinnerGate.swift` and the sidebar (`Sidebar.swift` with `SidebarItem.swift`, `SidebarSection.swift`, `SidebarSearch.swift` and their styles; `SidebarRail.swift` with `SidebarColumn.swift` for a narrow window; `ProfileCard.swift`) on the Mac; `Surfaces+iOS.swift`, `Feedback+iOS.swift`, `Motion+iOS.swift` and `PhoneMotion+iOS.swift` on iOS.
 
 ```swift
 enum G {

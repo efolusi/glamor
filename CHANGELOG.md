@@ -32,6 +32,11 @@ What an app does (Apps):
 1. Bump Glamor to exactly 0.3.1 and rebuild.
 2. A `Toggle` you draw yourself: tint it with `G.accentEdge` (`.tint(G.accentEdge)`).
 3. Look at a disabled main action and a progress bar in dark and in Increase contrast.
+- **New: `SidebarRail` and `SidebarColumn`, the narrow-window sidebar (GL38).** A rail 72 wide with one button per area (Home, each section of the `PlaceRegistry`, Settings) and the caller's footer pinned below, and a column of 184 for the chosen section's places. An area is 52 high, a glyph over its short title; the chosen one has the `panel` fill, the hairline and the marker, `G.Row.markerWidth` (4) wide, not 3. The rail and the column keep no state: the app owns the `area` binding and draws the column only for a section. Mac only; iPhone keeps the system tab bar.
+- **New: `G.Width.rail` = 72 (GL38).** The one new token. The column is `G.Width.sidebar` less the rail. `tokens.json` has its `rail-width` entry.
+- **New: `ProfileCard` and `ProfileCardStyle` (GL37).** The person at the bottom of the sidebar: a tile 32 circle on `avatar`, the name, the detail line and a chevron, in a popover of 260 for the app's menu. `.row` is the two-line row; `.avatar` is a 44 point circle for the rail. VoiceOver reads one button, "name, detail". Glamor knows no person: the name, the detail and the menu are the app's.
+- **Changed: `SidebarItemStyle` takes a height and an alignment** (internal; the rail draws the sidebar row look at 52 high, centred).
+- **New: the gallery scenes `sidebar-b` and `profile`, and their window-check lists (GL38, GL37).** The rail scene checks the rail's title and glyph, the chosen title and the marker in four modes, the names, 44 by 44 targets, AXPress and Space replacing the column, and the Tab order (rail, its footer, column). The profile scene checks the initial, the name and the detail in four modes, and that AXPress and Space open the menu popover, Escape closes it and focus returns to the card. `check-window.sh` has the run lines. They are unproven until the owner's run of `check-window.sh --strict`.
 
 ## v0.3.0 - 2026-11-27
 
