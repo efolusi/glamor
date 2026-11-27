@@ -201,7 +201,7 @@ A product's symbols for its own places and kinds of item belong in that product'
 
 `G` is Glamor's namespace: `Sources/Glamor/macOS/Tokens.swift` on the Mac and `Sources/Glamor/iOS/Tokens+iOS.swift` on iPhone and iPad. It wraps the vendored `GlamorTokens` (`Sources/Glamor/Generated/GlamorTokens.swift`, copied from efolusi/design-tokens by `scripts/vendor-tokens.sh`) in SwiftUI colours, fonts and lengths, so a view never writes a colour or a number. `scripts/check-colors.sh` and `scripts/check-sizes.sh` enforce it.
 
-The building blocks sit beside the tokens, one file per kind: `Typography.swift`, `Buttons.swift`, `Controls.swift`, `Lists.swift`, `Surfaces.swift`, `Feedback.swift`, `Layout.swift`, `Focus.swift`, `Hover.swift`, `Motion.swift`, `SplitDivider.swift` and `SpinnerGate.swift` on the Mac; `Surfaces+iOS.swift`, `Feedback+iOS.swift`, `Motion+iOS.swift` and `PhoneMotion+iOS.swift` on iOS.
+The building blocks sit beside the tokens, one file per kind: `Typography.swift`, `Buttons.swift`, `Controls.swift`, `Lists.swift`, `Surfaces.swift`, `Feedback.swift`, `Layout.swift`, `Focus.swift`, `Hover.swift`, `Motion.swift`, `SplitDivider.swift`, `SpinnerGate.swift` and the sidebar (`Sidebar.swift` with `SidebarItem.swift`, `SidebarSection.swift`, `SidebarSearch.swift` and their styles) on the Mac; `Surfaces+iOS.swift`, `Feedback+iOS.swift`, `Motion+iOS.swift` and `PhoneMotion+iOS.swift` on iOS.
 
 ```swift
 enum G {

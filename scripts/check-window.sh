@@ -93,6 +93,14 @@ run light strings --appearance light
 run light sheet --appearance light --open-sheet
 run light keys --appearance light
 
+scene sidebar-a
+run light pixels --appearance light
+run dark pixels --appearance dark
+run light-increased pixels --appearance light --increase-contrast
+run dark-increased pixels --appearance dark --increase-contrast
+run light strings --appearance light
+run light keys --appearance light
+
 # The Pro and Soon marks (GL36): word and outline pixels in four modes, and the spoken words.
 scene marks
 run light pixels --appearance light

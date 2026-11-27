@@ -91,6 +91,42 @@
         }
       }
     },
+    "count.findings": {
+      "comment": "What VoiceOver reads for the count on the Doctor row of the sidebar demo. %@ is the number.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ findings to review"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ temuan untuk ditinjau"
+          }
+        }
+      }
+    },
+    "count.transfers": {
+      "comment": "What VoiceOver reads for the count on the Copy row of the sidebar demo. %@ is the number.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ transfers running"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ transfer berjalan"
+          }
+        }
+      }
+    },
     "marks.approvals": {
       "comment": "Demo row of the marks scene, next to the Soon mark.",
       "extractionState": "manual",
@@ -285,6 +321,114 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ubah host"
+          }
+        }
+      }
+    },
+    "sidebar.about": {
+      "comment": "The fourth section title of the sidebar demo. The window check reads it by this English name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About komando"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tentang komando"
+          }
+        }
+      }
+    },
+    "sidebar.across": {
+      "comment": "The second section title of the sidebar demo. The window check reads it by this English name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Across types"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lintas jenis"
+          }
+        }
+      }
+    },
+    "sidebar.home": {
+      "comment": "The Home row of the sidebar demo. The window check reads it by this English name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beranda"
+          }
+        }
+      }
+    },
+    "sidebar.own": {
+      "comment": "The third section title of the sidebar demo. The window check reads it by this English name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Komando's own"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Milik komando"
+          }
+        }
+      }
+    },
+    "sidebar.settings": {
+      "comment": "The Settings row of the sidebar demo, pinned in the footer. The window check reads it by this English name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pengaturan"
+          }
+        }
+      }
+    },
+    "sidebar.targets": {
+      "comment": "The first section title of the sidebar demo. The window check reads it by this English name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Targets"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target"
           }
         }
       }

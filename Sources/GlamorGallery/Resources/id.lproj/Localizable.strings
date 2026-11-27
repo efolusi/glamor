@@ -15,6 +15,12 @@
 /* Demo button. */
 "action.save" = "Simpan";
 
+/* What VoiceOver reads for the count on the Doctor row of the sidebar demo. %@ is the number. */
+"count.findings" = "%@ temuan untuk ditinjau";
+
+/* What VoiceOver reads for the count on the Copy row of the sidebar demo. %@ is the number. */
+"count.transfers" = "%@ transfer berjalan";
+
 /* Demo row of the marks scene, next to the Soon mark. */
 "marks.approvals" = "Persetujuan";
 
@@ -47,6 +53,24 @@
 
 /* Demo sheet title, read by VoiceOver as a heading. */
 "sheet.title" = "Ubah host";
+
+/* The fourth section title of the sidebar demo. The window check reads it by this English name. */
+"sidebar.about" = "Tentang komando";
+
+/* The second section title of the sidebar demo. The window check reads it by this English name. */
+"sidebar.across" = "Lintas jenis";
+
+/* The Home row of the sidebar demo. The window check reads it by this English name. */
+"sidebar.home" = "Beranda";
+
+/* The third section title of the sidebar demo. The window check reads it by this English name. */
+"sidebar.own" = "Milik komando";
+
+/* The Settings row of the sidebar demo, pinned in the footer. The window check reads it by this English name. */
+"sidebar.settings" = "Pengaturan";
+
+/* The first section title of the sidebar demo. The window check reads it by this English name. */
+"sidebar.targets" = "Target";
 
 /* The help line under the ToggleCard's title in the demo. */
 "toggle.help" = "Laporan dikirim setiap pagi.";

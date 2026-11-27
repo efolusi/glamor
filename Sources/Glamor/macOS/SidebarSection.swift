@@ -1,0 +1,61 @@
+#if os(macOS)
+import SwiftUI
+
+/// A titled block of places that folds: a 32 high header (title in section-label type, a chevron) over its rows.
+/// Two ways to hold the open state, because `SceneStorage` needs a running scene and a view hosted in a bare
+/// `NSHostingView` (the gallery) has none:
+/// - `isExpanded:` the caller's binding, kept wherever the caller keeps it;
+/// - `id:` the state is kept per window in `SceneStorage`, under `storageKey(id:scope:)`. The id is unique per
+///   sidebar: two sidebars in one scene that both have a section with the same id pass a different `scope:` each,
+///   or they share one state.
+/// A folded section's rows are not drawn, so they leave the accessibility tree and the Tab order. The chosen place's
+/// marker and fill go with them: when a folded section holds that place, pass `containsSelection: true` and the
+/// place's name as `selectedTitle`, and the header shows a marker-coloured dot and reads "collapsed, <name> selected".
+public struct SidebarSection<Content: View>: View {
+    let title: String
+    private let containsSelection: Bool
+    private let selectedTitle: String?
+    private let storage: Storage
+    private let content: Content
+
+    private enum Storage {
+        case binding(Binding<Bool>)
+        case scene(id: String, scope: String?, startsExpanded: Bool)
+    }
+
+    public init(_ title: String, isExpanded: Binding<Bool>, containsSelection: Bool = false, selectedTitle: String? = nil,
+                @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.containsSelection = containsSelection
+        self.selectedTitle = selectedTitle
+        storage = .binding(isExpanded)
+        self.content = content()
+    }
+
+    public init(_ title: String, id: String, scope: String? = nil, startsExpanded: Bool = true,
+                containsSelection: Bool = false, selectedTitle: String? = nil, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.containsSelection = containsSelection
+        self.selectedTitle = selectedTitle
+        storage = .scene(id: id, scope: scope, startsExpanded: startsExpanded)
+        self.content = content()
+    }
+
+    /// The `SceneStorage` key of the section with this id, under the sidebar's `scope` when it has one.
+    static func storageKey(id: String, scope: String? = nil) -> String {
+        guard let scope else { return "glamor.sidebar.section.\(id)" }
+        return "glamor.sidebar.section.\(scope).\(id)"
+    }
+
+    public var body: some View {
+        switch storage {
+        case .binding(let isExpanded):
+            SidebarSectionBody(title: title, isExpanded: isExpanded, containsSelection: containsSelection,
+                               selectedTitle: selectedTitle) { content }
+        case .scene(let id, let scope, let startsExpanded):
+            SidebarSectionStored(title: title, id: id, scope: scope, startsExpanded: startsExpanded, containsSelection: containsSelection,
+                                 selectedTitle: selectedTitle) { content }
+        }
+    }
+}
+#endif

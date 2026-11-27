@@ -217,6 +217,24 @@
         }
       }
     },
+    "search.title": {
+      "comment": "The sidebar search button: its name and the word it shows (it opens the command palette).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cari"
+          }
+        }
+      }
+    },
     "sheet.close": {
       "comment": "The hidden button that Escape presses.",
       "extractionState": "manual",
@@ -231,6 +249,132 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tutup"
+          }
+        }
+      }
+    },
+    "sidebar.collapsed": {
+      "comment": "What VoiceOver reads after a sidebar section header when its rows are hidden.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "collapsed"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tertutup"
+          }
+        }
+      }
+    },
+    "sidebar.collapsedSelected": {
+      "comment": "What VoiceOver reads after a sidebar section header when its rows are hidden and one of them is the chosen place. %@ is that place's name.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "collapsed, %@ selected"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tertutup, %@ dipilih"
+          }
+        }
+      }
+    },
+    "sidebar.expanded": {
+      "comment": "What VoiceOver reads after a sidebar section header when its rows are showing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "expanded"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "terbuka"
+          }
+        }
+      }
+    },
+    "sidebar.hide": {
+      "comment": "The Hide button's name and tooltip.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide sidebar"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sembunyikan bilah samping"
+          }
+        }
+      }
+    },
+    "sidebar.label": {
+      "comment": "The name VoiceOver reads for the sidebar container.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sidebar"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilah samping"
+          }
+        }
+      }
+    },
+    "sidebar.sectionHint": {
+      "comment": "What VoiceOver reads as the hint of a sidebar section header: what pressing it does.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folds or opens the section"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menutup atau membuka bagian"
+          }
+        }
+      }
+    },
+    "sidebar.width": {
+      "comment": "What the sidebar's edge divider sizes, for VoiceOver.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sidebar width"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lebar bilah samping"
           }
         }
       }

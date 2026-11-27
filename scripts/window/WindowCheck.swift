@@ -429,6 +429,8 @@ struct Expected {
     let selected: Bool
     let pressEvent: String?
     var value: String? = nil
+    /// A row with no explicit `help`: its tooltip must not become a second, spoken name (AXHelp stays empty).
+    var hasNoHelp = false
 }
 
 /// What one gallery scene (`GlamorGallery --scene <name>`) must show, and the checks that belong to it alone.
@@ -443,6 +445,8 @@ struct SceneSpec {
     /// Names that only appear after the presses of `strings` (GL30).
     let afterActions: ((Target) -> Void)?
     let sheet: ((Target) -> Void)?
+    /// Checks only this scene needs, run at the end of `keys` (a header folded with Space, a row scrolled into view).
+    var keys: ((Target) -> Void)? = nil
 }
 
 /// The switch of the components scene (GL43). Not translated: the script runs the gallery in English.
@@ -466,12 +470,40 @@ let componentsControls: [Expected] = [
     Expected(name: switchName, role: "AXCheckBox", selected: false, pressEvent: "switch false", value: "1"),
 ]
 
+/// The sidebar-a scene (GL31 to GL34, GL40): Home, four sections of places, Settings in the footer, in reading order.
+/// Names are the gallery's English words and the CLI words; the script runs the gallery in English. A row's press event is
+/// its place id (the name in lower case); the row that is chosen at launch has none, since pressing it changes nothing.
+let sidebarASections: [(title: String, places: [String])] = [
+    ("Targets", ["Host", "Database", "Cache", "Queue", "Storage", "Cluster", "Registry", "VPN", "Cloud"]),
+    ("Across types", ["Copy", "Tunnel", "Sessions"]),
+    ("Komando's own", ["Snippet", "Credential", "Group", "Policy"]),
+    ("About komando", ["Audit", "Doctor", "Agent"]),
+]
+let sidebarAStart = "Host"
+let sidebarACounts = ["Copy": "2 transfers running", "Doctor": "3 findings to review"]
+
+func sidebarARow(_ name: String) -> Expected {
+    Expected(name: name, role: "AXButton", selected: name == sidebarAStart, pressEvent: name == sidebarAStart ? nil : name.lowercased(),
+             value: sidebarACounts[name], hasNoHelp: true)
+}
+
+let sidebarAControls: [Expected] = [
+    Expected(name: "Hide sidebar", role: "AXButton", selected: false, pressEvent: "hide"),
+    Expected(name: "Search", role: "AXButton", selected: false, pressEvent: "search"),
+    sidebarARow("Home"),
+] + sidebarASections.flatMap { section in
+    // A header is folded and opened by the `afterActions` and `keys` checks, so the press loop does not touch it.
+    [Expected(name: section.title, role: "AXButton", selected: false, pressEvent: nil, value: "expanded")] + section.places.map(sidebarARow)
+} + [sidebarARow("Settings")]
+
 let scenes: [String: SceneSpec] = [
     "components": SceneSpec(name: "components", readyButtons: 10, expected: componentsControls,
                             pixels: pixelsMode, afterActions: afterActionStrings, sheet: sheetMode),
     // The marks have no control: nothing to wait for but the window, and the strings and pixels read static texts.
     "marks": SceneSpec(name: "marks", readyButtons: 0, expected: [],
                        pixels: marksPixels, afterActions: marksStrings, sheet: nil),
+    "sidebar-a": SceneSpec(name: "sidebar-a", readyButtons: 27, expected: sidebarAControls,
+                           pixels: sidebarAPixels, afterActions: sidebarAAfterActions, sheet: nil, keys: sidebarAKeys),
 ]
 
 func stringsMode(_ t: Target) {
@@ -497,6 +529,10 @@ func stringsMode(_ t: Target) {
         }
         if let value = e.value {
             check("voiceover", theme, "\"\(e.name)\" reads its value before any press", "AXValue \"\(c.value)\"", "\"\(value)\"", c.value == value)
+        }
+        if e.hasNoHelp {
+            check("voiceover", theme, "\"\(e.name)\" has no AXHelp (its name is not read a second time as help text)",
+                  c.help.isEmpty ? "no AXHelp" : "AXHelp \"\(c.help)\"", "no AXHelp", c.help.isEmpty)
         }
         // One name: a title and a description that differ are two names for one control.
         let names = Set([c.title, c.description].filter { !$0.isEmpty })
@@ -737,6 +773,130 @@ func keysMode(_ t: Target) {
             }
         }
     }
+    t.scene.keys?(t)
+}
+
+// MARK: Scene sidebar-a (GL40)
+
+/// The pixel checks of the Mac sidebar, from a capture of that window only. Ratios are read from the capture, never from
+/// token values. A row's accessibility frame is the whole 32 pt row; the reads sit inside it, clear of its edges.
+func sidebarAPixels(_ t: Target) {
+    let theme = t.theme
+    // The search capsule must not be focused: its edge is the unfocused one. Put focus on Home, a row nothing below reads.
+    if let home = t.control("Home") { _ = t.focus(home) }
+    guard let search = t.control("Search"), let cache = t.control("Cache"), let header = t.control("Targets"),
+          let chosen = t.control(sidebarAStart), let copy = t.control("Copy") else {
+        check("setup", theme, "sidebar controls found", "missing", "all", false); return
+    }
+    let shot = capture(t, name: theme)
+    note("shot", theme, "\(t.out.path)/\(theme).png, \(shot.width)x\(shot.height) px, scale \(f2(shot.scale))")
+    func at(_ p: CGPoint) -> RGB { let q = shot.pixel(p); return shot.px(q.x, q.y) }
+    func ink(_ id: String, _ what: String, _ rect: CGRect, _ need: Double) {
+        let r = readInk(shot, rect: rect)
+        check(id, theme, "\(what): ink \(hex(r.ink)) on \(hex(r.ground))", f2(r.typical) + ":1", ">= \(f2(need)):1", r.typical >= need)
+        if r.worst < need { note(id, theme, "against the weakest ground pixel the ratio is \(f2(r.worst)):1") }
+    }
+    /// The glyph and the start of the name: from the row's first glyph (12 pt in) to about 110 pt, between its top and bottom padding.
+    func label(_ f: CGRect, width: Double = 110) -> CGRect { CGRect(x: f.minX + 12, y: f.minY + 6, width: min(f.width - 24, width), height: f.height - 12) }
+
+    ink("row-text", "row name (text2) on the window ground", label(cache.frame), 4.5)
+    ink("section-label", "section title (text3) on the window ground", label(header.frame, width: 90), 4.5)
+    ink("selected-text", "selected row name on its panel fill", label(chosen.frame), 4.5)
+    // The marker is 4 pt wide, 4 pt in from the row's edge; the panel fill is read at the row's right end, clear of any count.
+    let f = chosen.frame
+    let marker = at(CGPoint(x: f.minX + 6, y: f.midY)), panel = at(CGPoint(x: f.maxX - 24, y: f.midY))
+    check("selected-marker", theme, "selected marker \(hex(marker)) against panel \(hex(panel))", f2(ratio(marker, panel)) + ":1", ">= 3:1", ratio(marker, panel) >= 3)
+    // The count's pill ends 12 pt from the row's end; read the 20 pt of it that is always fill and text.
+    let c = copy.frame
+    ink("count", "count (accentFg) on its pill", CGRect(x: c.maxX - 12 - 21, y: c.midY - 7, width: 20, height: 14), 4.5)
+    // The search label sits on the field fill: the glyph and the first of the word.
+    ink("search-label", "search label (placeholder colour) on the field fill", label(search.frame, width: 90), 4.5)
+    // The unfocused search edge against the window ground above and below it (the capsule's straight top and bottom).
+    let s = search.frame
+    for (name, y, outward) in [("top", s.minY, -1.0), ("bottom", s.maxY, 1.0)] {
+        let surround = at(CGPoint(x: s.midX, y: y + outward * 7))
+        var best: (ratio: Double, color: RGB) = (0, surround)
+        for step in stride(from: -4.0, through: 4.0, by: 0.5) {
+            let color = at(CGPoint(x: s.midX, y: y + step))
+            if ratio(color, surround) > best.ratio { best = (ratio(color, surround), color) }
+        }
+        check("search-edge", theme, "unfocused search edge (\(name)) \(hex(best.color)) vs surround \(hex(surround))", f2(best.ratio) + ":1", ">= 3:1", best.ratio >= 3)
+    }
+    // M1: a folded section that holds the chosen place (Targets, while Host is chosen) shows the marker colour as a dot on
+    // its header, left of the chevron: 12 pt padding, the 8 pt chevron, the 8 pt label-icon gap, then the 8 pt dot. The read
+    // is the 22 pt around it, mostly ground, so the dot is the ink. Open, the same spot is bare ground.
+    func dotSpot(_ f: CGRect) -> CGRect { CGRect(x: f.maxX - 44, y: f.midY - 7, width: 22, height: 14) }
+    let bare = readInk(shot, rect: dotSpot(header.frame))
+    check("folded-dot", theme, "the header \"Targets\" shows no dot while it is open (ink \(hex(bare.ink)) on \(hex(bare.ground)))",
+          f2(bare.typical) + ":1", "< 1.5:1", bare.typical < 1.5)
+    let folded = AXUIElementPerformAction(header.element, "AXPress" as CFString) == .success
+        && waitUntil(3) { t.control("Cloud") == nil } && waitUntil(3) { t.control("Targets")?.value.hasPrefix("collapsed") == true }
+    guard folded, let foldedHeader = t.control("Targets") else {
+        check("folded-dot", theme, "the header \"Targets\" folds", "did not fold", "folded", false); return
+    }
+    usleep(500_000)
+    let after = capture(t, name: theme + "-folded")
+    let dot = readInk(after, rect: dotSpot(foldedHeader.frame))
+    check("folded-dot", theme, "folded \"Targets\" (it holds the chosen \"\(sidebarAStart)\") shows the marker dot \(hex(dot.ink)) on \(hex(dot.ground))",
+          f2(dot.typical) + ":1", ">= 3:1", dot.typical >= 3)
+}
+
+/// Names that depend on an action, and the one name of the container (GL30 rule: proven, not assumed).
+func sidebarAAfterActions(_ t: Target) {
+    let theme = t.theme
+    let named = descendants(t.window).contains { text($0, "AXDescription") == "Sidebar" || text($0, "AXTitle") == "Sidebar" }
+    check("voiceover", theme, "the container is named \"Sidebar\"", named ? "named" : "no element named Sidebar", "named", named)
+    // A header: AXPress folds it, so its rows leave the tree and its value says "collapsed"; a second press restores both.
+    let title = "Targets", row = "Cloud"
+    guard let header = t.control(title) else { check("voiceover", theme, "header \"\(title)\" found", "missing", "present", false); return }
+    let pressed = AXUIElementPerformAction(header.element, "AXPress" as CFString) == .success
+    let gone = pressed && waitUntil(3) { t.control(row) == nil }
+    // Targets holds the chosen place, so its folded header names it; a folded section that does not hold it reads "collapsed" alone.
+    let folded = "collapsed, \(sidebarAStart) selected"
+    let collapsed = waitUntil(3) { t.control(title)?.value == folded }
+    check("voiceover", theme, "AXPress on \"\(title)\" folds it: its row \"\(row)\" leaves the tree", gone ? "row gone" : "row still in the tree", "row gone", gone)
+    check("voiceover", theme, "a folded header that holds the chosen place reads \"\(folded)\"", "AXValue \"\(t.control(title)?.value ?? "")\"", "\"\(folded)\"", collapsed)
+    if let again = t.control(title) { _ = AXUIElementPerformAction(again.element, "AXPress" as CFString) }
+    let back = waitUntil(3) { t.control(row) != nil }
+    let open = waitUntil(3) { t.control(title)?.value == "expanded" }
+    check("voiceover", theme, "a second AXPress restores \"\(row)\" and the value \"expanded\"", back && open ? "restored" : "row \(back ? "back" : "gone"), value \"\(t.control(title)?.value ?? "")\"", "restored", back && open)
+}
+
+/// Keys: Space on a header folds it and takes its rows out of the Tab order; Tab to the last row scrolls it into the window.
+func sidebarAKeys(_ t: Target) {
+    let theme = t.theme
+    guard NSApplication.shared.isFullKeyboardAccessEnabled else {
+        unproven("keys", theme, "with Keyboard navigation off Space and Tab cannot be sent to the sidebar's headers and rows; rerun after turning it on yourself")
+        return
+    }
+    let folded = "Across types", next = "Komando's own", inside = "Copy", last = "Agent", before = "Doctor"
+    guard let header = t.control(folded), t.focus(header) else {
+        unproven("keys", theme, "\"\(folded)\" did not take keyboard focus, so Space could not be sent to it"); return
+    }
+    t.press(49)
+    let gone = waitUntil(3) { t.control(inside) == nil }
+    check("keys", theme, "Space on the focused header \"\(folded)\" folds it: \"\(inside)\" leaves the tree", gone ? "row gone" : "row still in the tree", "row gone", gone)
+    // The next Tab stop after the folded header is the next header: the folded rows are out of the Tab order.
+    t.press(48)
+    let stop = t.focused?.name ?? "none"
+    check("keys", theme, "after Tab from the folded header the next stop skips the folded rows", "\"\(stop)\"", "\"\(next)\"", stop == next)
+    if let again = t.control(folded), t.focus(again) { t.press(49) }
+    let back = waitUntil(3) { t.control(inside) != nil }
+    check("keys", theme, "a second Space on \"\(folded)\" restores \"\(inside)\"", back ? "restored" : "still folded", "restored", back)
+    // The window is 680 high with every section open, so the last rows start below the fold. Tab reaches \(last) and it must scroll in.
+    guard let doctor = t.control(before), t.focus(doctor) else {
+        unproven("keys", theme, "\"\(before)\" did not take keyboard focus, so Tab could not be sent on to \"\(last)\""); return
+    }
+    t.press(48)
+    let arrived = t.focused?.name == last
+    let inWindow = arrived && waitUntil(2) {
+        guard let row = t.control(last), let win = axFrame(t.window) else { return false }
+        return win.insetBy(dx: -1, dy: -1).contains(row.frame)
+    }
+    let frame = t.control(last)?.frame ?? .zero
+    check("keys", theme, "after Tab to the last row \"\(last)\" it is inside the window frame (scrolled into view)",
+          arrived ? "frame \(Int(frame.minX)),\(Int(frame.minY)) \(Int(frame.width))x\(Int(frame.height)); window \(axFrame(t.window).map { "\(Int($0.minY))..\(Int($0.maxY))" } ?? "?")" : "focus is on \"\(t.focused?.name ?? "none")\"",
+          "row inside the window", inWindow)
 }
 
 // MARK: Entry
