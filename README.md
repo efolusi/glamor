@@ -36,6 +36,32 @@ Native design system for Mac, iPhone, and iPad, by [Efolusi](https://efolusi.com
 
 See [guidelines/ecosystem.md](guidelines/ecosystem.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
 
+## Use it
+
+Add Glamor to `Package.swift`, pinned to a tag:
+
+```swift
+.package(url: "https://github.com/efolusi/glamor", exact: "0.2.0"),
+```
+
+Then add `"Glamor"` to your target's dependencies and `import Glamor`. The newest tag and what changed are in [CHANGELOG.md](CHANGELOG.md).
+
+## Language
+
+The words Glamor says itself (VoiceOver names, tooltips, the Copied announcement, the defaults of `label`, `help` and `allTitle`) live in the String Catalog `Sources/Glamor/Resources/Localizable.xcstrings`, in English (`en`) and Indonesian (`id`). Words your app owns (titles, placeholders, `ThemeSwitchWords`) are passed in by your app.
+
+Your app does not pass a language. Glamor takes the first match, in this order:
+
+1. Your app's languages, ordered for the person (`Bundle.main.preferredLocalizations`). An app in English only stays English on a Mac or iPhone set to Indonesian, so Glamor's words match the app's own.
+2. The person's language list (`Locale.preferredLanguages`), when your app has neither English nor Indonesian (an app in French only) or no languages of its own (the gallery under `swift run`).
+3. English.
+
+- An app that wants Glamor in Indonesian must offer Indonesian itself: ship an `id.lproj` (a String Catalog with Indonesian makes one) or list `id` in `CFBundleLocalizations`. An app that offers English and not Indonesian always gets English.
+- The person picks among your app's languages with the system list, or with the language they set for your app in Settings.
+- For a test or a screenshot, start the app with `-AppleLanguages "(id)"`.
+- `ThemeSwitchWords.current` gives the theme switch's words in that same language; `.english` and `.indonesian` fix one.
+- Glamor reads the language from the process (`Bundle.main`, `Locale.preferredLanguages`) when it builds a word, never from SwiftUI's environment, so `.environment(\.locale, Locale(identifier: "id"))` in a preview does not change Glamor's words. A preview follows the process that hosts it, by the same three steps; to see Glamor's Indonesian in an app that offers it, run the app with `-AppleLanguages "(id)"` or set the Mac's language to Indonesian.
+
 ## Preview
 
 ```bash
@@ -66,7 +92,7 @@ captures only that window (`screencapture -l <window id>`) and reads the accessi
 | VoiceOver strings, role, selected state, target size, `AXPress` | accessibility tree | Accessibility |
 | Tab order, Space and Return | key events to the gallery's PID | Accessibility |
 
-Light and dark are the gallery's own `--appearance` argument. The script never changes a system setting. It
+Light and dark are the gallery's own `--appearance` argument, and the gallery runs in English (`-AppleLanguages '(en)'`) on a Mac set to any language. The script never changes a system setting. It
 cannot set SwiftUI's `accessibilityReduceTransparency` or `colorSchemeContrast` (read-only environment values), so
 the solid (non-glass) path is not drawn in a window; the Increase contrast colours are. Tab reaches buttons only
 with System Settings › Keyboard › Keyboard navigation on; with it off the Tab order and Space/Return on buttons
@@ -91,7 +117,7 @@ On macOS 26, system glass loses its tint when its window is not the key window. 
 
 Glamor does not work around it. A solid fill swapped in while the window is inactive would flicker on every focus change and would no longer be the system's glass. The label colour (`G.onAccent`) does not change, so the text stays readable in both states. Reduce Transparency and Increase Contrast use the solid path, which keeps its colours in every window state.
 
-## Known limits in v0.1.0 (not machine-proven)
+## Known limits in v0.2.0 (not machine-proven)
 
 The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, which prints these as UNPROVEN or does not reach them. Each row says what was proven instead.
 
@@ -104,6 +130,7 @@ The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, whi
 | Real mouse clicks, including on the button padding | The accessibility frame covers the whole button (at least 24x24, Deploy 68x32) |
 | The solid path on macOS 15 and iOS 18 | `#available` checks and unit tests; not run on those systems |
 | iOS at run time | iOS is built in CI and in the gate (`generic/platform=iOS`); it is not run in a simulator or measured in a window |
+| Indonesian in a window | `LocalisationTests`: every catalog string has `en` and `id` with the same placeholders, the shipped `.lproj` files equal the catalog, and the language falls back to English. The window check reads the English names |
 
 ## Contributing
 

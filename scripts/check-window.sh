@@ -20,6 +20,13 @@ STRICT=0
 
 [ "$(sw_vers -productVersion | cut -d. -f1)" -ge 26 ] || { echo "needs macOS 26 or later" >&2; exit 2; }
 
+# --strict needs Keyboard navigation on (System Settings, Keyboard): without it Tab and Space cannot be tested and
+# every key check would end UNPROVEN after ten minutes. Stop at once with a plain line instead.
+if [ "$STRICT" = 1 ]; then
+    kbmode=$(defaults read NSGlobalDomain AppleKeyboardUIMode 2>/dev/null || echo 0)
+    [ "$kbmode" -ge 2 ] || { echo "Keyboard navigation is off: turn it on in System Settings, Keyboard, then run again" >&2; exit 2; }
+fi
+
 # One run at a time, and not under load: wait for the self-hosted runner, and for a 1-minute load under 10.
 RUN=()
 [ -x "$HOME/.claude/bin/when-runner-idle" ] && RUN=("$HOME/.claude/bin/when-runner-idle")
@@ -44,15 +51,22 @@ trap stop EXIT
 failed=0
 unproven=0
 # run <scenario> <mode> <gallery args...>: launch the gallery, run one mode against its PID, stop that PID.
+# The gallery runs in English (-AppleLanguages): WindowCheck.swift looks controls up by their English names
+# ("Daily", "Deploy"), so a Mac set to Indonesian would otherwise fail every lookup.
 run() {
     local scenario=$1 mode=$2
     shift 2
-    "$GALLERY" --log-activations "$@" >"$OUT/gallery-$scenario-$mode.log" 2>&1 &
+    "$GALLERY" --log-activations "$@" -AppleLanguages '(en)' >"$OUT/gallery-$scenario-$mode.log" 2>&1 &
     PID=$!
     echo "== $scenario / $mode (gallery pid $PID)"
     for _ in $(seq 1 40); do "$CHECK" ready "$PID" && break; sleep 0.5; done
     "$CHECK" ready "$PID" || { echo "the gallery window did not appear" >&2; stop; failed=2; return; }
+    # An inactive window gets the system's inactive material (grey, untinted), so the pixel checks must run
+    # with the gallery in front: bring that one process forward by PID (no other app is touched).
+    osascript -e "tell application \"System Events\" to set frontmost of (first process whose unix id is $PID) to true" >/dev/null 2>&1 || true
     sleep 1
+    front=$(osascript -e "tell application \"System Events\" to get frontmost of (first process whose unix id is $PID)" 2>/dev/null || echo unknown)
+    echo "WINDOW	$scenario	gallery is the front app: $front"
     echo "ENV	$scenario	$(grep '^environment:' "$OUT/gallery-$scenario-$mode.log" | head -1)"
     local out status
     out=$("$CHECK" "$mode" "$PID" "$scenario" "$OUT"); status=$?

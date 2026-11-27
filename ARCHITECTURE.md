@@ -10,7 +10,8 @@ glamor/
 ├── assets/ · components/   # brand files; flat HTML preview cards
 ├── guidelines/
 ├── Package.swift         # one library: Glamor (macOS 15, iOS 18)
-├── Sources/Glamor/        # macOS/, iOS/ (files end in +iOS), Text/
+├── Sources/Glamor/        # macOS/, iOS/ (files end in +iOS), Text/, Localisation/, Generated/
+│   └── Resources/          # Localizable.xcstrings (en, id); en.lproj/, id.lproj/ written from it
 ├── scripts/                # design-preview.py, check-*.sh
 ├── Tests/ · build/         # build/ is gitignored preview out
 └── README, ARCHITECTURE, CONTRIBUTING, SECURITY, …
@@ -26,8 +27,10 @@ glamor/
 
 | Path | Who writes it | Notes |
 |---|---|---|
-| `tokens.json`, `Sources/` (except `Generated/`), `components/`, `guidelines/` | Authors | Commit these |
+| `tokens.json`, `Sources/` (except `Generated/` and the `.lproj` files), `components/`, `guidelines/` | Authors | Commit these |
 | `Sources/Glamor/Generated/GlamorTokens.swift` | `scripts/vendor-tokens.sh` from design-tokens (pinned tag) | Commit it; never edit by hand |
+| `Sources/*/Resources/Localizable.xcstrings` (Glamor and GlamorGallery) | Authors, in English and Indonesian | Commit it; `LocalisationTests` fails on a string without `en` or `id` |
+| `Sources/*/Resources/{en,id}.lproj/Localizable.strings` | `scripts/generate-strings.py` from the catalog | Commit them; never edit by hand. The targets ship these because not every toolchain compiles a `.xcstrings`; a test fails when they differ from the catalog |
 | `build/design-preview/` | `scripts/design-preview.py` | Local only, gitignored |
 
 Do not edit files under `build/`. Regenerate them.
