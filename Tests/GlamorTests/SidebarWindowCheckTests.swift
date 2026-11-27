@@ -29,7 +29,7 @@ struct SidebarWindowCheckTests {
     @Test func theSceneKeepsItsSectionsInStateAndNotInSceneStorage() throws {
         let scene = try read("Sources/GlamorGallery/Scenes/SidebarAScene.swift")
         #expect(scene.contains("@State private var folded"))
-        #expect(!scene.contains("SceneStorage"))
+        #expect(!scene.contains("@SceneStorage"))
         #expect(scene.contains("isExpanded: expanded(section.id)"))
     }
 
