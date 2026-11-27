@@ -6,7 +6,7 @@ import SwiftUI
 /// `ContrastTests` keeps private copies of the same arithmetic; the sidebar tests share this one.
 enum ColorMeasure {
     /// Light, dark, light with Increase contrast, dark with Increase contrast: (dark, high).
-    static let allModes = [(false, false), (true, false), (false, true), (true, true)]
+    nonisolated static let allModes = [(false, false), (true, false), (false, true), (true, true)]
 
     static func rgb(_ color: Color, dark: Bool, high: Bool) -> (Double, Double, Double) {
         var out = (0.0, 0.0, 0.0)

@@ -235,6 +235,42 @@
         }
       }
     },
+    "sidebar.collapsed": {
+      "comment": "What VoiceOver reads after a sidebar section header when its rows are hidden.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "collapsed"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tertutup"
+          }
+        }
+      }
+    },
+    "sidebar.expanded": {
+      "comment": "What VoiceOver reads after a sidebar section header when its rows are showing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "expanded"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "terbuka"
+          }
+        }
+      }
+    },
     "sidebar.hide": {
       "comment": "The Hide button's name and tooltip.",
       "extractionState": "manual",

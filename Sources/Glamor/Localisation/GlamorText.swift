@@ -22,6 +22,7 @@ enum GlamorText {
         case markPro = "mark.pro", markProSpoken = "mark.proSpoken"
         case markSoon = "mark.soon", markSoonSpoken = "mark.soonSpoken"
         case sidebarLabel = "sidebar.label", sidebarHide = "sidebar.hide", sidebarWidth = "sidebar.width"
+        case sidebarExpanded = "sidebar.expanded", sidebarCollapsed = "sidebar.collapsed"
     }
 
     /// The languages the catalog ships.

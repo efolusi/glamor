@@ -39,6 +39,12 @@
 /* The hidden button that Escape presses. */
 "sheet.close" = "Close";
 
+/* What VoiceOver reads after a sidebar section header when its rows are hidden. */
+"sidebar.collapsed" = "collapsed";
+
+/* What VoiceOver reads after a sidebar section header when its rows are showing. */
+"sidebar.expanded" = "expanded";
+
 /* The Hide button's name and tooltip. */
 "sidebar.hide" = "Hide sidebar";
 
