@@ -4,11 +4,11 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 
 ## Where things stand
 
-Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27):
+Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27, `v0.3.0` on 2026-11-28):
 
 - One Swift package, one library `Glamor` (macOS 15, iOS 18). Tokens live in `enum G`; Mac files in `Sources/Glamor/macOS/`, iPhone and iPad files in `Sources/Glamor/iOS/` (named `<Name>+iOS.swift`), shared text cleaning in `Sources/Glamor/Text/`.
 - No Komando imports. The Komando logo, terminal palette and ANSI colors stay in komando-apps.
-- Colors and sizes come from design-tokens through `scripts/vendor-tokens.sh` (v0.7.0 at v0.2.0); the brand is the same as Meridian's.
+- Colors and sizes come from design-tokens through `scripts/vendor-tokens.sh` (v0.8.0 at v0.3.0: the owl's copper accent and `G.accentEdge`); the brand is the same as Meridian's.
 - Warm glass on bars, sheets, the theme switch, segments, the search field and the main action. Reduce Transparency, Increase Contrast, macOS 15 and iOS 18 draw the solid path.
 - Localisation in English and Indonesian, from one String Catalog, checked by `LocalisationTests`.
 - CI on every pull request and push to `main` (`.github/workflows/checks.yml`): vendored tokens, color, motion and size checks, `swift test`, generic iOS build.
@@ -17,7 +17,7 @@ Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-
 
 What is next:
 
-- GL25: add a default button to the gallery (the Save button of a sheet) and make the window check fail when Return does not press it. Planned for v0.2.1.
+- GL25: add a default button to the gallery (the Save button of a sheet) and make the window check fail when Return does not press it. Planned for v0.3.1, with GL27 (the switch takes the system tint, not copper) and GL28 (the disabled main action in dark, ProgressBar tones in Increase contrast).
 - Items 9 and 10: komando-apps adopts Glamor. Items 7, 15, 16, 18, 20 and 23 wait on it.
 - Items 12, 17 and 21: shared preview cards and design moved out of komando-apps, after the plan with the komando coordinator.
 
