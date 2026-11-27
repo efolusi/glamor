@@ -15,6 +15,18 @@
 /* What VoiceOver hears and the tooltip says after a copy. */
 "copy.done" = "Copied";
 
+/* The word on the Pro mark: a feature that is paid. The same word in both languages (the plan's name). */
+"mark.pro" = "Pro";
+
+/* What VoiceOver says for the Pro mark. */
+"mark.proSpoken" = "Pro, paid feature";
+
+/* The word on the Soon mark: a feature that is not built yet. */
+"mark.soon" = "Soon";
+
+/* What VoiceOver says for the Soon mark. */
+"mark.soonSpoken" = "Soon, not available yet";
+
 /* The name of the more button when it has no subject. */
 "more.label" = "More";
 

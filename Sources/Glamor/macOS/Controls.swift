@@ -162,25 +162,43 @@ private struct UnderlineTab: View {
     }
 }
 
+/// A word of status in a capsule: its tint on an opaque card ground. `Pill(mark:)` is the outlined Pro or Soon mark.
 public struct Pill: View {
     public let text: String
     public var color: Color = G.text2
+    /// Set by `init(mark:)`: the mark is outlined instead of tinted, and VoiceOver says what it means.
+    public let mark: PlanMark?
     @Environment(\.colorSchemeContrast) private var contrast
-    public var body: some View {
-        Text(text).textStyle(.small).lineLimit(1)
+    @ViewBuilder public var body: some View {
+        let word = Text(text).textStyle(.small).lineLimit(1)
             .padding(.horizontal, G.Space.s8)
             .frame(height: G.Height.pill)
-            .foregroundStyle(color)
-            // The tint sits on an opaque card ground, so a hovered row or a subtle panel never shows
-            // through. At the 10% pill tint every status color holds 4.6:1 or more on it in both themes; with
-            // Increase contrast the tint is 16% and the status colors take their increased pair: 4.61:1 or more.
-            .background(color.opacity(G.Opacity.pill(contrast)), in: Capsule())
-            .background(G.card, in: Capsule())
+        if let mark {
+            word.foregroundStyle(mark.label)
+                .overlay(PlanMarkEdge(mark: mark))
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(mark.spoken())
+        } else {
+            word.foregroundStyle(color)
+                // The tint sits on an opaque card ground, so a hovered row or a subtle panel never shows
+                // through. At the 10% pill tint every status color holds 4.6:1 or more on it in both themes; with
+                // Increase contrast the tint is 16% and the status colors take their increased pair: 4.61:1 or more.
+                .background(color.opacity(G.Opacity.pill(contrast)), in: Capsule())
+                .background(G.card, in: Capsule())
+        }
     }
 
     public init(text: String, color: Color = G.text2) {
         self.text = text
         self.color = color
+        self.mark = nil
+    }
+
+    /// The Pro or Soon mark (GL36): the word and its outline from `PlanMark`, in the person's language.
+    public init(mark: PlanMark) {
+        self.text = mark.word()
+        self.color = mark.label
+        self.mark = mark
     }
 }
 

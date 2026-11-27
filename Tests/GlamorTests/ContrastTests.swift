@@ -1,6 +1,6 @@
 #if os(macOS)
 import AppKit
-import Glamor
+@testable import Glamor
 import SwiftUI
 import Testing
 
@@ -154,6 +154,25 @@ struct ContrastTests {
             }
             #expect(against(G.text3) >= 3, "text3 dark=\(dark) high=\(high) ratio=\(against(G.text3))")
             if against(G.onAccent) < 3 { #expect(against(G.text3) > against(G.onAccent), "dark=\(dark) high=\(high)") }
+        }
+    }
+
+    /// GL36: the words of the Pro and Soon marks are text: 4.5:1 on every ground a mark sits on (inside pages: the
+    /// page, a panel, a card, a subtle well, a hovered card), in light, dark and both Increase contrast modes.
+    @Test(arguments: ContrastTests.allModes) func theProAndSoonLabelsReadOnEveryGroundAMarkSitsOn(dark: Bool, high: Bool) {
+        for mark in PlanMark.allCases {
+            for ground in [G.window, G.panel, G.card, G.subtle, G.cardHover] {
+                #expect(ratio(mark.label, ground, dark: dark, high: high) >= 4.5, "\(mark) dark=\(dark) high=\(high)")
+            }
+        }
+    }
+
+    /// GL36: the Pro outline is a shape, so it is `accentEdge`: 3:1 against the page, a card and a subtle well in every
+    /// mode. The Soon outline is dashed in the border colour: a hairline, never the only sign (the word and the dash
+    /// are), so it has no 3:1 claim.
+    @Test(arguments: ContrastTests.allModes) func theProOutlineHoldsThreeToOneOnEveryGroundAMarkSitsOn(dark: Bool, high: Bool) {
+        for ground in [G.window, G.card, G.subtle] {
+            #expect(ratio(PlanMark.pro.edge, ground, dark: dark, high: high) >= 3, "dark=\(dark) high=\(high)")
         }
     }
 

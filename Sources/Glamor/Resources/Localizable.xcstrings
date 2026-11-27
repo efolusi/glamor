@@ -91,6 +91,78 @@
         }
       }
     },
+    "mark.pro": {
+      "comment": "The word on the Pro mark: a feature that is paid. The same word in both languages (the plan's name).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        }
+      }
+    },
+    "mark.proSpoken": {
+      "comment": "What VoiceOver says for the Pro mark.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro, paid feature"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro, fitur berbayar"
+          }
+        }
+      }
+    },
+    "mark.soon": {
+      "comment": "The word on the Soon mark: a feature that is not built yet.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soon"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segera"
+          }
+        }
+      }
+    },
+    "mark.soonSpoken": {
+      "comment": "What VoiceOver says for the Soon mark.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soon, not available yet"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segera, belum tersedia"
+          }
+        }
+      }
+    },
     "more.label": {
       "comment": "The name of the more button when it has no subject.",
       "extractionState": "manual",

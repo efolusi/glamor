@@ -9,9 +9,9 @@ struct LocalisationTests {
     private static let root = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
 
-    /// Keys whose English and Indonesian text may be the same word (a loan word, a name). Empty today: an entry here is a
+    /// Keys whose English and Indonesian text may be the same word (a loan word, a name). An entry here is a
     /// decision, written with its reason, never a way to silence the check.
-    private static let sameInBothLanguages: Set<String> = []
+    private static let sameInBothLanguages: Set<String> = ["mark.pro"]   // "Pro" is the plan's name, said the same in Indonesian
 
     private struct Entry {
         let key: String
