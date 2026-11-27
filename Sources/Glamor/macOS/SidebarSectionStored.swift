@@ -9,12 +9,12 @@ struct SidebarSectionStored<Content: View>: View {
     @SceneStorage private var isExpanded: Bool
     private let content: Content
 
-    init(title: String, id: String, startsExpanded: Bool, containsSelection: Bool, selectedTitle: String?,
+    init(title: String, id: String, scope: String?, startsExpanded: Bool, containsSelection: Bool, selectedTitle: String?,
          @ViewBuilder content: () -> Content) {
         self.title = title
         self.containsSelection = containsSelection
         self.selectedTitle = selectedTitle
-        _isExpanded = SceneStorage(wrappedValue: startsExpanded, SidebarSection<Content>.storageKey(id: id))
+        _isExpanded = SceneStorage(wrappedValue: startsExpanded, SidebarSection<Content>.storageKey(id: id, scope: scope))
         self.content = content()
     }
 

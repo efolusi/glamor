@@ -19,6 +19,14 @@ struct SidebarSectionTests {
         #expect(SidebarSection<EmptyView>.storageKey(id: "across") != SidebarSection<EmptyView>.storageKey(id: "targets"))
     }
 
+    /// Two sidebars in one scene (the main window's and a second column) may both have a "targets" section.
+    @Test func aScopeKeepsTwoSidebarsWithTheSameSectionIdApart() {
+        #expect(SidebarSection<EmptyView>.storageKey(id: "targets", scope: "main") == "glamor.sidebar.section.main.targets")
+        #expect(SidebarSection<EmptyView>.storageKey(id: "targets", scope: "main") != SidebarSection<EmptyView>.storageKey(id: "targets", scope: "rail"))
+        #expect(SidebarSection<EmptyView>.storageKey(id: "targets", scope: "main") != SidebarSection<EmptyView>.storageKey(id: "targets"))
+        #expect(SidebarSection<EmptyView>.storageKey(id: "targets", scope: nil) == SidebarSection<EmptyView>.storageKey(id: "targets"))
+    }
+
     @Test func aHeaderSaysExpandedOrCollapsedInBothLanguages() {
         #expect(GlamorText.string(.sidebarExpanded, language: "en") == "expanded")
         #expect(GlamorText.string(.sidebarCollapsed, language: "en") == "collapsed")
@@ -62,6 +70,7 @@ struct SidebarSectionTests {
         _ = SidebarSection("Targets", isExpanded: binding) { EmptyView() }
         _ = SidebarSection("Targets", isExpanded: binding, containsSelection: true, selectedTitle: "Host") { EmptyView() }
         _ = SidebarSection("Targets", id: "targets") { EmptyView() }
+        _ = SidebarSection("Targets", id: "targets", scope: "rail") { EmptyView() }
         _ = SidebarSection("Targets", id: "targets", containsSelection: true, selectedTitle: "Host") { EmptyView() }
         open = true
     }
@@ -120,7 +129,7 @@ struct SidebarSectionTests {
     @Test func theIdInitKeepsTheStateInSceneStorageAndTheBindingInitDoesNot() throws {
         let stored = try source("macOS/SidebarSectionStored.swift")
         #expect(stored.contains("@SceneStorage"))
-        #expect(stored.contains("SidebarSection<Content>.storageKey(id: id)"))
+        #expect(stored.contains("SidebarSection<Content>.storageKey(id: id, scope: scope)"))
         #expect(!(try source("macOS/SidebarSection.swift")).contains("@SceneStorage"), "the binding init must work in a bare NSHostingView")
     }
 }
