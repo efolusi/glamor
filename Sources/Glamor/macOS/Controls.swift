@@ -320,7 +320,7 @@ public struct MenuPicker<Value: Hashable, Options: View>: View {
         // first, 7 pt from the word), so the label is an empty rectangle of the face's size and the Menu covers
         // the whole face: that is its hit and accessibility area (GL21).
         HStack(spacing: G.Space.labelIcon) {
-            Text(title).textStyle(.bodyMedium).foregroundStyle(G.text)
+            Text(title).textStyle(.bodyMedium).lineLimit(1).foregroundStyle(G.text)
             Image(systemName: "chevron.down").icon(G.Icon.xs, weight: .bold).foregroundStyle(G.text2)
         }
         .accessibilityHidden(true)

@@ -165,6 +165,7 @@ struct PillButtonTests {
         #expect(!picker.contains("RoundedRectangle"))
         #expect(picker.contains(".focusRingCapsule(isFocused: focused)"))
         #expect(picker.contains("small ? G.Height.control28 : G.Height.control32"), "the heights stay")
+        #expect(picker.contains("Text(title).textStyle(.bodyMedium).lineLimit(1)"), "a long title truncates, it does not grow a second line in a 32 high face")
     }
 
     @Test func theMoreMenuHoversAsACircleLikeTheGhostSquare() throws {
