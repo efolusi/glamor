@@ -4,7 +4,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 
 ## Where things stand
 
-Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27, `v0.3.0` on 2026-11-27, `v0.3.1` on 2026-11-28 once the owner's window check has run):
+Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27, `v0.3.0` on 2026-11-27, `v0.3.1` on 2026-11-28, `v0.4.0` once the owner's window check has run):
 
 - One Swift package, one library `Glamor` (macOS 15, iOS 18). Tokens live in `enum G`; Mac files in `Sources/Glamor/macOS/`, iPhone and iPad files in `Sources/Glamor/iOS/` (named `<Name>+iOS.swift`), shared text cleaning in `Sources/Glamor/Text/`.
 - No Komando imports. The Komando logo, terminal palette and ANSI colors stay in komando-apps.
@@ -17,6 +17,7 @@ Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-
 
 What is next:
 
+- v0.4.0 (done in the release PR, tag after the owner's window run): GL31 to GL34 (`Sidebar`, `SidebarItem`, `SidebarSection`, `SidebarSearch`), GL36 (Pro and Soon marks), GL37 (`ProfileCard`), GL38 (`SidebarRail`, `SidebarColumn`), GL39 (the iOS `SidebarItem`, compiled only), GL41 (capsule buttons), GL42 (the 16 komando names out of `G`), GL45 (`G.Opacity.banner(_:)`; `Banner` does not read it yet). Still open: GL25, GL44, and a simulator run of the iOS row (GL56, after 1 December).
 - GL25: add a default button to the gallery (the Save button of a sheet) and make the window check fail when Return does not press it. Open; it was planned for v0.3.1 and did not ship in it. GL27 (the switch tint), GL28 (the disabled main action, the ProgressBar track) and GL30 (four more VoiceOver lines in the window check) are done in v0.3.1. A stronger ProgressBar track waits on design-tokens `okEdge`, `warnEdge`, `dangerEdge` (DT19, GL44).
 - Items 9 and 10: komando-apps adopts Glamor. Items 7, 15, 16, 18, 20 and 23 wait on it.
 - Items 12, 17 and 21: shared preview cards and design moved out of komando-apps, after the plan with the komando coordinator.
