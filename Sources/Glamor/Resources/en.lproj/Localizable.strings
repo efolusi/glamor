@@ -36,8 +36,32 @@
 /* A progress bar's value for VoiceOver. %lld is 0 to 100. */
 "progress.percent" = "%lld percent";
 
+/* The sidebar search button: its name and the word it shows (it opens the command palette). */
+"search.title" = "Search";
+
 /* The hidden button that Escape presses. */
 "sheet.close" = "Close";
+
+/* What VoiceOver reads after a sidebar section header when its rows are hidden. */
+"sidebar.collapsed" = "collapsed";
+
+/* What VoiceOver reads after a sidebar section header when its rows are hidden and one of them is the chosen place. %@ is that place's name. */
+"sidebar.collapsedSelected" = "collapsed, %@ selected";
+
+/* What VoiceOver reads after a sidebar section header when its rows are showing. */
+"sidebar.expanded" = "expanded";
+
+/* The Hide button's name and tooltip. */
+"sidebar.hide" = "Hide sidebar";
+
+/* The name VoiceOver reads for the sidebar container. */
+"sidebar.label" = "Sidebar";
+
+/* What VoiceOver reads as the hint of a sidebar section header: what pressing it does. */
+"sidebar.sectionHint" = "Folds or opens the section";
+
+/* What the sidebar's edge divider sizes, for VoiceOver. */
+"sidebar.width" = "Sidebar width";
 
 /* Redacted placeholder line in the iOS list skeleton. */
 "skeleton.detailLine" = "Loading detail line";
