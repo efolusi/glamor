@@ -1,4 +1,3 @@
-#if os(macOS)
 import Foundation
 
 /// The number on a sidebar row, with the words VoiceOver reads for it. Glamor does not know what is being counted
@@ -12,4 +11,3 @@ public struct SidebarCount: Hashable, Sendable {
         self.spoken = spoken
     }
 }
-#endif
