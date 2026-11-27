@@ -61,14 +61,30 @@ struct ProfileCardTests {
         #expect(card.contains("G.text3"))
     }
 
-    /// Under the pointer the card is a raised control: `cardHover`, then `G.Hover.pressed`. It casts no shadow, which
-    /// would lift the sidebar's footer off the window.
-    @Test func underThePointerItTurnsCardHoverThenPressedAndCastsNoShadow() throws {
+    /// The foot is ONE bordered account card: at rest the row is the card fill with a `border` hairline, as the sso rail foot is;
+    /// under the pointer it turns `cardHover`, pressed `G.Hover.pressed`. It casts no shadow, which would lift the foot off the window.
+    @Test func atRestTheRowIsTheCardFillAndUnderThePointerItTurnsCardHoverThenPressed() throws {
+        #expect(ProfileCardButtonStyle.fill(pressed: false, hover: false) == G.card)
+        #expect(ProfileCardButtonStyle.fill(pressed: false, hover: true) == G.cardHover)
+        #expect(ProfileCardButtonStyle.fill(pressed: true, hover: true) == G.Hover.pressed)
+        #expect(ProfileCardButtonStyle.fill(pressed: true, hover: false) == G.Hover.pressed)
         let style = try source("macOS/ProfileCardButtonStyle.swift")
-        #expect(style.contains("G.cardHover"))
-        #expect(style.contains("G.Hover.pressed"))
         #expect(!style.contains(".shadow("))
         #expect(try source("macOS/ProfileCard.swift").contains("G.Width.profileMenu"), "the popover is the profile menu's 260 wide")
+    }
+
+    @Test func theRowIsABorderedCardOfTheCardRadiusAndItsFocusRingFollowsThatShape() throws {
+        let style = try source("macOS/ProfileCardButtonStyle.swift")
+        #expect(style.contains("G.Radius.r12"), "a card's 12, not a list row's 8")
+        #expect(style.contains("strokeBorder(G.border, lineWidth: G.Line.hair)"))
+        #expect(style.contains("focusRingInside(radius: G.Radius.r12)"), "the ring is drawn on the card's corners")
+    }
+
+    /// The circle is a soft tile, 1.06:1 off the window in light: a `border` hairline gives it its boundary (WCAG 1.4.11),
+    /// in the rail where it stands alone and in the row, so it is one avatar.
+    @Test func theAvatarCircleHasAHairlineRingInBothStyles() throws {
+        let card = try source("macOS/ProfileCard.swift")
+        #expect(card.contains("Circle().strokeBorder(G.border, lineWidth: G.Line.hair)"))
     }
 
     @Test func theMenuIsAPopoverTheInitialIsHiddenAndTheButtonHasOneName() throws {
@@ -97,7 +113,6 @@ struct ProfileCardTests {
     @Test func theAvatarStyleIsAtLeast44SquareAndTheRowIsTheRowRadius() throws {
         let style = try source("macOS/ProfileCardButtonStyle.swift")
         #expect(style.contains("G.Height.toolbar"), "the rail's avatar is a 44 point target")
-        #expect(style.contains("G.Row.radius"))
         #expect(style.contains("focusRingCapsule()"), "a square 44 target is a circle: the capsule ring")
     }
 }

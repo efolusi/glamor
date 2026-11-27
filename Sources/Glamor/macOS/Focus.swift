@@ -22,7 +22,7 @@ public struct FocusRing: ViewModifier {
                 if isFocused ?? environmentFocused {
                     Group {
                         if inside {
-                            RoundedRectangle(cornerRadius: G.Row.radius, style: .continuous)
+                            RoundedRectangle(cornerRadius: radius > 0 ? radius : G.Row.radius, style: .continuous)
                                 .strokeBorder(G.focus, lineWidth: G.Line.strong)
                         } else if capsule { Capsule().strokeBorder(G.focus, lineWidth: G.Line.strong) }
                         else {
@@ -54,7 +54,8 @@ public extension View {
     /// The capsule ring for a control that tracks its own focus, such as a Menu: pair it with `.focused(_:)`.
     func focusRingCapsule(isFocused: Bool) -> some View { modifier(FocusRing(radius: 0, capsule: true, isFocused: isFocused)) }
     /// The ring inside a list row, on its highlight's shape (a host, connection or job row).
-    func focusRingInside() -> some View { modifier(FocusRing(radius: 0, inside: true)) }
+    /// `radius` is the shape's own corner radius when it is not a row's (a card's 12); without it the ring has the row's.
+    func focusRingInside(radius: CGFloat = 0) -> some View { modifier(FocusRing(radius: radius, inside: true)) }
 }
 
 /// `.plain` with the focus ring: for buttons whose label draws its own shape (rows, cards, tabs). Nothing fades

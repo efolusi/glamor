@@ -71,10 +71,12 @@ public struct ProfileCard<Menu: View>: View {
         Image(systemName: "chevron.up.chevron.down").icon(G.Icon.sm).foregroundStyle(G.text3)
     }
 
-    /// One solid circle, the same in both themes. A name with no letter shows the person glyph instead of an initial.
+    /// One solid circle with a `border` hairline ring (the soft tile is 1.06:1 off the window in light, so the ring is its
+    /// boundary), the same in both themes. A name with no letter shows the person glyph instead of an initial.
     private var avatar: some View {
         Circle().fill(G.avatar)
             .frame(width: G.Tile.t32, height: G.Tile.t32)
+            .overlay { Circle().strokeBorder(G.border, lineWidth: G.Line.hair) }
             .overlay {
                 if let initial {
                     Text(initial).textStyle(.bodyMedium).foregroundStyle(G.onAvatar)

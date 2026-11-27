@@ -1030,7 +1030,7 @@ func sidebarBKeys(_ t: Target) {
 // MARK: Scene profile (GL37)
 
 /// The pixel checks of the profile card, from a capture of that window only. The row is 52 high with the 32 tile 12 in from its
-/// edge; the name is the upper line and the detail the lower line, to the right of the tile. At rest the row is bare window ground.
+/// edge; the name is the upper line and the detail the lower line, to the right of the tile. At rest the row is the bordered account card: `card` fill, a `border` hairline.
 func profilePixels(_ t: Target) {
     let theme = t.theme
     guard let card = t.control(profileSpoken) else { check("setup", theme, "the profile card found", "missing", "present", false); return }
@@ -1044,8 +1044,15 @@ func profilePixels(_ t: Target) {
     let f = card.frame
     // The initial sits in the middle of the 32 tile: the 14 pt square around its centre is the fill and the letter.
     ink("avatar-initial", "avatar initial (onAvatar) on the avatar fill", CGRect(x: f.minX + 12 + 16 - 7, y: f.midY - 7, width: 14, height: 14), 4.5)
-    ink("profile-name", "name (text) on the window ground", CGRect(x: f.minX + 56, y: f.minY + 10, width: 70, height: 15), 4.5)
-    ink("profile-detail", "detail line (text2) on the window ground", CGRect(x: f.minX + 56, y: f.minY + 27, width: 70, height: 14), 4.5)
+    ink("profile-name", "name (text) on the card", CGRect(x: f.minX + 56, y: f.minY + 10, width: 70, height: 15), 4.5)
+    ink("profile-detail", "detail line (text2) on the card", CGRect(x: f.minX + 56, y: f.minY + 27, width: 70, height: 14), 4.5)
+    // The card's border: within 2 pt of the row's left edge, mid-height, one pixel column differs from the fill 8 pt inside it (border/card is 1.2:1, so the
+    // gap is small: 0.02 of the 0 to 1.73 colour distance, well above the anti-aliasing of a flat fill).
+    func at(_ p: CGPoint) -> RGB { let q = shot.pixel(p); return shot.px(q.x, q.y) }
+    let fill = at(CGPoint(x: f.minX + 8, y: f.midY))
+    var edge = 0.0
+    for step in -1...2 { edge = max(edge, colorGap(at(CGPoint(x: f.minX + CGFloat(step) * 0.5, y: f.midY)), fill)) }
+    check("profile-card-edge", theme, "the row draws a border at its edge, not a bare row (fill \(hex(fill)))", "largest gap \(f2(edge))", ">= 0.02", edge >= 0.02)
 }
 
 /// What AXPress does to the card: the profile menu opens as a popover, holding its rows; Escape closes it.

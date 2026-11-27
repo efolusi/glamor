@@ -17,9 +17,9 @@ struct ProfileCardContrastTests {
         holds(G.onAvatar, on: G.avatar, 4.5, dark: dark, high: high)
     }
 
-    /// The name is `text`, the detail `text2`: at rest on the window, under the pointer on `cardHover`, pressed.
+    /// The name is `text`, the detail `text2`: at rest on the card, under the pointer on `cardHover`, pressed.
     @Test(arguments: ColorMeasure.allModes) func theNameAndTheDetailReadAtRestUnderThePointerAndPressed(dark: Bool, high: Bool) {
-        for ground in [G.window, G.cardHover, G.Hover.pressed] {
+        for ground in [G.card, G.cardHover, G.Hover.pressed] {
             holds(G.text, on: ground, 4.5, dark: dark, high: high)
             holds(G.text2, on: ground, 4.5, dark: dark, high: high)
         }
@@ -27,7 +27,7 @@ struct ProfileCardContrastTests {
 
     /// The chevron is a mark that says "a menu opens": `text3` holds 3:1 on all three grounds.
     @Test(arguments: ColorMeasure.allModes) func theChevronStandsThreeToOneOffEveryGroundTheCardTakes(dark: Bool, high: Bool) {
-        for ground in [G.window, G.cardHover, G.Hover.pressed] {
+        for ground in [G.card, G.cardHover, G.Hover.pressed] {
             holds(G.text3, on: ground, 3, dark: dark, high: high)
         }
     }
