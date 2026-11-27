@@ -87,12 +87,14 @@ captures only that window (`screencapture -l <window id>`) and reads the accessi
 
 | Check | How | Needs |
 |---|---|---|
-| Search placeholder 4.5:1, Deploy label on its glass fill 4.5:1, unfocused search edge 3:1 (GL17) | pixels of the capture, in light, dark and with the Increase contrast colours | Screen Recording |
+| Search placeholder 4.5:1, Deploy label on its glass fill 4.5:1, unfocused search edge 3:1 (GL17), switch-on track 3:1 (GL43) | pixels of the capture, in light, dark and with the Increase contrast colours | Screen Recording |
 | Label-to-icon gap on the "Daily" menu button | ink gap in pixels against 8 pt times the backing scale | Screen Recording |
-| VoiceOver strings, role, selected state, target size, `AXPress` | accessibility tree | Accessibility |
+| VoiceOver strings, role, selected state, value, target size (a small switch: spacing to the nearest target, 24 pt), `AXPress` | accessibility tree | Accessibility |
 | The theme switch is named "Switch to light theme" after the toggle; the search field gets a button named "Clear the search" after typing; the unlabelled spinner is named "Working" (GL30) | accessibility tree, after the presses | Accessibility |
 | The title of a sheet (the gallery opens one with `--open-sheet`) is read as a heading (GL30) | accessibility tree, in its own run | Accessibility |
 | Tab order, Space and Return | key events to the gallery's PID | Accessibility |
+
+The gallery shows one scene per run (`--scene <name>`), and the script keeps one list of controls per scene (`scenes` in `scripts/window/WindowCheck.swift`).
 
 A release that changes a label, a role or a control also needs a spot check by ear with VoiceOver on the changed control. A release that changes only colours needs this script and nothing more.
 
