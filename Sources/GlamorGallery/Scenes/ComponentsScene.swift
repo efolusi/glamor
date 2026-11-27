@@ -54,7 +54,7 @@ struct ComponentsScene: View {
         .onAppear { saveFocused = true }
         .onChange(of: segment) { activated("segment \(segment)") }
         .onChange(of: appearance) { activated("theme \(appearance)") }
-        .onChange(of: reports) { activated(reports ? "switch on" : "switch off") }
+        .onChange(of: reports) { activated("switch \(reports)") }
         .background(EnvironmentProbe())
         .sheet(isPresented: $sheetShown) {
             SheetLayout(symbol: "desktopcomputer", title: Words.text("sheet.title")) {

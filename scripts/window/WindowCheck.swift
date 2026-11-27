@@ -394,7 +394,7 @@ let componentsControls: [Expected] = [
     Expected(name: "Month", role: "AXButton", selected: false, pressEvent: "segment 2"),
     Expected(name: "Switch to dark theme", role: "AXButton", selected: false, pressEvent: "theme dark"),
     Expected(name: "Search hosts", role: "AXTextField", selected: false, pressEvent: nil),
-    Expected(name: switchName, role: "AXCheckBox", selected: false, pressEvent: "switch off", value: "1"),
+    Expected(name: switchName, role: "AXCheckBox", selected: false, pressEvent: "switch false", value: "1"),
 ]
 
 let scenes: [String: SceneSpec] = [
