@@ -75,8 +75,23 @@ struct ProfileCardTests {
         let card = try source("macOS/ProfileCard.swift")
         #expect(card.contains(".popover(isPresented:"))
         #expect(card.contains(".accessibilityLabel(spokenName)"))
-        #expect(card.contains(".help(spokenName)"))
         #expect(card.contains(".accessibilityHidden(true)"), "the initial and the chevron are not read a second time")
+    }
+
+    /// On macOS a tooltip is the control's AXHelp, which VoiceOver reads after its name. The card's name is in the tooltip
+    /// of the label (hidden from VoiceOver), not of the button: nothing between the button's style and its popover may
+    /// call `.help`. The window check reads AXHelp of the button and fails when it is not empty.
+    @Test func noTooltipEqualsTheAccessibilityLabelBecauseTheButtonHasNoHelpOfItsOwn() throws {
+        let card = try source("macOS/ProfileCard.swift")
+        let chain = try #require(card.range(of: ".buttonStyle(ProfileCardButtonStyle(style: style))"))
+        let end = try #require(card.range(of: ".popover(isPresented:"))
+        let onTheButton = String(card[chain.upperBound..<end.lowerBound])
+        #expect(!onTheButton.contains(".help("), "a tooltip on the button is read a second time as its help text")
+        let label = try #require(card.range(of: "Button { isOpen.toggle() } label: {"))
+        let labelEnd = try #require(card.range(of: ".buttonStyle(ProfileCardButtonStyle"))
+        let inTheLabel = String(card[label.upperBound..<labelEnd.lowerBound])
+        #expect(inTheLabel.contains(".help(spokenName)"), "the name is the tooltip of the label")
+        #expect(inTheLabel.contains(".accessibilityHidden(true)"), "and that label is hidden from VoiceOver")
     }
 
     @Test func theAvatarStyleIsAtLeast44SquareAndTheRowIsTheRowRadius() throws {

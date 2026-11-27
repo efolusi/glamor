@@ -27,6 +27,10 @@ struct SidebarRailArea: Identifiable, Hashable {
         hasColumn = true
     }
 
+    /// The tooltip: the full title, only where it adds words to the name. On macOS a tooltip is the button's AXHelp, which
+    /// VoiceOver reads after the name, so a tooltip equal to the name would be read twice.
+    var tooltip: String? { help == name ? nil : help }
+
     /// Home, every section in the registry's order, then Settings.
     static func all(in registry: PlaceRegistry) -> [SidebarRailArea] {
         [SidebarRailArea(place: registry.home)] + registry.sections.map(SidebarRailArea.init(section:)) + [SidebarRailArea(place: registry.settings)]

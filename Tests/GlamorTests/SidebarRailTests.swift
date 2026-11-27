@@ -85,6 +85,18 @@ struct SidebarRailTests {
         #expect(across.symbol == "square.on.square")
     }
 
+    /// A tooltip is the button's AXHelp on macOS, so a tooltip equal to the name would be read twice. The rail has one only
+    /// where it adds words: a section's full title. Home and Settings, and a section whose short title is its title, have none.
+    @Test func aRailItemHasATooltipOnlyWhenItAddsWordsToTheName() throws {
+        let areas = SidebarRailArea.all(in: registry)
+        let across = try #require(areas.first { $0.id == "across" })
+        #expect(across.tooltip == "Across types")
+        for id in ["home", "targets", "settings"] {
+            let area = try #require(areas.first { $0.id == id })
+            #expect(area.tooltip == nil, "\(area.name): help equals the name, so there is no tooltip")
+        }
+    }
+
     @Test func homeAndSettingsAreNamedByTheirTitleAndHaveNoColumn() throws {
         let areas = SidebarRailArea.all(in: registry)
         let home = try #require(areas.first { $0.id == "home" })
@@ -129,7 +141,8 @@ struct SidebarRailTests {
         #expect(item.contains("G.Icon.lg"))
         #expect(item.contains(".textStyle(.caption)"))
         #expect(item.contains(".accessibilityLabel(area.name)"))
-        #expect(item.contains(".help(area.help)"))
+        #expect(!item.contains(".help(area.help)"), "the button has no help of its own: a tooltip equal to the name is read twice")
+        #expect(item.contains(".help(ifPresent: area.tooltip)"))
         #expect(item.contains(".accessibilityAddTraits(isSelected ? .isSelected : [])"))
         #expect(item.contains(".foregroundStyle(isSelected ? G.text : G.text2)"))
     }

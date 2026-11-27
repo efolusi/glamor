@@ -507,14 +507,15 @@ let profileDetail = "Local · on this Mac"
 let profileSpoken = "\(profileName), \(profileDetail)"
 
 let sidebarBControls: [Expected] = sidebarBRailNames.map {
-    Expected(name: $0, role: "AXButton", selected: $0 == sidebarBStartArea, pressEvent: nil)
+    Expected(name: $0, role: "AXButton", selected: $0 == sidebarBStartArea, pressEvent: nil, hasNoHelp: true)
 } + [
-    Expected(name: profileSpoken, role: "AXButton", selected: false, pressEvent: nil),
+    Expected(name: profileSpoken, role: "AXButton", selected: false, pressEvent: nil, hasNoHelp: true),
     Expected(name: "Search", role: "AXButton", selected: false, pressEvent: "search"),
 ] + sidebarASections[0].places.map(sidebarARow)
 
-/// The profile scene (GL37): one button, the card. Its menu is a popover that only opens by a press or a key.
-let profileControls: [Expected] = [Expected(name: profileSpoken, role: "AXButton", selected: false, pressEvent: nil)]
+/// The profile scene (GL37): one button, the card. Its menu is a popover that only opens by a press or a key. The card's tooltip is on its
+/// label, hidden from VoiceOver, so the button has no AXHelp (the name is not read a second time).
+let profileControls: [Expected] = [Expected(name: profileSpoken, role: "AXButton", selected: false, pressEvent: nil, hasNoHelp: true)]
 
 let scenes: [String: SceneSpec] = [
     "components": SceneSpec(name: "components", readyButtons: 10, expected: componentsControls,

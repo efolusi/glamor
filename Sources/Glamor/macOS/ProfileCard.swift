@@ -6,7 +6,7 @@ import SwiftUI
 /// 260 wide, with the caller's content (Appearance, Upgrade, Settings, Account, Team); Escape closes it and the system
 /// returns focus to the card. In the rail (`.avatar`) only the circle shows.
 ///
-/// VoiceOver reads one button, "name, detail": the initial and the chevron are hidden. Glamor knows no person: the name,
+/// VoiceOver reads one button, "name, detail": the label (initial, lines, chevron) is hidden. Glamor knows no person: the name,
 /// the detail line and the menu are the app's.
 public struct ProfileCard<Menu: View>: View {
     public let name: String
@@ -22,7 +22,8 @@ public struct ProfileCard<Menu: View>: View {
         self.menu = menu()
     }
 
-    /// What VoiceOver reads, and the tooltip: the name, then the detail line when there is one.
+    /// What VoiceOver reads, and the words of the tooltip: the name, then the detail line when there is one. The tooltip is on the
+    /// label, hidden from VoiceOver: on macOS a button's own tooltip is its AXHelp, which would read the name a second time.
     var spokenName: String { detail.isEmpty ? name : "\(name), \(detail)" }
 
     /// The first letter of the name, in capitals; nil when the name has none.
@@ -32,13 +33,16 @@ public struct ProfileCard<Menu: View>: View {
 
     public var body: some View {
         Button { isOpen.toggle() } label: {
-            switch style {
-            case .row: row
-            case .avatar: avatar
+            Group {
+                switch style {
+                case .row: row
+                case .avatar: avatar
+                }
             }
+            .help(spokenName)
+            .accessibilityHidden(true)
         }
         .buttonStyle(ProfileCardButtonStyle(style: style))
-        .help(spokenName)
         .accessibilityLabel(spokenName)
         .popover(isPresented: $isOpen, arrowEdge: style == .row ? .top : .trailing) {
             menu.frame(width: G.Width.profileMenu)
@@ -78,7 +82,6 @@ public struct ProfileCard<Menu: View>: View {
                     Image(systemName: "person.fill").icon(G.Icon.md).foregroundStyle(G.onAvatar)
                 }
             }
-            .accessibilityHidden(true)
     }
 }
 #endif

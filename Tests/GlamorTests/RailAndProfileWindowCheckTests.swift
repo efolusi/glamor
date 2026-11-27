@@ -67,7 +67,14 @@ struct RailAndProfileWindowCheckTests {
         let demo = try read("Sources/GlamorGallery/Scenes/SidebarDemo.swift")
         for short in ["Targets", "Across", "Own", "About"] { #expect(demo.contains(#""\#(short)""#)) }
         // A rail item has no pressEvent in the list: the area presses run last, so the column rows are still there for the row presses.
-        #expect(check.contains("selected: $0 == sidebarBStartArea, pressEvent: nil"))
+        #expect(check.contains("selected: $0 == sidebarBStartArea, pressEvent: nil, hasNoHelp: true"))
+    }
+
+    /// A tooltip equal to the name would be the button's AXHelp, read after its name: the list asks for none on the rail and the card.
+    @Test func theRailAndTheCardAskForNoHelpOnTheButton() throws {
+        let check = try read("scripts/window/WindowCheck.swift")
+        #expect(check.contains(#"Expected(name: profileSpoken, role: "AXButton", selected: false, pressEvent: nil, hasNoHelp: true)"#))
+        #expect(try matches(#"(hasNoHelp: true)"#, in: check).count >= 3, "rail items, the card in sidebar-b, the card in profile")
     }
 
     @Test func theWindowCheckHasAListForTheProfileSceneWithPixelsStringsAndKeys() throws {
