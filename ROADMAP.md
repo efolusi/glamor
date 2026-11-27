@@ -4,7 +4,7 @@ The one list of planned work for Glamor. Mark an item `done` or `deferred` (with
 
 ## Where things stand
 
-Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27, `v0.3.0` on 2026-11-28):
+Released (tags `v0.0.1` on 2026-11-18, `v0.1.0` on 2026-11-23, `v0.2.0` on 2026-11-27, `v0.3.0` on 2026-11-27):
 
 - One Swift package, one library `Glamor` (macOS 15, iOS 18). Tokens live in `enum G`; Mac files in `Sources/Glamor/macOS/`, iPhone and iPad files in `Sources/Glamor/iOS/` (named `<Name>+iOS.swift`), shared text cleaning in `Sources/Glamor/Text/`.
 - No Komando imports. The Komando logo, terminal palette and ANSI colors stay in komando-apps.
