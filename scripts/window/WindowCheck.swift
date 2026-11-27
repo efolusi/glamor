@@ -47,8 +47,17 @@ func axFrame(_ e: AXUIElement) -> CGRect? {
     return CGRect(origin: pt, size: sz)
 }
 
+/// The element and everything below it. The tree is read once per element (a repeated element is skipped) and to a
+/// fixed depth, so a cycle in the accessibility tree ends the walk instead of overflowing the stack.
 func descendants(_ e: AXUIElement) -> [AXUIElement] {
-    [e] + ((attr(e, "AXChildren") as? [AXUIElement]) ?? []).flatMap(descendants)
+    var out: [AXUIElement] = []
+    func walk(_ el: AXUIElement, _ depth: Int) {
+        guard depth < 60, !out.contains(where: { CFEqual($0, el) }) else { return }
+        out.append(el)
+        for child in (attr(el, "AXChildren") as? [AXUIElement]) ?? [] { walk(child, depth + 1) }
+    }
+    walk(e, 0)
+    return out
 }
 
 struct Control {
