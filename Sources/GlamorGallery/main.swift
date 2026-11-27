@@ -7,9 +7,16 @@ import AppKit
 
 MainActor.assumeIsolated {
     var scene = GalleryScenes.fallback
-    if let name = Options.sceneName {
+    let known = GalleryScenes.all.map(\.name).joined(separator: ", ")
+    switch Options.scene {
+    case .absent:
+        break
+    case .malformed(let argument):
+        FileHandle.standardError.write(Data("\(argument) needs a scene name: --scene <name>; the scenes are \(known)\n".utf8))
+        exit(64)
+    case .name(let name):
         guard let named = GalleryScenes.named(name) else {
-            FileHandle.standardError.write(Data("unknown scene \"\(name)\"; the scenes are \(GalleryScenes.all.map(\.name).joined(separator: ", "))\n".utf8))
+            FileHandle.standardError.write(Data("unknown scene \"\(name)\"; the scenes are \(known)\n".utf8))
             exit(64)
         }
         scene = named

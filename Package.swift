@@ -14,7 +14,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "Glamor", exclude: ["Resources/Localizable.xcstrings"], resources: [.process("Resources")], swiftSettings: [.swiftLanguageMode(.v5)]),
-        .testTarget(name: "GlamorTests", dependencies: ["Glamor"], swiftSettings: [.swiftLanguageMode(.v5)]),
+        .testTarget(name: "GlamorTests", dependencies: ["Glamor", .target(name: "GlamorGallery", condition: .when(platforms: [.macOS]))], swiftSettings: [.swiftLanguageMode(.v5)]),
         // A small Mac app that shows the components in a real window. Not a product, so it never ships.
         .executableTarget(name: "GlamorGallery", dependencies: ["Glamor"], exclude: ["Resources/Localizable.xcstrings"], resources: [.process("Resources")], swiftSettings: [.swiftLanguageMode(.v5)]),
     ]
