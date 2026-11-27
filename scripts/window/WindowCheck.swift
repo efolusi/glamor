@@ -3,7 +3,7 @@
 //   windowcheck pixels <pid> <theme> <out-dir>    pixel contrast and the label-to-icon gap, from a capture of that window only
 //   windowcheck strings <pid> <theme> <out-dir>   VoiceOver strings and AXPress activation, from the accessibility tree;
 //                                                 after the presses: the theme switch's new name, the clear button after
-//                                                 typing, the unlabelled spinner's name
+//                                                 typing with key events, the unlabelled spinner's name (AXBusyIndicator)
 //   windowcheck sheet <pid> <theme> <out-dir>     the title of the sheet the gallery opens with --open-sheet, read as a heading
 //   windowcheck keys <pid> <theme> <out-dir>      Tab order, Space and Return
 //   windowcheck ready <pid>                       exits 0 once the window is on screen with its controls
@@ -131,6 +131,24 @@ struct Target {
             usleep(40_000)
         }
         usleep(350_000)
+    }
+
+    /// Types the letters w, e and b with real key events (the same path as press), each carrying its character, so
+    /// the focused text field receives them as typing and SwiftUI's text binding changes. The first run set
+    /// AXValue instead and saw no clear button; this path was read from the live tree to show it.
+    func type(_ letters: String) {
+        let codes: [Character: CGKeyCode] = ["w": 13, "e": 14, "b": 11]
+        for letter in letters {
+            guard let code = codes[letter] else { continue }
+            for down in [true, false] {
+                let e = CGEvent(keyboardEventSource: nil, virtualKey: code, keyDown: down)!
+                var unit = Array(String(letter).utf16)
+                e.keyboardSetUnicodeString(stringLength: unit.count, unicodeString: &unit)
+                e.postToPid(pid)
+                usleep(40_000)
+            }
+            usleep(250_000)
+        }
     }
 }
 
@@ -398,23 +416,37 @@ func afterActionStrings(_ t: Target) {
     check("voiceover", theme, "after the toggle the theme switch is named \"Switch to light theme\"",
           back ? "named" : "names now: \(themeNames)", "\"Switch to light theme\"", back)
 
-    // Typing in the search field adds the clear button, and VoiceOver must read "Clear the search".
+    // Typing in the search field adds the clear button, and VoiceOver must read "Clear the search". The letters go in
+    // as key events to the focused field: typing is what drives SwiftUI's text binding.
     guard let field = t.control("Search hosts") else {
-        check("voiceover", theme, "search field found to type into", "missing", "present", false); return
+        check("voiceover", theme, "search field found to type into", "missing; controls read: \(t.controls.map(\.name).joined(separator: ", "))", "present", false); return
     }
-    let typed = AXUIElementSetAttributeValue(field.element, "AXValue" as CFString, "web" as CFString) == .success
-    let clear = typed ? waitUntil(3) { t.control("Clear the search") != nil } : false
-    let names = t.controls.map(\.name).joined(separator: ", ")
+    let focusTaken = t.focus(field)
+    t.type("web")
+    let clear = waitUntil(3) { t.control("Clear the search") != nil }
+    let read = (attr(field.element, "AXValue") as? String) ?? ""
+    let holder = t.focused.map { "\($0.role) \"\($0.name)\"" } ?? "nothing"
+    let names = t.controls.map { "\($0.name) (\($0.role))" }.joined(separator: ", ")
     check("voiceover", theme, "after typing the search field has a button named \"Clear the search\"",
-          typed ? (clear ? "named" : "no such button; names now: \(names)") : "the field refused the typed text",
+          clear ? "named" : "no such button; field text \"\(read)\", focus \(focusTaken ? "taken" : "not confirmed"), focus now on \(holder); names now: \(names)",
           "\"Clear the search\"", clear)
 
-    // A spinner built without a label reads the library's "Working" (GL22).
-    let spinners = descendants(t.window).filter { text($0, "AXRole") == "AXProgressIndicator" }
-    let working = spinners.contains { text($0, "AXDescription") == "Working" || text($0, "AXTitle") == "Working" }
-    let seen = spinners.map { "\"\(spokenName($0))\"" }.joined(separator: ", ")
+    // A spinner built without a label reads the library's "Working" (GL22). Read from the live tree: macOS exposes
+    // the spinning ProgressView as AXBusyIndicator (a bar would be AXProgressIndicator), named by AXDescription.
+    // Anything else of that kind in the window is only listed when the line fails.
+    func progressLike() -> [AXUIElement] {
+        descendants(t.window).filter {
+            let role = text($0, "AXRole"), kind = text($0, "AXRoleDescription")
+            return ["Progress", "Busy", "Indicator"].contains { role.contains($0) || kind.localizedCaseInsensitiveContains($0) }
+        }
+    }
+    func named(_ e: AXUIElement) -> String { [text(e, "AXDescription"), text(e, "AXTitle"), text(e, "AXHelp")].first { !$0.isEmpty } ?? "" }
+    let spinnerRoles = ["AXBusyIndicator", "AXProgressIndicator"]
+    let working = waitUntil(3) { progressLike().contains { spinnerRoles.contains(text($0, "AXRole")) && named($0) == "Working" } }
+    let seen = progressLike().map { "\(text($0, "AXRole")) (\(text($0, "AXRoleDescription"))) \"\(named($0))\"" }.joined(separator: ", ")
     check("voiceover", theme, "the unlabelled spinner is named \"Working\"",
-          spinners.isEmpty ? "no progress indicator in the tree" : seen, "\"Working\"", working)
+          working ? "named" : "no AXBusyIndicator or AXProgressIndicator named \"Working\"; progress, busy or indicator elements in the window: \(seen.isEmpty ? "none" : seen)",
+          "\"Working\"", working)
 }
 
 /// The gallery's sheet (opened by --open-sheet) must say its title as a heading.
