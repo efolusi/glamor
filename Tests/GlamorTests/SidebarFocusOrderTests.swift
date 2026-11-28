@@ -52,5 +52,45 @@ struct SidebarFocusOrderTests {
         #expect(keys.contains("the divider follows the footer"))
         #expect(keys.contains(#"check("tab-order""#))
     }
+
+    // MARK: The code gives the visual order
+
+    private func sidebarBody() throws -> String {
+        let text = try read("Sources/Glamor/macOS/Sidebar.swift")
+        let start = try #require(text.range(of: "public var body: some View {"))
+        let end = try #require(text.range(of: "/// Where the traffic lights sit"))
+        return String(text[start.lowerBound..<end.lowerBound])
+    }
+
+    /// The cause (run 3, `Tab stops found`): the Tab order follows position on screen, and the rows below the fold are lower than
+    /// the pinned footer. The scrolling rows are one focus section and the footer another, so focus visits all the rows before
+    /// the footer, whatever their position; the sections themselves are ordered by position, top to bottom.
+    @Test func theScrollingRowsAreOneFocusSection() throws {
+        let body = try sidebarBody()
+        let scroll = try #require(body.range(of: "ScrollView {"))
+        let hairline = try #require(body.range(of: "Hairline()"))
+        #expect(body[scroll.lowerBound..<hairline.lowerBound].contains(".focusSection()"),
+                "the ScrollView and its rows are one section, so rows below the fold are not ordered against the footer")
+    }
+
+    /// The section is drawn round the footer's rows, not round their padding: the divider (the sidebar's full height, which ends at
+    /// the same bottom edge as the padded footer) must not tie with it.
+    @Test func theFooterIsItsOwnFocusSectionRoundItsRowsAndAfterTheContent() throws {
+        let body = try sidebarBody()
+        #expect(body.contains("footer.focusSection().padding(G.Row.listInset)"))
+        let scroll = try #require(body.range(of: "ScrollView {"))
+        let footer = try #require(body.range(of: "footer.focusSection()"))
+        #expect(scroll.lowerBound < footer.lowerBound, "the footer is declared after the content in the view tree")
+    }
+
+    /// The divider is the last stop: it is declared after the footer (an overlay on the whole column), and the doc says the order.
+    @Test func theDividerIsDeclaredAfterTheFooterAndTheDocNamesTheOrder() throws {
+        let body = try sidebarBody()
+        let footer = try #require(body.range(of: "footer.focusSection()"))
+        let divider = try #require(body.range(of: "SplitDivider("))
+        #expect(footer.lowerBound < divider.lowerBound)
+        let text = try read("Sources/Glamor/macOS/Sidebar.swift")
+        #expect(text.contains("Tab order: Hide, Search, every row top to bottom, the footer, then the divider"))
+    }
 }
 #endif

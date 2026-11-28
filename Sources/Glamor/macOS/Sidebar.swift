@@ -8,6 +8,10 @@ import SwiftUI
 ///
 /// Its content is a plain stack: a lazy one leaves the rows below the fold out of the accessibility tree and out
 /// of the Tab order until they are scrolled to, and a sidebar has about 25 rows.
+/// Tab order: Hide, Search, every row top to bottom, the footer, then the divider (WCAG 2.4.3). macOS orders Tab stops by
+/// where they are on screen, and the rows below the fold are lower than the pinned footer, so the scrolling rows are one
+/// focus section and the footer another: focus visits every row before the footer, and the divider, the last thing the
+/// sidebar declares, is the stop before the page it sizes.
 /// Variant B (the narrow window) passes `isResizable: false` and a fixed width for its column.
 public struct Sidebar<Header: View, Content: View, Footer: View>: View {
     @Binding var width: CGFloat
@@ -36,8 +40,9 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(G.Row.listInset)
             }
+            .focusSection()
             Hairline()
-            footer.padding(G.Row.listInset)
+            footer.focusSection().padding(G.Row.listInset)
         }
         .frame(width: width)
         .frame(maxHeight: .infinity)
