@@ -66,6 +66,38 @@ func descendants(_ e: AXUIElement) -> [AXUIElement] {
     return out
 }
 
+/// The window's whole tree, one row per element: depth, role, subrole, role description, what VoiceOver reads, AXValue, frame.
+func treeLines(_ window: AXUIElement) -> [String] {
+    var out: [String] = []
+    var seen: [AXUIElement] = []
+    func walk(_ el: AXUIElement, _ depth: Int) {
+        guard depth < 60, !seen.contains(where: { CFEqual($0, el) }) else { return }
+        seen.append(el)
+        let c = Control(element: el)
+        let f = c.frame
+        out.append("\(depth)\t\(c.role)\t\(c.subrole)\t\(c.roleDescription)\t\(spokenName(el))\t\(String(c.value.prefix(60)))\t\(Int(f.minX)),\(Int(f.minY)) \(Int(f.width))x\(Int(f.height))")
+        for child in (attr(el, "AXChildren") as? [AXUIElement]) ?? [] { walk(child, depth + 1) }
+    }
+    walk(window, 0)
+    return out
+}
+
+/// What a window holds, for the line that says something was not found: the count of each role, then every element that reads
+/// words, by role and words (at most 40).
+func roleCensus(_ t: Target) -> String {
+    let all = descendants(t.window)
+    var counts: [String: Int] = [:]
+    for e in all { counts[text(e, "AXRole"), default: 0] += 1 }
+    let roles = counts.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: " ")
+    let words = t.spoken.prefix(40).map { "\($0.role) \"\($0.name)\"" }.joined(separator: ", ")
+    return "\(all.count) elements (\(roles)); reading words: \(words.isEmpty ? "none" : words)"
+}
+
+/// An element named for a line of the log: its role, subrole and the words it reads.
+func holder(_ c: Control) -> String {
+    "\(c.role)\(c.subrole.isEmpty ? "" : "/\(c.subrole)") \"\(c.name.isEmpty ? spokenName(c.element) : c.name)\""
+}
+
 struct Control {
     let element: AXUIElement
     var role: String { text(element, "AXRole") }
@@ -74,12 +106,15 @@ struct Control {
     var description: String { text(element, "AXDescription") }
     var title: String { text(element, "AXTitle") }
     var help: String { text(element, "AXHelp") }
-    /// AXValue as text. A switch is guessed to read "1" (on) or "0" (off): not yet seen on this macOS, proven by the owner's window run.
+    /// AXValue as text. A switch reads "1" (on) or "0" (off): seen in run 3 of v0.4.0.
     var value: String { attr(element, "AXValue").map { "\($0)" } ?? "" }
     var placeholder: String { text(element, "AXPlaceholderValue") }
     var selected: Bool { (attr(element, "AXSelected") as? Bool) == true }
     var enabled: Bool { (attr(element, "AXEnabled") as? Bool) != false }
     var frame: CGRect { axFrame(element) ?? .zero }
+    /// A switch or a checkbox by what the tree says: an AXCheckBox, or any element with subrole AXToggle (run 3 read the switch as
+    /// role AXCheckBox, subrole AXToggle, role description "toggle button"). A control named like the switch is listed in any case.
+    var isSwitchLike: Bool { role == "AXCheckBox" || subrole == "AXToggle" }
     /// What VoiceOver reads first: the description, else the title, else a text field's placeholder.
     var name: String { [description, title, placeholder].first { !$0.isEmpty } ?? "" }
     var nameSource: String {
@@ -113,15 +148,16 @@ struct Target {
     var controls: [Control] {
         descendants(window).map(Control.init).filter {
             (["AXButton", "AXMenuButton", "AXTextField"].contains($0.role) && $0.subrole.isEmpty)
-                // UNPROVEN: a SwiftUI Toggle with .toggleStyle(.switch) is guessed to read AXCheckBox, subrole AXSwitch (or none).
-                // Not yet seen on this macOS; proven by the owner's window run (`strings` prints "switch-ax" with what was read).
-                || ($0.role == "AXCheckBox" && ["", "AXSwitch"].contains($0.subrole))
+                || $0.isSwitchLike
+                // The switch is also found by its name, whatever its role (a wrong role then fails the role line by name, instead
+                // of the switch being "not in the accessibility tree"). The card's own title text carries the same words.
+                || ($0.name == switchName && $0.role != "AXStaticText")
         }
     }
 
-    /// Text that is not a control (a mark's "Pro", a section's label): the tree's static texts, by their spoken string.
-    var staticTexts: [String] {
-        descendants(window).filter { text($0, "AXRole") == "AXStaticText" }.map(spokenName).filter { !$0.isEmpty }
+    /// Every element that reads something, in any role, by role and spoken string (a mark's "Pro", a section's label, a switch).
+    var spoken: [(role: String, name: String)] {
+        descendants(window).map { (text($0, "AXRole"), spokenName($0)) }.filter { !$0.1.isEmpty }
     }
 
     /// What a popover (the profile menu) holds, by role and spoken name; empty when none is open. The popover is a window of
@@ -143,7 +179,8 @@ struct Target {
         AXUIElementSetAttributeValue(c.element, "AXFocused" as CFString, kCFBooleanTrue)
         usleep(250_000)
         guard let f = attr(app, "AXFocusedUIElement") else { return false }
-        return CFEqual(f, c.element)
+        // The tree may hand back a fresh element for the row that holds focus: the same words are the same row.
+        return CFEqual(f, c.element) || (!c.name.isEmpty && Control(element: f as! AXUIElement).name == c.name)
     }
 
     func press(_ code: CGKeyCode, shift: Bool = false) {
@@ -332,11 +369,15 @@ func pixelsMode(_ t: Target) {
     check("deploy-label", theme, "Deploy label ink \(hex(dp.ink)) on fill \(hex(dp.ground))", f2(dp.typical) + ":1", ">= 4.5:1", dp.typical >= 4.5)
     if dp.worst < 4.5 { note("deploy-label", theme, "against the weakest fill pixel the ratio is \(f2(dp.worst)):1") }
 
-    // 1b2. A Button is a capsule (GL41): its corner radius is half its height. See `buttonShape`.
-    for name in ["Save", "Cancel", "Deploy"] {
+    // 1b2. A Button is a capsule (GL41): its corner radius is half its height. See `buttonShape`. Save and Deploy are read: their
+    // copper fill differs from the ground. Cancel is a secondary button on a card fill that equals the window ground in the
+    // capture (run 2: #FDFDFD, #FFFFFF, #FFFFFF in light, the same in dark), so its corner cannot tell a capsule from a
+    // rectangle; it draws the same `G.controlShape` as the two that are read (WindowCheckReadingTests pins that).
+    for name in ["Save", "Deploy"] {
         if let button = t.control(name) { buttonShape(name, theme, shot, wholeButton(button)) }
         else { check("button-shape", theme, "button \"\(name)\" found", "missing", "present", false) }
     }
+    note("button-shape", theme, "\"Cancel\" corner not read: its card fill reads like the window ground in this capture, so the corner cannot tell a capsule from a rectangle; Cancel draws the same G.controlShape as \"Save\" and \"Deploy\", whose corners are read above")
 
     // 1c. Unfocused search field edge against the surface around it (3:1, GL17): top, left and right edges
     // (the bottom edge sits in the glass's own shadow, so it is reported but does not decide).
@@ -427,6 +468,8 @@ func switchTint(_ t: Target, _ shot: Shot) {
 struct Expected {
     let name: String
     let role: String
+    /// The subrole the tree must read too, when the role alone does not say it (the switch is an AXCheckBox with subrole AXToggle); nil asks for none.
+    var subrole: String? = nil
     let selected: Bool
     let pressEvent: String?
     var value: String? = nil
@@ -441,6 +484,9 @@ struct SceneSpec {
     let name: String
     /// Buttons in the tree before `ready` says the window is up.
     let readyButtons: Int
+    /// Static texts in the tree before `ready` says the window is up: a scene with no control (the marks) is otherwise "up" at once,
+    /// before SwiftUI has put its words in the tree.
+    let readyTexts: Int
     let expected: [Expected]
     let pixels: ((Target) -> Void)?
     /// Names that only appear after the presses of `strings` (GL30).
@@ -448,6 +494,13 @@ struct SceneSpec {
     let sheet: ((Target) -> Void)?
     /// Checks only this scene needs, run at the end of `keys` (a header folded with Space, a row scrolled into view).
     var keys: ((Target) -> Void)? = nil
+    /// Print the window's whole accessibility tree (TREE lines) at the start of `strings`: one more run then shows what a role-based lookup missed.
+    var dumpsTree: Bool = false
+    /// The words of an element that is the last Tab stop of the scene and is not a listed control (its role is AXUnknown): the
+    /// sidebar's divider. It is looked up in any role, by what it reads, and expected after the listed controls.
+    var lastStop: String? = nil
+    /// The row `keys` puts keyboard focus on before any key is sent, so the Tab walk and the Space lines start from a defined stop.
+    var startsOn: String? = nil
 }
 
 /// The switch of the components scene (GL43). Not translated: the script runs the gallery in English.
@@ -467,8 +520,9 @@ let componentsControls: [Expected] = [
     Expected(name: "Month", role: "AXButton", selected: false, pressEvent: "segment 2"),
     Expected(name: "Switch to dark theme", role: "AXButton", selected: false, pressEvent: "theme dark"),
     Expected(name: "Search hosts", role: "AXTextField", selected: false, pressEvent: nil),
-    // UNPROVEN: role AXCheckBox, AXValue "1" and the press toggling it are guesses; not yet seen on this macOS, proven by the owner's window run.
-    Expected(name: switchName, role: "AXCheckBox", selected: false, pressEvent: "switch false", value: "1"),
+    // Read in run 3 of v0.4.0: role AXCheckBox, subrole AXToggle, role description "toggle button", AXValue "1", AXHelp the card's help line,
+    // frame 32x18. The NOTE switch-ax prints the same on every run.
+    Expected(name: switchName, role: "AXCheckBox", subrole: "AXToggle", selected: false, pressEvent: "switch false", value: "1"),
 ]
 
 /// The sidebar-a scene (GL31 to GL34, GL40): Home, four sections of places, Settings in the footer, in reading order.
@@ -481,6 +535,9 @@ let sidebarASections: [(title: String, places: [String])] = [
     ("About komando", ["Audit", "Doctor", "Agent"]),
 ]
 let sidebarAStart = "Host"
+/// The divider on the sidebar's edge is an intended keyboard stop (`SplitDivider` is focusable; ← → size it). It is the last stop
+/// of the sidebar, after the pinned footer and before the page it sizes. Its name is the library's English "Sidebar width".
+let sidebarDividerName = "Sidebar width"
 let sidebarACounts = ["Copy": "2 transfers running", "Doctor": "3 findings to review"]
 
 func sidebarARow(_ name: String) -> Expected {
@@ -518,22 +575,28 @@ let sidebarBControls: [Expected] = sidebarBRailNames.map {
 let profileControls: [Expected] = [Expected(name: profileSpoken, role: "AXButton", selected: false, pressEvent: nil, hasNoHelp: true)]
 
 let scenes: [String: SceneSpec] = [
-    "components": SceneSpec(name: "components", readyButtons: 10, expected: componentsControls,
-                            pixels: pixelsMode, afterActions: afterActionStrings, sheet: sheetMode),
+    "components": SceneSpec(name: "components", readyButtons: 10, readyTexts: 0, expected: componentsControls,
+                            pixels: pixelsMode, afterActions: afterActionStrings, sheet: sheetMode, dumpsTree: true),
     // The marks have no control: nothing to wait for but the window, and the strings and pixels read static texts.
-    "marks": SceneSpec(name: "marks", readyButtons: 0, expected: [],
-                       pixels: marksPixels, afterActions: marksStrings, sheet: nil),
-    "sidebar-a": SceneSpec(name: "sidebar-a", readyButtons: 27, expected: sidebarAControls,
-                           pixels: sidebarAPixels, afterActions: sidebarAAfterActions, sheet: nil, keys: sidebarAKeys),
-    "sidebar-b": SceneSpec(name: "sidebar-b", readyButtons: 17, expected: sidebarBControls,
+    "marks": SceneSpec(name: "marks", readyButtons: 0, readyTexts: 4, expected: [],
+                       pixels: marksPixels, afterActions: marksStrings, sheet: nil, dumpsTree: true),
+    "sidebar-a": SceneSpec(name: "sidebar-a", readyButtons: 27, readyTexts: 0, expected: sidebarAControls,
+                           pixels: sidebarAPixels, afterActions: sidebarAAfterActions, sheet: nil, keys: sidebarAKeys,
+                           lastStop: sidebarDividerName, startsOn: "Home"),
+    "sidebar-b": SceneSpec(name: "sidebar-b", readyButtons: 17, readyTexts: 0, expected: sidebarBControls,
                            pixels: sidebarBPixels, afterActions: sidebarBAfterActions, sheet: nil, keys: sidebarBKeys),
-    "profile": SceneSpec(name: "profile", readyButtons: 1, expected: profileControls,
+    "profile": SceneSpec(name: "profile", readyButtons: 1, readyTexts: 0, expected: profileControls,
                          pixels: profilePixels, afterActions: profileAfterActions, sheet: nil, keys: profileKeys),
 ]
 
 func stringsMode(_ t: Target) {
     let theme = t.theme
     emit("TABLE\tname\trole\troleDescription\tname from\tAXDescription\tAXTitle\tAXHelp\tselected\tframe (pt)")
+    if t.scene.dumpsTree {
+        // The whole tree, not only the controls the table's filter keeps: a role the check did not expect shows here.
+        emit("TREE\tdepth\trole\tsubrole\troleDescription\tspoken\tAXValue\tframe (pt) x,y size")
+        for line in treeLines(t.window) { emit("TREE\t\(line)") }
+    }
     for c in t.controls {
         emit("TABLE\t\(c.name)\t\(c.role)\t\(c.roleDescription)\t\(c.nameSource)\t\(c.description)\t\(c.title)\t\(c.help)\t\(c.selected)\t\(Int(c.frame.width))x\(Int(c.frame.height))")
     }
@@ -542,15 +605,25 @@ func stringsMode(_ t: Target) {
             check("voiceover", theme, "control named \"\(e.name)\"", "not in the accessibility tree", "present", false); continue
         }
         check("voiceover", theme, "\"\(e.name)\": role \(e.role), selected \(e.selected), enabled",
-              "\(c.role) (\(c.roleDescription)), selected \(c.selected), enabled \(c.enabled), name from \(c.nameSource)",
-              "\(e.role), selected \(e.selected), enabled true", c.role == e.role && c.selected == e.selected && c.enabled)
+              "\(c.role)\(c.subrole.isEmpty ? "" : "/\(c.subrole)") (\(c.roleDescription)), selected \(c.selected), enabled \(c.enabled), name from \(c.nameSource)",
+              "\(e.role)\(e.subrole.map { "/\($0)" } ?? ""), selected \(e.selected), enabled true", c.role == e.role && (e.subrole == nil || c.subrole == e.subrole) && c.selected == e.selected && c.enabled)
         if c.role == "AXTextField" {
             let labelled = c.description == c.placeholder || c.title == c.placeholder
             check("voiceover", theme, "the text field is named by a label equal to its placeholder, not by the placeholder alone",
                   "AXDescription \"\(c.description)\", AXTitle \"\(c.title)\", placeholder \"\(c.placeholder)\"", "a label \"\(c.placeholder)\"", labelled)
         }
         if e.role == "AXCheckBox" {
-            note("switch-ax", theme, "\"\(e.name)\" read as role \(c.role), subrole \"\(c.subrole)\", role description \"\(c.roleDescription)\", AXValue \"\(c.value)\"; not yet seen on this macOS, proven by the owner's window run")
+            note("switch-ax", theme, "\"\(e.name)\" read as role \(c.role), subrole \"\(c.subrole)\", role description \"\(c.roleDescription)\", AXValue \"\(c.value)\", AXDescription \"\(c.description)\", AXTitle \"\(c.title)\", AXHelp \"\(c.help)\", frame \(Int(c.frame.minX)),\(Int(c.frame.minY)) \(Int(c.frame.width))x\(Int(c.frame.height)), window \(axFrame(t.window).map { "\(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height))" } ?? "?")")
+        }
+        if e.role == "AXCheckBox" {
+            // The card's row: the title, the help line and the switch together. ToggleCard draws no contentShape and no tap on its row,
+            // so the pointer target is the switch alone (the spacing line below stands for it); the row is measured, not called the target.
+            let texts = descendants(t.window).filter { text($0, "AXRole") == "AXStaticText" }
+            let parts = [e.name, c.help].compactMap { words in texts.first { spokenName($0) == words } }.compactMap(axFrame) + [c.frame]
+            let row = parts.dropFirst().reduce(parts[0]) { $0.union($1) }
+            note("target-row", theme, "the pointer target is the switch alone, \(frameText(c.frame)) pt: ToggleCard draws no contentShape or tap on its row (WCAG 2.5.8 stands on the spacing line)")
+            check("target-row", theme, "the card row (title, help line and switch together) frame", parts.count == 3 ? "\(f2(Double(row.width)))x\(f2(Double(row.height))) pt" : "title or help text not found in the tree (\(parts.count - 1) of 2)",
+                  ">= 24 pt high", parts.count == 3 && row.height >= 24)
         }
         if let value = e.value {
             check("voiceover", theme, "\"\(e.name)\" reads its value before any press", "AXValue \"\(c.value)\"", "\"\(value)\"", c.value == value)
@@ -661,22 +734,31 @@ func afterActionStrings(_ t: Target) {
 /// What VoiceOver reads for the two marks, which the marks scene shows twice each: on the window and on a card.
 let proSpoken = "Pro, paid feature", soonSpoken = "Soon, not available yet"
 
-/// The frames of the tree's static texts that read `spoken`, top first (the window's mark, then the card's).
-func markFrames(_ t: Target, _ spoken: String) -> [CGRect] {
-    descendants(t.window).filter { text($0, "AXRole") == "AXStaticText" && spokenName($0) == spoken }
-        .compactMap(axFrame).sorted { $0.minY < $1.minY }
+/// The elements that read `spoken`, in any role (a mark is one element with a label, whatever role SwiftUI gives it), the one
+/// that holds the words and not a parent that repeats them.
+func markElements(_ t: Target, _ spoken: String) -> [AXUIElement] {
+    descendants(t.window).filter { el in
+        spokenName(el) == spoken && !((attr(el, "AXChildren") as? [AXUIElement]) ?? []).contains { spokenName($0) == spoken }
+    }
 }
 
-/// Each mark is one element read as its spoken words; the bare word is not read apart from it.
+/// The frames of the elements that read `spoken`, top first (the window's mark, then the card's).
+func markFrames(_ t: Target, _ spoken: String) -> [CGRect] {
+    markElements(t, spoken).compactMap(axFrame).sorted { $0.minY < $1.minY }
+}
+
+/// Each mark is one element read as its spoken words, in whatever role the tree gives it (the NOTE says which); the bare word is
+/// not read apart from it, by any element.
 func marksStrings(_ t: Target) {
     let theme = t.theme
     for (mark, spoken) in [("Pro", proSpoken), ("Soon", soonSpoken)] {
-        let both = waitUntil(3) { t.staticTexts.filter { $0 == spoken }.count == 2 }
-        let count = t.staticTexts.filter { $0 == spoken }.count
-        check("voiceover", theme, "the \(mark) mark is one static text read \"\(spoken)\", once on the window and once on a card",
-              both ? "2 found" : "\(count) found; static texts in the window: \(t.staticTexts.joined(separator: ", "))", "2 found", both)
+        let both = waitUntil(3) { markElements(t, spoken).count == 2 }
+        let found = markElements(t, spoken)
+        note("mark-ax", theme, "\(mark) read as: " + (found.isEmpty ? "no element" : found.map { holder(Control(element: $0)) + " \(Control(element: $0).roleDescription)" }.joined(separator: "; ")))
+        check("voiceover", theme, "the \(mark) mark is one element read \"\(spoken)\", once on the window and once on a card",
+              both ? "2 found" : "\(found.count) found; the window holds \(roleCensus(t))", "2 found", both)
     }
-    let bare = t.staticTexts.filter { $0 == "Pro" || $0 == "Soon" }
+    let bare = t.spoken.filter { $0.name == "Pro" || $0.name == "Soon" }.map { "\($0.role) \"\($0.name)\"" }
     check("voiceover", theme, "no bare word \"Pro\" or \"Soon\" is read apart from its mark", bare.isEmpty ? "none" : bare.joined(separator: ", "), "none", bare.isEmpty)
 }
 
@@ -687,7 +769,7 @@ func marksPixels(_ t: Target) {
     let theme = t.theme
     let found = waitUntil(5) { markFrames(t, proSpoken).count == 2 && markFrames(t, soonSpoken).count == 2 }
     guard found else {
-        check("setup", theme, "both marks found on the window and on a card", "Pro: \(markFrames(t, proSpoken).count), Soon: \(markFrames(t, soonSpoken).count); static texts: \(t.staticTexts.joined(separator: ", "))",
+        check("setup", theme, "both marks found on the window and on a card", "Pro: \(markFrames(t, proSpoken).count), Soon: \(markFrames(t, soonSpoken).count); the window holds \(roleCensus(t))",
               "2 and 2", false)
         return
     }
@@ -729,45 +811,109 @@ func sheetMode(_ t: Target) {
           found ? "heading" : "headings in the tree: \(seen.isEmpty ? "none" : seen)", "a heading \"\(title)\"", found)
 }
 
+/// A frame as "x,y WxH" for a line of the log.
+func frameText(_ f: CGRect) -> String { "\(Int(f.minX)),\(Int(f.minY)) \(Int(f.width))x\(Int(f.height))" }
+
+/// What the tree says when a row would not take focus: its own AXFocused, its frame, and what holds focus instead. A row that cannot
+/// take focus is a finding, so the evidence is printed, not guessed.
+func focusEvidence(_ t: Target, _ c: Control) -> String {
+    let flag = (attr(c.element, "AXFocused") as? Bool).map { "\($0)" } ?? "unreadable"
+    let held = t.focused.map { "\(holder($0)) frame \(frameText($0.frame))" } ?? "nothing"
+    return "AXFocused on the row reads \(flag), row frame \(frameText(c.frame)), focus is on \(held)"
+}
+
+/// Gives one control keyboard focus the way a person does: AXFocused first (some controls refuse it, the glass theme switch among
+/// them), then Tab, one full turn of the Tab order. Tab starts from a defined row: the one before it in the reading order, put in focus
+/// with AXFocused first, not from whatever the last control left. `visited` is what held focus after each Tab, for the line that says a
+/// control took none: a control that Tab never reaches is a finding, so the stops are printed, not guessed, with `evidence` from the tree.
+func focusByKeyboard(_ t: Target, _ name: String, order: [String], fka: Bool) -> (ok: Bool, visited: [String], evidence: String) {
+    let row = t.control(name)
+    if let again = row, t.focus(again) { return (true, [], "") }
+    let evidence = row.map { focusEvidence(t, $0) } ?? "no row named \"\(name)\" in the tree"
+    guard fka else { return (false, [], evidence) }
+    if let at = order.firstIndex(of: name), at > 0, let before = t.control(order[at - 1]) { _ = t.focus(before) }
+    var visited: [String] = []
+    for _ in 0..<(order.count + 2) {
+        t.press(48)
+        visited.append(t.focused.map { holder($0) } ?? "nothing")
+        if t.focused?.name == name { return (true, visited, evidence) }
+    }
+    return (false, visited, evidence)
+}
+
+/// The UNPROVEN text for a control that took no keyboard focus, with the stops Tab visited and what the tree said about the row.
+func noFocusText(_ name: String, fka: Bool, visited: [String], evidence: String = "", then: String) -> String {
+    "\"\(name)\" does not take keyboard focus with Keyboard navigation \(fka ? "on" : "off"), so \(then). Tab visited: \(visited.isEmpty ? "no stop (no Tab was sent)" : visited.joined(separator: " > "))\(evidence.isEmpty ? "" : ". Evidence: \(evidence)")"
+}
+
 func keysMode(_ t: Target) {
     let theme = t.theme
     let fka = NSApplication.shared.isFullKeyboardAccessEnabled
     note("keyboard", theme, "System Settings > Keyboard > Keyboard navigation is \(fka ? "ON" : "OFF") (read only; this script never changes it)")
 
-    // Tab order. Expected: the reading order of the controls, as the accessibility tree lists them.
+    // Tab order. Expected: the reading order of the controls, as the accessibility tree lists them, then the scene's last stop.
     let order = t.controls.map(\.name)
-    var seen: [String] = []
-    if let first = t.focused, order.contains(first.name) { seen.append(first.name) }
-    for _ in 0..<(order.count + 2) {
-        t.press(48)
-        guard let n = t.focused?.name, order.contains(n), !seen.contains(n) else { break }
-        seen.append(n)
+    // The last stop (the sidebar's divider) is not a listed control: it is found in any role by what it reads, and its role, subrole and
+    // frame are printed. A scene that names one the tree does not hold fails here, not as an unexplained extra stop.
+    var lastStopLabel: String?
+    if let lastStop = t.scene.lastStop {
+        let found = descendants(t.window).first { spokenName($0) == lastStop }
+        lastStopLabel = found.map { holder(Control(element: $0)) }
+        let f = found.flatMap(axFrame)
+        note("divider-ax", theme, "\"\(lastStop)\" read as \(lastStopLabel ?? "no element"), frame \(f.map { "\(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height))" } ?? "?"), window \(axFrame(t.window).map { "\(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height))" } ?? "?")")
+        check("voiceover", theme, "the element \"\(lastStop)\" is in the tree, in any role", lastStopLabel ?? "not in the accessibility tree", "present", found != nil)
     }
+    let expectedOrder = order + (lastStopLabel.map { [$0] } ?? [])
+    // A stop that is not a listed control is kept, named by role and words, and the walk goes on: one run then records the whole turn.
+    func label(_ c: Control?) -> String { c.map { order.contains($0.name) ? $0.name : holder($0) } ?? "nothing holds focus" }
+    // The keys start from a known row: focus is put there with AXFocused before any key is sent (run 3 started from the search field's leftover focus).
+    if let start = t.scene.startsOn {
+        let put = focusByKeyboard(t, start, order: expectedOrder, fka: fka)
+        note("keys-start", theme, put.ok ? "focus put on \"\(start)\" before any key" : "\"\(start)\" took no focus; \(put.evidence)")
+    }
+    var seen: [String] = []
+    var ended = "the turn used every Tab it was given"
+    if let first = t.focused { seen.append(label(first)) }
+    for _ in 0..<(expectedOrder.count + 3) {
+        t.press(48)
+        let stop = label(t.focused)
+        if stop == seen.first { ended = "Tab came back to \"\(stop)\""; break }
+        if seen.contains(stop) { ended = "Tab reached \"\(stop)\" a second time"; break }
+        seen.append(stop)
+    }
+    let unlisted = seen.filter { !expectedOrder.contains($0) }
     note("tab-order", theme, "Tab stops found: \(seen.joined(separator: " > "))")
+    note("tab-stop", theme, "the walk ended after \(seen.count) stops: \(ended)\(unlisted.isEmpty ? "" : "; stops that are not listed controls: \(unlisted.joined(separator: ", "))")")
     if fka {
         // The walk may start anywhere (the search field has focus at launch), so the order is compared as a rotation.
-        let start = seen.first.flatMap { order.firstIndex(of: $0) } ?? 0
-        let rotated = Array(order[start...] + order[..<start])
+        let start = seen.first.flatMap { expectedOrder.firstIndex(of: $0) } ?? 0
+        let rotated = Array(expectedOrder[start...] + expectedOrder[..<start])
         check("tab-order", theme, "Tab visits every control in reading order", seen.joined(separator: " > "), rotated.joined(separator: " > "), seen == rotated)
+        if seen != rotated, let at = zip(seen, rotated).enumerated().first(where: { $0.element.0 != $0.element.1 })?.offset ?? (seen.count < rotated.count ? seen.count : nil) {
+            note("tab-order", theme, "first difference at stop \(at + 1): expected \"\(at < rotated.count ? rotated[at] : "no more stops")\", Tab went to \"\(at < seen.count ? seen[at] : "no stop")\"")
+        }
+        // The divider stands right after the last listed control (the pinned footer), whatever the walk's start.
+        if let lastStopLabel, let footer = order.last {
+            let after = seen.firstIndex(of: footer).flatMap { i in i + 1 < seen.count ? seen[i + 1] : seen.first }
+            check("tab-order", theme, "the divider follows the footer: the stop after \"\(footer)\" is the divider", after.map { "\"\($0)\"" } ?? "no stop", "\"\(lastStopLabel)\"", after == lastStopLabel)
+        }
     } else {
-        unproven("tab-order", theme, "with Keyboard navigation off macOS keeps Tab on text fields, so the order of \(order.count) controls cannot be walked; rerun after turning Keyboard navigation on yourself")
+        unproven("tab-order", theme, "with Keyboard navigation off macOS keeps Tab on text fields, so the order of \(expectedOrder.count) controls cannot be walked; rerun after turning Keyboard navigation on yourself")
     }
 
     // Space and Return, on every control that takes focus. A control that will not take focus is reported, not skipped silently.
     for e in t.scene.expected where e.role != "AXTextField" {
         guard let c = t.control(e.name) else { continue }
         // Some controls (the glass theme switch) refuse AXFocused but take focus from Tab: reach them the way a user does.
+        var visited: [String] = [], evidence = ""
         func focusOrTab(_ name: String) -> Bool {
-            if let again = t.control(name), t.focus(again) { return true }
-            guard fka else { return false }
-            for _ in 0..<(order.count + 2) {
-                t.press(48)
-                if t.focused?.name == name { return true }
-            }
-            return false
+            let reached = focusByKeyboard(t, name, order: order, fka: fka)
+            visited = reached.visited
+            evidence = reached.evidence
+            return reached.ok
         }
         guard focusOrTab(e.name) else {
-            unproven("keys", theme, "\"\(e.name)\" does not take keyboard focus with Keyboard navigation \(fka ? "on" : "off"), so Space and Return could not be sent to it")
+            unproven("keys", theme, noFocusText(e.name, fka: fka, visited: visited, evidence: evidence, then: "Space and Return could not be sent to it"))
             continue
         }
         if e.role == "AXMenuButton" {
@@ -873,6 +1019,11 @@ func sidebarAAfterActions(_ t: Target) {
     check("voiceover", theme, "the container is named \"Sidebar\"", named ? "named" : "no element named Sidebar", "named", named)
     // A header: AXPress folds it, so its rows leave the tree and its value says "collapsed"; a second press restores both.
     let title = "Targets", row = "Cloud"
+    // The row presses before this ended on Settings, so Targets holds no chosen place now and its header rightly reads "collapsed"
+    // alone (run 2 read that and expected the name). Choose Host again, as at launch, before the fold is read.
+    if let place = t.control(sidebarAStart) { _ = AXUIElementPerformAction(place.element, "AXPress" as CFString) }
+    let chosenAgain = waitUntil(3) { t.control(sidebarAStart)?.selected == true }
+    check("voiceover", theme, "\"\(sidebarAStart)\" is chosen again before the folded header is read", chosenAgain ? "chosen" : "not chosen", "chosen", chosenAgain)
     guard let header = t.control(title) else { check("voiceover", theme, "header \"\(title)\" found", "missing", "present", false); return }
     let pressed = AXUIElementPerformAction(header.element, "AXPress" as CFString) == .success
     let gone = pressed && waitUntil(3) { t.control(row) == nil }
@@ -885,6 +1036,14 @@ func sidebarAAfterActions(_ t: Target) {
     let back = waitUntil(3) { t.control(row) != nil }
     let open = waitUntil(3) { t.control(title)?.value == "expanded" }
     check("voiceover", theme, "a second AXPress restores \"\(row)\" and the value \"expanded\"", back && open ? "restored" : "row \(back ? "back" : "gone"), value \"\(t.control(title)?.value ?? "")\"", "restored", back && open)
+    // A folded section that does not hold the chosen place says "collapsed" and no name.
+    let other = "Komando's own", otherRow = "Snippet"
+    guard let otherHeader = t.control(other) else { check("voiceover", theme, "header \"\(other)\" found", "missing", "present", false); return }
+    let otherFolded = AXUIElementPerformAction(otherHeader.element, "AXPress" as CFString) == .success
+        && waitUntil(3) { t.control(otherRow) == nil } && waitUntil(3) { t.control(other)?.value == "collapsed" }
+    check("voiceover", theme, "a folded header that does not hold the chosen place reads \"collapsed\" alone", "AXValue \"\(t.control(other)?.value ?? "")\"", "\"collapsed\"", otherFolded)
+    if let again = t.control(other) { _ = AXUIElementPerformAction(again.element, "AXPress" as CFString) }
+    _ = waitUntil(3) { t.control(otherRow) != nil }
 }
 
 /// Keys: Space on a header folds it and takes its rows out of the Tab order; Tab to the last row scrolls it into the window.
@@ -895,8 +1054,10 @@ func sidebarAKeys(_ t: Target) {
         return
     }
     let folded = "Across types", next = "Komando's own", inside = "Copy", last = "Agent", before = "Doctor"
-    guard let header = t.control(folded), t.focus(header) else {
-        unproven("keys", theme, "\"\(folded)\" did not take keyboard focus, so Space could not be sent to it"); return
+    let order = t.controls.map(\.name)
+    let header = focusByKeyboard(t, folded, order: order, fka: true)
+    guard header.ok else {
+        unproven("keys", theme, noFocusText(folded, fka: true, visited: header.visited, evidence: header.evidence, then: "Space could not be sent to it")); return
     }
     t.press(49)
     let gone = waitUntil(3) { t.control(inside) == nil }
@@ -905,12 +1066,13 @@ func sidebarAKeys(_ t: Target) {
     t.press(48)
     let stop = t.focused?.name ?? "none"
     check("keys", theme, "after Tab from the folded header the next stop skips the folded rows", "\"\(stop)\"", "\"\(next)\"", stop == next)
-    if let again = t.control(folded), t.focus(again) { t.press(49) }
+    if focusByKeyboard(t, folded, order: order, fka: true).ok { t.press(49) }
     let back = waitUntil(3) { t.control(inside) != nil }
     check("keys", theme, "a second Space on \"\(folded)\" restores \"\(inside)\"", back ? "restored" : "still folded", "restored", back)
     // The window is 680 high with every section open, so the last rows start below the fold. Tab reaches \(last) and it must scroll in.
-    guard let doctor = t.control(before), t.focus(doctor) else {
-        unproven("keys", theme, "\"\(before)\" did not take keyboard focus, so Tab could not be sent on to \"\(last)\""); return
+    let doctor = focusByKeyboard(t, before, order: order, fka: true)
+    guard doctor.ok else {
+        unproven("keys", theme, noFocusText(before, fka: true, visited: doctor.visited, evidence: doctor.evidence, then: "Tab could not be sent on to \"\(last)\"")); return
     }
     t.press(48)
     let arrived = t.focused?.name == last
@@ -1019,8 +1181,9 @@ func sidebarBKeys(_ t: Target) {
         return
     }
     let area = "Across", row = sidebarASections[1].places[0]
-    guard let item = t.control(area), t.focus(item) else {
-        unproven("keys", theme, "\"\(area)\" did not take keyboard focus, so Space could not be sent to it"); return
+    let item = focusByKeyboard(t, area, order: t.controls.map(\.name), fka: true)
+    guard item.ok else {
+        unproven("keys", theme, noFocusText(area, fka: true, visited: item.visited, evidence: item.evidence, then: "Space could not be sent to it")); return
     }
     t.press(49)
     let shown = waitUntil(3) { t.control(row) != nil && t.control("Host") == nil }
@@ -1073,8 +1236,10 @@ func profileAfterActions(_ t: Target) {
 /// Keys: Space on the focused card opens the menu, Escape closes it, and focus is back on the card.
 func profileKeys(_ t: Target) {
     let theme = t.theme
-    guard let card = t.control(profileSpoken), t.focus(card) else {
-        unproven("keys", theme, "the profile card did not take keyboard focus, so Space could not be sent to it"); return
+    let fka = NSApplication.shared.isFullKeyboardAccessEnabled
+    let card = focusByKeyboard(t, profileSpoken, order: t.controls.map(\.name), fka: fka)
+    guard card.ok else {
+        unproven("keys", theme, noFocusText(profileSpoken, fka: fka, visited: card.visited, evidence: card.evidence, then: "Space could not be sent to it")); return
     }
     t.press(49)
     let opened = waitUntil(3) { !t.popoverChildren.isEmpty }
@@ -1096,14 +1261,37 @@ func sceneNamed(_ name: String?) -> SceneSpec {
     }
     return spec
 }
+// Log only: when the readiness wait fails, print what the window's accessibility tree holds, so one more run shows why
+// (window count, whether the window is listed, the role counts of every descendant and the first two levels).
+if args.count == 3, args[1] == "dump", let pid = Int32(args[2]) {
+    let app = AXUIElementCreateApplication(pid)
+    let windows = attr(app, "AXWindows") as? [AXUIElement] ?? []
+    let listed = (CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]] ?? [])
+        .contains { ($0[kCGWindowOwnerPID as String] as? Int32) == pid && ($0[kCGWindowLayer as String] as? Int) == 0 }
+    print("DUMP\twindows in the application: \(windows.count); a layer 0 window is on screen: \(listed)")
+    for (i, w) in windows.enumerated() {
+        let all = descendants(w)
+        var counts: [String: Int] = [:]
+        for e in all { counts[text(e, "AXRole"), default: 0] += 1 }
+        let summary = counts.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: " ")
+        print("DUMP\twindow \(i): role \(text(w, "AXRole")), title \"\(text(w, "AXTitle"))\", \(all.count) descendants: \(summary)")
+        for c in (attr(w, "AXChildren") as? [AXUIElement] ?? []).prefix(12) {
+            let kids = (attr(c, "AXChildren") as? [AXUIElement] ?? [])
+            let names = kids.prefix(8).map { "\(text($0, "AXRole")) \"\(text($0, "AXTitle"))\(text($0, "AXDescription"))\"" }.joined(separator: ", ")
+            print("DUMP\t  level 1: \(text(c, "AXRole")) \"\(text(c, "AXTitle"))\" with \(kids.count) children: \(names)")
+        }
+    }
+    exit(0)
+}
 if args.count >= 3, args.count <= 4, args[1] == "ready", let pid = Int32(args[2]) {
     let spec = sceneNamed(args.count == 4 ? args[3] : nil)
     let app = AXUIElementCreateApplication(pid)
     let window = (attr(app, "AXWindows") as? [AXUIElement])?.first
     let buttons = window.map { descendants($0).filter { text($0, "AXRole") == "AXButton" }.count } ?? 0
+    let texts = window.map { descendants($0).filter { text($0, "AXRole") == "AXStaticText" && !spokenName($0).isEmpty }.count } ?? 0
     let listed = (CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]] ?? [])
         .contains { ($0[kCGWindowOwnerPID as String] as? Int32) == pid && ($0[kCGWindowLayer as String] as? Int) == 0 }
-    exit(buttons >= spec.readyButtons && listed ? 0 : 1)
+    exit(buttons >= spec.readyButtons && texts >= spec.readyTexts && listed ? 0 : 1)
 }
 guard args.count == 5 || args.count == 6, let pidValue = Int32(args[2]) else {
     FileHandle.standardError.write(Data("usage: windowcheck pixels|strings|keys|sheet <pid> <theme> <out-dir> [scene] | ready <pid> [scene]\n".utf8))

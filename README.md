@@ -41,7 +41,7 @@ See [guidelines/ecosystem.md](guidelines/ecosystem.md) and [ARCHITECTURE.md](ARC
 Add Glamor to `Package.swift`, pinned to a tag:
 
 ```swift
-.package(url: "https://github.com/efolusi/glamor", exact: "0.3.1"),
+.package(url: "https://github.com/efolusi/glamor", exact: "0.4.0"),
 ```
 
 Then add `"Glamor"` to your target's dependencies and `import Glamor`. The newest tag and what changed are in [CHANGELOG.md](CHANGELOG.md).
@@ -123,7 +123,7 @@ On macOS 26, system glass loses its tint when its window is not the key window. 
 
 Glamor does not work around it. A solid fill swapped in while the window is inactive would flicker on every focus change and would no longer be the system's glass. The label colour (`G.onAccent`) does not change, so the text stays readable in both states. Reduce Transparency and Increase Contrast use the solid path, which keeps its colours in every window state.
 
-## Known limits in v0.3.1 (not machine-proven)
+## Known limits in v0.4.0 (not machine-proven)
 
 The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, which proves Tab order and Space on every button with Keyboard navigation on (it stops at once with one line when that is off). The rows below are what it does not prove. Each row says what was proven instead.
 
@@ -134,7 +134,9 @@ The release gate (`scripts/release-gate.sh`) runs `scripts/check-window.sh`, whi
 | The system Reduce Transparency and Increase Contrast settings | A unit test of `GlassPath.choose` for the solid path. A debug palette switch draws the increased-contrast colours in the window, and they are measured |
 | Real mouse clicks, including on the button padding | The accessibility frame covers the whole button (at least 24x24, Deploy 68x32) |
 | The solid path on macOS 15 and iOS 18 | `#available` checks and unit tests; not run on those systems |
-| iOS at run time | iOS is built in CI and in the gate (`generic/platform=iOS`); it is not run in a simulator or measured in a window |
+| iOS at run time, including the 44 high `SidebarItem` | iOS is built in CI and in the gate (`generic/platform=iOS`), and CI builds the iOS tests (`build-for-testing`) without running them; the row is source-pinned. It is not run in a simulator or on a device, and not measured in a window |
+| The scenes `sidebar-a`, `sidebar-b`, `profile` and `marks`, the ToggleCard switch, `button-shape` | Unit and source tests for the sizes, names and contrast. Their window-check lines run only in the owner's run of `check-window.sh --strict`, which the v0.4.0 tag waits for |
+| `SidebarSearch` typing | Not built: it is a button that opens the app's own command palette; nothing filters the sidebar |
 | Indonesian in a window | `LocalisationTests`: every catalog string has `en` and `id` with the same placeholders, the shipped `.lproj` files equal the catalog, and the language falls back to English. The window check reads the English names |
 
 ## Contributing

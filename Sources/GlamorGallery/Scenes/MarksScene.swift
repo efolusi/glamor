@@ -19,6 +19,7 @@ struct MarksScene: View {
         .padding(G.Space.s24)
         .frame(width: 460, height: 260, alignment: .topLeading)
         .background(G.panel)
+        .background(EnvironmentProbe())
     }
 
     /// The names are the gallery's own demo words, not a product's.
