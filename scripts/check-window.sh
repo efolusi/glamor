@@ -24,6 +24,13 @@ STRICT=0
 
 [ "$(sw_vers -productVersion | cut -d. -f1)" -ge 26 ] || { echo "needs macOS 26 or later" >&2; exit 2; }
 
+# A locked screen hides every window from the accessibility tree: each launch would print "the gallery window did not
+# appear" and nothing would be checked (runs 1 and 4 of the v0.4.0 check were lost that way). Stop at once instead.
+if ioreg -n Root -d1 -a 2>/dev/null | grep -A1 'IOConsoleLocked' | grep -q '<true/>'; then
+    echo "the screen is locked: unlock the Mac (and keep it awake), then run again" >&2
+    exit 2
+fi
+
 # --strict needs Keyboard navigation on (System Settings, Keyboard): without it Tab and Space cannot be tested and
 # every key check would end UNPROVEN after ten minutes. Stop at once with a plain line instead.
 if [ "$STRICT" = 1 ]; then
