@@ -1096,6 +1096,28 @@ func sceneNamed(_ name: String?) -> SceneSpec {
     }
     return spec
 }
+// Log only: when the readiness wait fails, print what the window's accessibility tree holds, so one more run shows why
+// (window count, whether the window is listed, the role counts of every descendant and the first two levels).
+if args.count == 3, args[1] == "dump", let pid = Int32(args[2]) {
+    let app = AXUIElementCreateApplication(pid)
+    let windows = attr(app, "AXWindows") as? [AXUIElement] ?? []
+    let listed = (CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]] ?? [])
+        .contains { ($0[kCGWindowOwnerPID as String] as? Int32) == pid && ($0[kCGWindowLayer as String] as? Int) == 0 }
+    print("DUMP\twindows in the application: \(windows.count); a layer 0 window is on screen: \(listed)")
+    for (i, w) in windows.enumerated() {
+        let all = descendants(w)
+        var counts: [String: Int] = [:]
+        for e in all { counts[text(e, "AXRole"), default: 0] += 1 }
+        let summary = counts.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: " ")
+        print("DUMP\twindow \(i): role \(text(w, "AXRole")), title \"\(text(w, "AXTitle"))\", \(all.count) descendants: \(summary)")
+        for c in (attr(w, "AXChildren") as? [AXUIElement] ?? []).prefix(12) {
+            let kids = (attr(c, "AXChildren") as? [AXUIElement] ?? [])
+            let names = kids.prefix(8).map { "\(text($0, "AXRole")) \"\(text($0, "AXTitle"))\(text($0, "AXDescription"))\"" }.joined(separator: ", ")
+            print("DUMP\t  level 1: \(text(c, "AXRole")) \"\(text(c, "AXTitle"))\" with \(kids.count) children: \(names)")
+        }
+    }
+    exit(0)
+}
 if args.count >= 3, args.count <= 4, args[1] == "ready", let pid = Int32(args[2]) {
     let spec = sceneNamed(args.count == 4 ? args[3] : nil)
     let app = AXUIElementCreateApplication(pid)
