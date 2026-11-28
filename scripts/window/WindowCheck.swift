@@ -182,7 +182,8 @@ struct Target {
         AXUIElementSetAttributeValue(c.element, "AXFocused" as CFString, kCFBooleanTrue)
         usleep(250_000)
         guard let f = attr(app, "AXFocusedUIElement") else { return false }
-        return CFEqual(f, c.element)
+        // The tree may hand back a fresh element for the row that holds focus: the same words are the same row.
+        return CFEqual(f, c.element) || (!c.name.isEmpty && Control(element: f as! AXUIElement).name == c.name)
     }
 
     func press(_ code: CGKeyCode, shift: Bool = false) {
@@ -502,6 +503,8 @@ struct SceneSpec {
     /// The words of an element that is the last Tab stop of the scene and is not a listed control (its role is AXUnknown): the
     /// sidebar's divider. It is looked up in any role, by what it reads, and expected after the listed controls.
     var lastStop: String? = nil
+    /// The row `keys` puts keyboard focus on before any key is sent, so the Tab walk and the Space lines start from a defined stop.
+    var startsOn: String? = nil
 }
 
 /// The switch of the components scene (GL43). Not translated: the script runs the gallery in English.
@@ -583,7 +586,7 @@ let scenes: [String: SceneSpec] = [
                        pixels: marksPixels, afterActions: marksStrings, sheet: nil, dumpsTree: true),
     "sidebar-a": SceneSpec(name: "sidebar-a", readyButtons: 27, readyTexts: 0, expected: sidebarAControls,
                            pixels: sidebarAPixels, afterActions: sidebarAAfterActions, sheet: nil, keys: sidebarAKeys,
-                           lastStop: sidebarDividerName),
+                           lastStop: sidebarDividerName, startsOn: "Home"),
     "sidebar-b": SceneSpec(name: "sidebar-b", readyButtons: 17, readyTexts: 0, expected: sidebarBControls,
                            pixels: sidebarBPixels, afterActions: sidebarBAfterActions, sheet: nil, keys: sidebarBKeys),
     "profile": SceneSpec(name: "profile", readyButtons: 1, readyTexts: 0, expected: profileControls,
@@ -802,24 +805,39 @@ func sheetMode(_ t: Target) {
           found ? "heading" : "headings in the tree: \(seen.isEmpty ? "none" : seen)", "a heading \"\(title)\"", found)
 }
 
+/// A frame as "x,y WxH" for a line of the log.
+func frameText(_ f: CGRect) -> String { "\(Int(f.minX)),\(Int(f.minY)) \(Int(f.width))x\(Int(f.height))" }
+
+/// What the tree says when a row would not take focus: its own AXFocused, its frame, and what holds focus instead. A row that cannot
+/// take focus is a finding, so the evidence is printed, not guessed.
+func focusEvidence(_ t: Target, _ c: Control) -> String {
+    let flag = (attr(c.element, "AXFocused") as? Bool).map { "\($0)" } ?? "unreadable"
+    let held = t.focused.map { "\(holder($0)) frame \(frameText($0.frame))" } ?? "nothing"
+    return "AXFocused on the row reads \(flag), row frame \(frameText(c.frame)), focus is on \(held)"
+}
+
 /// Gives one control keyboard focus the way a person does: AXFocused first (some controls refuse it, the glass theme switch among
-/// them), then Tab from where focus is, one full turn of the Tab order. `visited` is what held focus after each Tab, for the line
-/// that says a control took none: a control that Tab never reaches is a finding, so the stops are printed, not guessed.
-func focusByKeyboard(_ t: Target, _ name: String, order: [String], fka: Bool) -> (ok: Bool, visited: [String]) {
-    if let again = t.control(name), t.focus(again) { return (true, []) }
-    guard fka else { return (false, []) }
+/// them), then Tab, one full turn of the Tab order. Tab starts from a defined row: the one before it in the reading order, put in focus
+/// with AXFocused first, not from whatever the last control left. `visited` is what held focus after each Tab, for the line that says a
+/// control took none: a control that Tab never reaches is a finding, so the stops are printed, not guessed, with `evidence` from the tree.
+func focusByKeyboard(_ t: Target, _ name: String, order: [String], fka: Bool) -> (ok: Bool, visited: [String], evidence: String) {
+    let row = t.control(name)
+    if let again = row, t.focus(again) { return (true, [], "") }
+    let evidence = row.map { focusEvidence(t, $0) } ?? "no row named \"\(name)\" in the tree"
+    guard fka else { return (false, [], evidence) }
+    if let at = order.firstIndex(of: name), at > 0, let before = t.control(order[at - 1]) { _ = t.focus(before) }
     var visited: [String] = []
     for _ in 0..<(order.count + 2) {
         t.press(48)
         visited.append(t.focused.map { holder($0) } ?? "nothing")
-        if t.focused?.name == name { return (true, visited) }
+        if t.focused?.name == name { return (true, visited, evidence) }
     }
-    return (false, visited)
+    return (false, visited, evidence)
 }
 
-/// The UNPROVEN text for a control that took no keyboard focus, with the stops Tab visited.
-func noFocusText(_ name: String, fka: Bool, visited: [String], then: String) -> String {
-    "\"\(name)\" does not take keyboard focus with Keyboard navigation \(fka ? "on" : "off"), so \(then). Tab visited: \(visited.isEmpty ? "no stop (no Tab was sent)" : visited.joined(separator: " > "))"
+/// The UNPROVEN text for a control that took no keyboard focus, with the stops Tab visited and what the tree said about the row.
+func noFocusText(_ name: String, fka: Bool, visited: [String], evidence: String = "", then: String) -> String {
+    "\"\(name)\" does not take keyboard focus with Keyboard navigation \(fka ? "on" : "off"), so \(then). Tab visited: \(visited.isEmpty ? "no stop (no Tab was sent)" : visited.joined(separator: " > "))\(evidence.isEmpty ? "" : ". Evidence: \(evidence)")"
 }
 
 func keysMode(_ t: Target) {
@@ -842,6 +860,11 @@ func keysMode(_ t: Target) {
     let expectedOrder = order + (lastStopLabel.map { [$0] } ?? [])
     // A stop that is not a listed control is kept, named by role and words, and the walk goes on: one run then records the whole turn.
     func label(_ c: Control?) -> String { c.map { order.contains($0.name) ? $0.name : holder($0) } ?? "nothing holds focus" }
+    // The keys start from a known row: focus is put there with AXFocused before any key is sent (run 3 started from the search field's leftover focus).
+    if let start = t.scene.startsOn {
+        let put = focusByKeyboard(t, start, order: expectedOrder, fka: fka)
+        note("keys-start", theme, put.ok ? "focus put on \"\(start)\" before any key" : "\"\(start)\" took no focus; \(put.evidence)")
+    }
     var seen: [String] = []
     var ended = "the turn used every Tab it was given"
     if let first = t.focused { seen.append(label(first)) }
@@ -876,14 +899,15 @@ func keysMode(_ t: Target) {
     for e in t.scene.expected where e.role != "AXTextField" {
         guard let c = t.control(e.name) else { continue }
         // Some controls (the glass theme switch) refuse AXFocused but take focus from Tab: reach them the way a user does.
-        var visited: [String] = []
+        var visited: [String] = [], evidence = ""
         func focusOrTab(_ name: String) -> Bool {
             let reached = focusByKeyboard(t, name, order: order, fka: fka)
             visited = reached.visited
+            evidence = reached.evidence
             return reached.ok
         }
         guard focusOrTab(e.name) else {
-            unproven("keys", theme, noFocusText(e.name, fka: fka, visited: visited, then: "Space and Return could not be sent to it"))
+            unproven("keys", theme, noFocusText(e.name, fka: fka, visited: visited, evidence: evidence, then: "Space and Return could not be sent to it"))
             continue
         }
         if e.role == "AXMenuButton" {
@@ -1027,7 +1051,7 @@ func sidebarAKeys(_ t: Target) {
     let order = t.controls.map(\.name)
     let header = focusByKeyboard(t, folded, order: order, fka: true)
     guard header.ok else {
-        unproven("keys", theme, noFocusText(folded, fka: true, visited: header.visited, then: "Space could not be sent to it")); return
+        unproven("keys", theme, noFocusText(folded, fka: true, visited: header.visited, evidence: header.evidence, then: "Space could not be sent to it")); return
     }
     t.press(49)
     let gone = waitUntil(3) { t.control(inside) == nil }
@@ -1042,7 +1066,7 @@ func sidebarAKeys(_ t: Target) {
     // The window is 680 high with every section open, so the last rows start below the fold. Tab reaches \(last) and it must scroll in.
     let doctor = focusByKeyboard(t, before, order: order, fka: true)
     guard doctor.ok else {
-        unproven("keys", theme, noFocusText(before, fka: true, visited: doctor.visited, then: "Tab could not be sent on to \"\(last)\"")); return
+        unproven("keys", theme, noFocusText(before, fka: true, visited: doctor.visited, evidence: doctor.evidence, then: "Tab could not be sent on to \"\(last)\"")); return
     }
     t.press(48)
     let arrived = t.focused?.name == last
@@ -1153,7 +1177,7 @@ func sidebarBKeys(_ t: Target) {
     let area = "Across", row = sidebarASections[1].places[0]
     let item = focusByKeyboard(t, area, order: t.controls.map(\.name), fka: true)
     guard item.ok else {
-        unproven("keys", theme, noFocusText(area, fka: true, visited: item.visited, then: "Space could not be sent to it")); return
+        unproven("keys", theme, noFocusText(area, fka: true, visited: item.visited, evidence: item.evidence, then: "Space could not be sent to it")); return
     }
     t.press(49)
     let shown = waitUntil(3) { t.control(row) != nil && t.control("Host") == nil }
@@ -1209,7 +1233,7 @@ func profileKeys(_ t: Target) {
     let fka = NSApplication.shared.isFullKeyboardAccessEnabled
     let card = focusByKeyboard(t, profileSpoken, order: t.controls.map(\.name), fka: fka)
     guard card.ok else {
-        unproven("keys", theme, noFocusText(profileSpoken, fka: fka, visited: card.visited, then: "Space could not be sent to it")); return
+        unproven("keys", theme, noFocusText(profileSpoken, fka: fka, visited: card.visited, evidence: card.evidence, then: "Space could not be sent to it")); return
     }
     t.press(49)
     let opened = waitUntil(3) { !t.popoverChildren.isEmpty }

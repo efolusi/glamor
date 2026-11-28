@@ -152,5 +152,39 @@ struct WindowCheckReadingTests {
         #expect(after.contains(#"value == "collapsed""#))
         #expect(after.contains("Komando's own"), "a section that does not hold Host")
     }
+
+    // MARK: Keys start from a known row (run 3: "Host" and "Doctor" UNPROVEN)
+
+    /// Run 3 sent Tab to "Host" from wherever focus happened to be, and the first stop was an unnamed AXHostingView. A scene names the
+    /// row its keys start from; the check puts focus there before any key, so the walk and the Space lines start from a defined stop.
+    @Test func aSceneNamesTheRowItsKeysStartFromAndTheCheckFocusesItFirst() throws {
+        let check = try read("scripts/window/WindowCheck.swift")
+        #expect(check.contains("var startsOn: String? = nil"))
+        #expect(check.contains(#"startsOn: "Home""#))
+        let keys = try body(of: "keysMode", in: check)
+        let start = try #require(keys.range(of: "t.scene.startsOn"))
+        let walk = try #require(keys.range(of: "t.press(48)"))
+        #expect(start.lowerBound < walk.lowerBound, "focus is put on the starting row before the first Tab")
+        #expect(keys.contains(#"note("keys-start""#))
+    }
+
+    /// A row that cannot be focused by AXFocused is reached by Tab from the row before it, which is put in focus first: the Tab
+    /// starts from a defined row, not from the previous control's leftover focus.
+    @Test func tabToARowStartsFromTheRowBeforeItAndAFailurePrintsTheTreeEvidence() throws {
+        let check = try read("scripts/window/WindowCheck.swift")
+        let helper = try body(of: "focusByKeyboard", in: check)
+        #expect(helper.contains("order[at - 1]"), "the row before it in the reading order is focused before Tab")
+        #expect(helper.contains("focusEvidence("))
+        let evidence = try body(of: "focusEvidence", in: check)
+        #expect(evidence.contains(#"attr(c.element, "AXFocused")"#), "what the row says about its own focus")
+        #expect(evidence.contains("t.focused"), "and what holds focus instead")
+        #expect(try body(of: "noFocusText", in: check).contains("evidence"))
+    }
+
+    /// AXFocusedUIElement may hand back a fresh element for the row that holds focus: the same words are the same row.
+    @Test func focusIsConfirmedByTheRowsNameAsWellAsItsElement() throws {
+        let check = try read("scripts/window/WindowCheck.swift")
+        #expect(check.contains("Control(element: f as! AXUIElement).name == c.name"))
+    }
 }
 #endif
