@@ -82,6 +82,9 @@ public struct TextFieldBox: View {
 /// The switch is the system `Toggle`, tinted with `G.accentEdge` so its on state is the same copper edge as the web
 /// switch (3:1 or more on a card in light, dark and Increase contrast; plain copper is 2.7:1 on a light card). A
 /// `Toggle` you draw yourself takes the app's `AccentColor`: do not set that to copper, tint it with `G.accentEdge`.
+/// Only the switch is the pointer target: 32 by 18 at `.small`, with no `contentShape` or tap on the row. WCAG 2.5.8 AA holds
+/// by its spacing exception (no other target within 24 pt), which the window check measures. VoiceOver reads it as an
+/// AXCheckBox with subrole AXToggle.
 public struct ToggleCard<Extra: View>: View {
     public let title: String
     public let help: String

@@ -106,18 +106,15 @@ struct Control {
     var description: String { text(element, "AXDescription") }
     var title: String { text(element, "AXTitle") }
     var help: String { text(element, "AXHelp") }
-    /// AXValue as text. A switch is guessed to read "1" (on) or "0" (off): not yet seen on this macOS, proven by the owner's window run.
+    /// AXValue as text. A switch reads "1" (on) or "0" (off): seen in run 3 of v0.4.0.
     var value: String { attr(element, "AXValue").map { "\($0)" } ?? "" }
     var placeholder: String { text(element, "AXPlaceholderValue") }
     var selected: Bool { (attr(element, "AXSelected") as? Bool) == true }
     var enabled: Bool { (attr(element, "AXEnabled") as? Bool) != false }
     var frame: CGRect { axFrame(element) ?? .zero }
-    /// A switch or a checkbox by what the tree says: the role, the subrole or the role description (macOS words it "switch").
-    /// Run 2 listed only the roles guessed for the switch, so a switch read under another one was "missing".
-    var isSwitchLike: Bool {
-        ["AXCheckBox", "AXSwitch", "AXToggle"].contains(role) || ["AXSwitch", "AXToggle"].contains(subrole)
-            || roleDescription.localizedCaseInsensitiveContains("switch")
-    }
+    /// A switch or a checkbox by what the tree says: an AXCheckBox, or any element with subrole AXToggle (run 3 read the switch as
+    /// role AXCheckBox, subrole AXToggle, role description "toggle button"). A control named like the switch is listed in any case.
+    var isSwitchLike: Bool { role == "AXCheckBox" || subrole == "AXToggle" }
     /// What VoiceOver reads first: the description, else the title, else a text field's placeholder.
     var name: String { [description, title, placeholder].first { !$0.isEmpty } ?? "" }
     var nameSource: String {
@@ -471,14 +468,13 @@ func switchTint(_ t: Target, _ shot: Shot) {
 struct Expected {
     let name: String
     let role: String
+    /// The subrole the tree must read too, when the role alone does not say it (the switch is an AXCheckBox with subrole AXToggle); nil asks for none.
+    var subrole: String? = nil
     let selected: Bool
     let pressEvent: String?
     var value: String? = nil
     /// A row with no explicit `help`: its tooltip must not become a second, spoken name (AXHelp stays empty).
     var hasNoHelp = false
-    /// Roles that read as this control when `role` is one of several (a switch is an AXCheckBox or an AXSwitch); nil is `role` alone.
-    var acceptedRoles: [String]? = nil
-    func accepts(_ read: String) -> Bool { (acceptedRoles ?? [role]).contains(read) }
 }
 
 /// What one gallery scene (`GlamorGallery --scene <name>`) must show, and the checks that belong to it alone.
@@ -524,9 +520,9 @@ let componentsControls: [Expected] = [
     Expected(name: "Month", role: "AXButton", selected: false, pressEvent: "segment 2"),
     Expected(name: "Switch to dark theme", role: "AXButton", selected: false, pressEvent: "theme dark"),
     Expected(name: "Search hosts", role: "AXTextField", selected: false, pressEvent: nil),
-    // UNPROVEN: the role (AXCheckBox with subrole AXSwitch, or AXSwitch), AXValue "1" and the press toggling it are guesses; run 2 did not list
-    // the switch under any role the check knew. The strings run now prints its role, subrole and frame (NOTE switch-ax) and the whole tree (TREE).
-    Expected(name: switchName, role: "AXCheckBox", selected: false, pressEvent: "switch false", value: "1", acceptedRoles: ["AXCheckBox", "AXSwitch"]),
+    // Read in run 3 of v0.4.0: role AXCheckBox, subrole AXToggle, role description "toggle button", AXValue "1", AXHelp the card's help line,
+    // frame 32x18. The NOTE switch-ax prints the same on every run.
+    Expected(name: switchName, role: "AXCheckBox", subrole: "AXToggle", selected: false, pressEvent: "switch false", value: "1"),
 ]
 
 /// The sidebar-a scene (GL31 to GL34, GL40): Home, four sections of places, Settings in the footer, in reading order.
@@ -609,8 +605,8 @@ func stringsMode(_ t: Target) {
             check("voiceover", theme, "control named \"\(e.name)\"", "not in the accessibility tree", "present", false); continue
         }
         check("voiceover", theme, "\"\(e.name)\": role \(e.role), selected \(e.selected), enabled",
-              "\(c.role) (\(c.roleDescription)), selected \(c.selected), enabled \(c.enabled), name from \(c.nameSource)",
-              "\((e.acceptedRoles ?? [e.role]).joined(separator: " or ")), selected \(e.selected), enabled true", e.accepts(c.role) && c.selected == e.selected && c.enabled)
+              "\(c.role)\(c.subrole.isEmpty ? "" : "/\(c.subrole)") (\(c.roleDescription)), selected \(c.selected), enabled \(c.enabled), name from \(c.nameSource)",
+              "\(e.role)\(e.subrole.map { "/\($0)" } ?? ""), selected \(e.selected), enabled true", c.role == e.role && (e.subrole == nil || c.subrole == e.subrole) && c.selected == e.selected && c.enabled)
         if c.role == "AXTextField" {
             let labelled = c.description == c.placeholder || c.title == c.placeholder
             check("voiceover", theme, "the text field is named by a label equal to its placeholder, not by the placeholder alone",
@@ -618,6 +614,16 @@ func stringsMode(_ t: Target) {
         }
         if e.role == "AXCheckBox" {
             note("switch-ax", theme, "\"\(e.name)\" read as role \(c.role), subrole \"\(c.subrole)\", role description \"\(c.roleDescription)\", AXValue \"\(c.value)\", AXDescription \"\(c.description)\", AXTitle \"\(c.title)\", AXHelp \"\(c.help)\", frame \(Int(c.frame.minX)),\(Int(c.frame.minY)) \(Int(c.frame.width))x\(Int(c.frame.height)), window \(axFrame(t.window).map { "\(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height))" } ?? "?")")
+        }
+        if e.role == "AXCheckBox" {
+            // The card's row: the title, the help line and the switch together. ToggleCard draws no contentShape and no tap on its row,
+            // so the pointer target is the switch alone (the spacing line below stands for it); the row is measured, not called the target.
+            let texts = descendants(t.window).filter { text($0, "AXRole") == "AXStaticText" }
+            let parts = [e.name, c.help].compactMap { words in texts.first { spokenName($0) == words } }.compactMap(axFrame) + [c.frame]
+            let row = parts.dropFirst().reduce(parts[0]) { $0.union($1) }
+            note("target-row", theme, "the pointer target is the switch alone, \(frameText(c.frame)) pt: ToggleCard draws no contentShape or tap on its row (WCAG 2.5.8 stands on the spacing line)")
+            check("target-row", theme, "the card row (title, help line and switch together) frame", parts.count == 3 ? "\(f2(Double(row.width)))x\(f2(Double(row.height))) pt" : "title or help text not found in the tree (\(parts.count - 1) of 2)",
+                  ">= 24 pt high", parts.count == 3 && row.height >= 24)
         }
         if let value = e.value {
             check("voiceover", theme, "\"\(e.name)\" reads its value before any press", "AXValue \"\(c.value)\"", "\"\(value)\"", c.value == value)

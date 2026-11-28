@@ -35,14 +35,40 @@ struct WindowCheckReadingTests {
         #expect(region.contains("AXStaticText"), "the card's own title text is not the switch")
     }
 
-    @Test func theSwitchListEntryAcceptsTheSwitchRolesAndTheLineSaysWhatWasRead() throws {
+    /// Run 3 read the switch: role AXCheckBox, subrole AXToggle, role description "toggle button", AXValue 1, AXHelp the card's help
+    /// line, frame 32 by 18. The list says exactly that (AXSwitch is a role this macOS never gave it), and the line says what was read.
+    @Test func theSwitchListEntryExpectsRoleAXCheckBoxAndSubroleAXToggleAndTheLineSaysWhatWasRead() throws {
         let check = try read("scripts/window/WindowCheck.swift")
-        #expect(check.contains("var acceptedRoles: [String]?"))
-        #expect(check.contains(#"acceptedRoles: ["AXCheckBox", "AXSwitch"]"#))
+        #expect(check.contains(#"role: "AXCheckBox", subrole: "AXToggle""#))
+        #expect(!check.contains("acceptedRoles"), "one role is expected, so no list of accepted ones")
         let strings = try body(of: "stringsMode", in: check)
-        #expect(strings.contains("e.accepts(c.role)"))
+        #expect(strings.contains("c.subrole == e.subrole"))
         #expect(strings.contains(#"note("switch-ax""#))
         #expect(strings.contains("window \\(axFrame(t.window)"), "the NOTE gives the frame against the window's, so a cut-off switch shows")
+    }
+
+    /// The name of the role is the one the tree read, in every place that says it: the check, the tests, the CHANGELOG and README.
+    @Test func noFileCallsTheSwitchAnAXSwitch() throws {
+        for path in ["scripts/window/WindowCheck.swift", "CHANGELOG.md", "README.md", "ARCHITECTURE.md", "Tests/GlamorTests/AccentEdgeTests.swift"] {
+            #expect(!(try read(path)).contains("AXSwitch"), "\(path) still says AXSwitch; the tree reads AXCheckBox with subrole AXToggle")
+        }
+        #expect(try read("CHANGELOG.md").contains("role AXCheckBox, subrole AXToggle"))
+    }
+
+    /// ToggleCard draws no `contentShape` and no tap on its row: the switch alone is the pointer target (32 by 18 at `.small`). WCAG 2.5.8 AA holds
+    /// by the spacing exception, which is a CHECK; the row's own frame is measured too, and the line says it is not the target.
+    @Test func theSwitchCardsRowIsMeasuredAndTheLineSaysTheSwitchAloneIsTheTarget() throws {
+        let check = try read("scripts/window/WindowCheck.swift")
+        let strings = try body(of: "stringsMode", in: check)
+        #expect(strings.contains(#"check("target-row""#))
+        #expect(strings.contains(#"note("target-row""#), "the pointer target is the switch alone: the NOTE says so")
+        let controls = try read("Sources/Glamor/macOS/Controls.swift")
+        let start = try #require(controls.range(of: "/// A bordered card with a title, a line of help and a switch"))
+        let declaration = try #require(controls.range(of: "public struct ToggleCard<Extra: View>"))
+        let end = try #require(controls.range(of: "/// Tabs drawn as words"))
+        #expect(controls[start.lowerBound..<declaration.lowerBound].contains("Only the switch is the pointer target"))
+        let card = String(controls[declaration.lowerBound..<end.lowerBound])
+        #expect(!card.contains("contentShape"), "if the row becomes the target, this test and the NOTE change together")
     }
 
     // MARK: Tab order and keyboard focus
