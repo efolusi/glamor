@@ -499,6 +499,9 @@ struct SceneSpec {
     var keys: ((Target) -> Void)? = nil
     /// Print the window's whole accessibility tree (TREE lines) at the start of `strings`: one more run then shows what a role-based lookup missed.
     var dumpsTree: Bool = false
+    /// The words of an element that is the last Tab stop of the scene and is not a listed control (its role is AXUnknown): the
+    /// sidebar's divider. It is looked up in any role, by what it reads, and expected after the listed controls.
+    var lastStop: String? = nil
 }
 
 /// The switch of the components scene (GL43). Not translated: the script runs the gallery in English.
@@ -533,6 +536,9 @@ let sidebarASections: [(title: String, places: [String])] = [
     ("About komando", ["Audit", "Doctor", "Agent"]),
 ]
 let sidebarAStart = "Host"
+/// The divider on the sidebar's edge is an intended keyboard stop (`SplitDivider` is focusable; ← → size it). It is the last stop
+/// of the sidebar, after the pinned footer and before the page it sizes. Its name is the library's English "Sidebar width".
+let sidebarDividerName = "Sidebar width"
 let sidebarACounts = ["Copy": "2 transfers running", "Doctor": "3 findings to review"]
 
 func sidebarARow(_ name: String) -> Expected {
@@ -576,7 +582,8 @@ let scenes: [String: SceneSpec] = [
     "marks": SceneSpec(name: "marks", readyButtons: 0, readyTexts: 4, expected: [],
                        pixels: marksPixels, afterActions: marksStrings, sheet: nil, dumpsTree: true),
     "sidebar-a": SceneSpec(name: "sidebar-a", readyButtons: 27, readyTexts: 0, expected: sidebarAControls,
-                           pixels: sidebarAPixels, afterActions: sidebarAAfterActions, sheet: nil, keys: sidebarAKeys),
+                           pixels: sidebarAPixels, afterActions: sidebarAAfterActions, sheet: nil, keys: sidebarAKeys,
+                           lastStop: sidebarDividerName),
     "sidebar-b": SceneSpec(name: "sidebar-b", readyButtons: 17, readyTexts: 0, expected: sidebarBControls,
                            pixels: sidebarBPixels, afterActions: sidebarBAfterActions, sheet: nil, keys: sidebarBKeys),
     "profile": SceneSpec(name: "profile", readyButtons: 1, readyTexts: 0, expected: profileControls,
@@ -820,33 +827,49 @@ func keysMode(_ t: Target) {
     let fka = NSApplication.shared.isFullKeyboardAccessEnabled
     note("keyboard", theme, "System Settings > Keyboard > Keyboard navigation is \(fka ? "ON" : "OFF") (read only; this script never changes it)")
 
-    // Tab order. Expected: the reading order of the controls, as the accessibility tree lists them.
+    // Tab order. Expected: the reading order of the controls, as the accessibility tree lists them, then the scene's last stop.
     let order = t.controls.map(\.name)
+    // The last stop (the sidebar's divider) is not a listed control: it is found in any role by what it reads, and its role, subrole and
+    // frame are printed. A scene that names one the tree does not hold fails here, not as an unexplained extra stop.
+    var lastStopLabel: String?
+    if let lastStop = t.scene.lastStop {
+        let found = descendants(t.window).first { spokenName($0) == lastStop }
+        lastStopLabel = found.map { holder(Control(element: $0)) }
+        let f = found.flatMap(axFrame)
+        note("divider-ax", theme, "\"\(lastStop)\" read as \(lastStopLabel ?? "no element"), frame \(f.map { "\(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height))" } ?? "?"), window \(axFrame(t.window).map { "\(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height))" } ?? "?")")
+        check("voiceover", theme, "the element \"\(lastStop)\" is in the tree, in any role", lastStopLabel ?? "not in the accessibility tree", "present", found != nil)
+    }
+    let expectedOrder = order + (lastStopLabel.map { [$0] } ?? [])
     // A stop that is not a listed control is kept, named by role and words, and the walk goes on: one run then records the whole turn.
     func label(_ c: Control?) -> String { c.map { order.contains($0.name) ? $0.name : holder($0) } ?? "nothing holds focus" }
     var seen: [String] = []
     var ended = "the turn used every Tab it was given"
     if let first = t.focused { seen.append(label(first)) }
-    for _ in 0..<(order.count + 3) {
+    for _ in 0..<(expectedOrder.count + 3) {
         t.press(48)
         let stop = label(t.focused)
         if stop == seen.first { ended = "Tab came back to \"\(stop)\""; break }
         if seen.contains(stop) { ended = "Tab reached \"\(stop)\" a second time"; break }
         seen.append(stop)
     }
-    let unlisted = seen.filter { !order.contains($0) }
+    let unlisted = seen.filter { !expectedOrder.contains($0) }
     note("tab-order", theme, "Tab stops found: \(seen.joined(separator: " > "))")
     note("tab-stop", theme, "the walk ended after \(seen.count) stops: \(ended)\(unlisted.isEmpty ? "" : "; stops that are not listed controls: \(unlisted.joined(separator: ", "))")")
     if fka {
         // The walk may start anywhere (the search field has focus at launch), so the order is compared as a rotation.
-        let start = seen.first.flatMap { order.firstIndex(of: $0) } ?? 0
-        let rotated = Array(order[start...] + order[..<start])
+        let start = seen.first.flatMap { expectedOrder.firstIndex(of: $0) } ?? 0
+        let rotated = Array(expectedOrder[start...] + expectedOrder[..<start])
         check("tab-order", theme, "Tab visits every control in reading order", seen.joined(separator: " > "), rotated.joined(separator: " > "), seen == rotated)
         if seen != rotated, let at = zip(seen, rotated).enumerated().first(where: { $0.element.0 != $0.element.1 })?.offset ?? (seen.count < rotated.count ? seen.count : nil) {
             note("tab-order", theme, "first difference at stop \(at + 1): expected \"\(at < rotated.count ? rotated[at] : "no more stops")\", Tab went to \"\(at < seen.count ? seen[at] : "no stop")\"")
         }
+        // The divider stands right after the last listed control (the pinned footer), whatever the walk's start.
+        if let lastStopLabel, let footer = order.last {
+            let after = seen.firstIndex(of: footer).flatMap { i in i + 1 < seen.count ? seen[i + 1] : seen.first }
+            check("tab-order", theme, "the divider follows the footer: the stop after \"\(footer)\" is the divider", after.map { "\"\($0)\"" } ?? "no stop", "\"\(lastStopLabel)\"", after == lastStopLabel)
+        }
     } else {
-        unproven("tab-order", theme, "with Keyboard navigation off macOS keeps Tab on text fields, so the order of \(order.count) controls cannot be walked; rerun after turning Keyboard navigation on yourself")
+        unproven("tab-order", theme, "with Keyboard navigation off macOS keeps Tab on text fields, so the order of \(expectedOrder.count) controls cannot be walked; rerun after turning Keyboard navigation on yourself")
     }
 
     // Space and Return, on every control that takes focus. A control that will not take focus is reported, not skipped silently.
